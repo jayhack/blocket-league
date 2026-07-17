@@ -5,8 +5,6 @@ import Image from "next/image";
 import {
   ArrowRight,
   CircleDot,
-  Pause,
-  Play,
   RotateCcw,
 } from "lucide-react";
 
@@ -168,7 +166,6 @@ export function BlocketLeagueLab() {
   const [initialWorld] = useState(() => createPassiveWorld(17));
   const worldRef = useRef<WorldState>(initialWorld);
   const [snapshot, setSnapshot] = useState(() => snapshotWorld(initialWorld));
-  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     let animationFrame = 0;
@@ -181,7 +178,7 @@ export function BlocketLeagueLab() {
       accumulator = Math.min(accumulator + now - previous, 250);
       previous = now;
       let advanced = false;
-      while (!paused && accumulator >= stepDuration) {
+      while (accumulator >= stepDuration) {
         stepWorld(world, 0, true);
         accumulator -= stepDuration;
         advanced = true;
@@ -192,7 +189,7 @@ export function BlocketLeagueLab() {
     };
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [paused]);
+  }, []);
 
   const reset = () => {
     const world = worldRef.current;
@@ -210,10 +207,11 @@ export function BlocketLeagueLab() {
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>Can a tiny world model<br />discover the rules?</h1>
+        <h1>Find the physics inside a transformer. Then steer it.</h1>
         <p className={styles.heroCopy}>
-          Train a transformer only to watch pixels move. Find the velocity it invents.
-          Then turn that hidden direction into the controls it never saw during training.
+          A next-frame predictor invents a causal model of motion in its hidden activations.
+          Recover that representation, write to it, and its uncontrolled video hallucination
+          becomes a playable game.
         </p>
       </section>
 
@@ -232,16 +230,13 @@ export function BlocketLeagueLab() {
         <div className={styles.simulatorShell}>
           <div className={styles.canvasColumn}>
             <div className={styles.canvasHeader}>
-              <div className={styles.simulatorActions}>
-                <button type="button" onClick={() => setPaused((value) => !value)}>
-                  {paused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
-                  {paused ? "Resume" : "Pause"}
-                </button>
-                <button type="button" onClick={reset}>
-                  <RotateCcw aria-hidden="true" /> Reset
-                </button>
+              <div className={styles.score} aria-label={`${snapshot.score} goals scored`}>
+                <strong>{snapshot.score.toString().padStart(2, "0")}</strong>
+                <span>{snapshot.score === 1 ? "goal" : "goals"}</span>
               </div>
-              <div className={styles.score}>GOALS <strong>{snapshot.score.toString().padStart(2, "0")}</strong></div>
+              <button className={styles.simulatorReset} type="button" onClick={reset}>
+                <RotateCcw aria-hidden="true" /> Reset world
+              </button>
             </div>
             <canvas
               ref={canvasRef}

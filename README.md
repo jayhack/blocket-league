@@ -1,8 +1,10 @@
 # Blocket League
 
-Blocket League is a small world-model interpretability experiment. A transformer watches raw 64×64 pixel frames from a passive two-disc physics simulation and predicts the next image. It receives no actions or simulator state.
+**The money shot: a transformer trained only to predict pixels develops a causal representation of motion. We recover a velocity direction from its hidden activations, write that direction back into the frozen model, and turn its video hallucination into a playable game.**
 
-The interactive lab shows the model rolling forward, probes hidden states for physical quantities such as velocity, and demonstrates a causal intervention: keyboard input writes a recovered velocity direction into the frozen model's activations instead of entering through an action channel.
+Blocket League is a small world-model interpretability experiment. The transformer watches raw 64×64 frames from a passive two-disc physics simulation and predicts the next image. It receives no actions, coordinates, or simulator state. Its learned weights nevertheless produce hidden-state directions that predict downstream physical effects. Those directions are not merely readable: intervening on them changes the generated trajectory.
+
+The interactive lab follows the whole argument from observation to intervention. It shows the model rolling forward, recovers physical variables such as velocity from its activations, tests a reusable causal direction across unseen worlds, and finally maps that activation edit to the keyboard. The resulting “game” is still an autoregressive hallucination; the controls operate by performing live surgery on the model's internal physics.
 
 ## Run the lab
 

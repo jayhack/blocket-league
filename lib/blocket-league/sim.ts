@@ -30,7 +30,7 @@ export const WORLD = {
   puckMass: 1,
   playerAcceleration: 3.35,
   playerDrag: 1.55,
-  puckDrag: 0.12,
+  puckDrag: 0.045,
   maxPlayerSpeed: 1.25,
   restitution: 0.91,
   goalLow: 0.35,
