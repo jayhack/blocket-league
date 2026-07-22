@@ -1,14 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Cpu, Gauge, Pause, Play, RotateCcw } from "lucide-react";
+import { Cpu, RotateCcw } from "lucide-react";
 
 import { ACTION_NAMES, ACTION_VECTORS, keyboardAction } from "@/lib/blocket-league/sim";
 
 import styles from "./blocket-league-lab.module.css";
 
-const PAD_ACTIONS = [8, 1, 2, 7, 0, 3, 6, 5, 4];
-const PAD_LABELS = ["↖", "↑", "↗", "←", "·", "→", "↙", "↓", "↘"];
+const PAD_ACTIONS = [
+  { action: 1, label: "↑" },
+  { action: 7, label: "←" },
+  { action: 3, label: "→" },
+  { action: 5, label: "↓" },
+] as const;
 const MOVEMENT_KEYS = new Set(["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft", "w", "a", "s", "d"]);
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -197,16 +201,8 @@ export function LiveWorldModel() {
   const queueRef = useRef<DreamFrame[]>([]);
   const [status, setStatus] = useState<PlayerStatus>("idle");
   const [loadProgress, setLoadProgress] = useState(0);
-  const [loadLabel, setLoadLabel] = useState("MODEL SLEEPING");
   const [error, setError] = useState("");
-  const [provider, setProvider] = useState<"webgpu" | "wasm" | null>(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
-  const [modelMegabytes, setModelMegabytes] = useState(14.2);
-  const [modelParameters, setModelParameters] = useState(3_667_992);
-  const [interventionLabel, setInterventionLabel] = useState("block 5 · 8σ");
   const [inputAction, setInputAction] = useState(0);
-  const [generatedFrames, setGeneratedFrames] = useState(0);
-  const [frameMilliseconds, setFrameMilliseconds] = useState<number | null>(null);
 
   const drawStarter = useCallback(() => {
     const canvas = canvasRef.current;
@@ -245,18 +241,13 @@ export function LiveWorldModel() {
     setError("");
     try {
       setLoadProgress(0.02);
-      setLoadLabel("READING PIXEL TRANSFORMER MANIFEST");
       const response = await fetch(assetUrl("/blocket-league/live/manifest.json"));
       if (!response.ok) throw new Error("The browser model manifest is missing.");
       const manifest = await response.json() as LiveManifest;
       if (manifest.modelKind !== "passive-direct-pixel-autoregressive") {
         throw new Error("The loaded checkpoint is not the passive pixel model.");
       }
-      setModelMegabytes(manifest.modelBytes / 1_048_576);
-      setModelParameters(manifest.modelParameters);
-      setInterventionLabel(`block ${manifest.interventionBlock} · ${manifest.interventionStrength}σ`);
       let loaded = 0;
-      setLoadLabel(`DOWNLOADING ${(manifest.modelBytes / 1_048_576).toFixed(1)} MB · LOCAL ONLY`);
       const [modelBytes, starterBytes] = await Promise.all([
         fetchBytes(assetUrl(manifest.assets.dynamics), (value) => {
           loaded = value;
@@ -265,7 +256,6 @@ export function LiveWorldModel() {
         fetchBytes(assetUrl(manifest.assets.starterContext)),
       ]);
       setLoadProgress(0.78);
-      setLoadLabel("COMPILING FROZEN TRANSFORMER");
       const runtime = await import("onnxruntime-web/webgpu");
       runtime.env.logLevel = "warning";
       runtime.env.wasm.numThreads = 1;
@@ -304,14 +294,11 @@ export function LiveWorldModel() {
         history: starterContext.slice(),
         lastGreenSpatialMask: greenTokenMask(starterContext, manifest).spatial,
       };
-      setProvider(selectedProvider);
-      setModelLoaded(true);
       setLoadProgress(1);
-      setLoadLabel(`${selectedProvider.toUpperCase()} READY · NO ACTION CHANNEL`);
       setStatus("ready");
+      window.setTimeout(() => startPlaybackRef.current(), 0);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : String(loadError));
-      setLoadLabel("MODEL FAILED TO WAKE");
       setStatus("error");
     }
   };
@@ -331,7 +318,6 @@ export function LiveWorldModel() {
         context.imageSmoothingEnabled = false;
         context.putImageData(next.image, 0, 0);
       }
-      setGeneratedFrames((value) => value + 1);
     }, 1_000 / engine.manifest.sourceFps);
     const inferenceLoop = async () => {
       while (runningRef.current && loopIdRef.current === loopId) {
@@ -340,12 +326,10 @@ export function LiveWorldModel() {
           continue;
         }
         const action = manualActionRef.current ?? keyboardAction(keysRef.current);
-        const started = performance.now();
         try {
           const image = await generateFrame(engine, action);
           if (!runningRef.current || loopIdRef.current !== loopId) return;
           queueRef.current.push({ image, action });
-          setFrameMilliseconds(performance.now() - started);
         } catch (inferenceError) {
           stopPlayback();
           setError(inferenceError instanceof Error ? inferenceError.message : String(inferenceError));
@@ -402,11 +386,10 @@ export function LiveWorldModel() {
     keysRef.current.clear();
     manualActionRef.current = null;
     setInputAction(0);
-    setGeneratedFrames(0);
-    setFrameMilliseconds(null);
     setError("");
     drawStarter();
     setStatus(engine ? "ready" : "idle");
+    if (engine) window.setTimeout(() => startPlaybackRef.current(), 0);
   };
 
   const beginManualAction = (action: number) => {
@@ -418,7 +401,6 @@ export function LiveWorldModel() {
     manualActionRef.current = null;
     setInputAction(keyboardAction(keysRef.current));
   };
-  const theoreticalFps = frameMilliseconds ? 1_000 / frameMilliseconds : null;
 
   return (
     <div
@@ -426,42 +408,27 @@ export function LiveWorldModel() {
       onFocusCapture={() => { activeLivePlayerId = instanceId; }}
       onPointerEnter={() => { activeLivePlayerId = instanceId; }}
     >
-      <div className={styles.livePlayerHeader}>
-        <div className={styles.liveLabel}><span className={status === "running" ? styles.livePulse : undefined} />FROZEN PIXEL TRANSFORMER · {provider?.toUpperCase() ?? "NOT LOADED"}</div>
-        <div>{(modelParameters / 1_000_000).toFixed(2)}M PARAMETERS · {modelMegabytes.toFixed(1)} MB FP32</div>
-      </div>
       <div className={styles.livePlayerGrid}>
         <div className={styles.liveDreamColumn}>
-          <div className={styles.liveCanvasHeader}><strong>MODEL&apos;S DREAM</strong><span>{generatedFrames.toString().padStart(4, "0")} GENERATED FRAMES</span></div>
           <div className={styles.liveCanvasWrap}>
             <canvas ref={canvasRef} className={styles.liveCanvas} width={64} height={64} role="img" aria-label="Live frames imagined by the passive Blocket League pixel transformer." />
             {(status === "idle" || status === "loading" || status === "error") && (
               <div className={styles.liveCanvasOverlay}>
                 {status === "idle" && <button type="button" onClick={loadModel}><Cpu aria-hidden="true" /> Load local model</button>}
                 {status === "loading" && <><div className={styles.liveLoadTrack} aria-label={`${Math.round(loadProgress * 100)} percent loaded`}><span style={{ width: `${loadProgress * 100}%` }} /></div><strong>{Math.round(loadProgress * 100)}%</strong></>}
-                {status === "error" && <button type="button" onClick={resetDream}><RotateCcw aria-hidden="true" /> Reset player</button>}
+                {status === "error" && <button type="button" onClick={loadModel}><RotateCcw aria-hidden="true" /> Try again</button>}
               </div>
             )}
           </div>
-          <div className={styles.liveStatusLine}><span>{loadLabel}</span><span>{error || "PIXELS → TRANSFORMER → PIXELS · CONTROL = HIDDEN-STATE WRITE"}</span></div>
         </div>
         <aside className={styles.liveControls} aria-label="Activation steering controls">
-          <div className={styles.liveMetrics}>
-            <div><span>COMPUTE</span><strong>{frameMilliseconds ? `${frameMilliseconds.toFixed(0)} ms` : "—"}</strong></div>
-            <div><span>HEADROOM</span><strong>{theoreticalFps ? `${theoreticalFps.toFixed(0)} fps` : "—"}</strong></div>
-            <div><span>WRITE</span><strong>{ACTION_NAMES[inputAction]}</strong></div>
-          </div>
-          <div className={styles.liveQuality}><div><Gauge aria-hidden="true" /><span>INTERVENTION</span></div><div><button type="button" className={styles.liveQualityActive}>{interventionLabel}</button></div></div>
           <div className={styles.pad} aria-label="Hidden-state direction pad">
-            {PAD_ACTIONS.map((action, index) => (
-              <button key={action} type="button" className={[action === 0 ? styles.padCenter : "", inputAction === action ? styles.padActive : ""].filter(Boolean).join(" ") || undefined} aria-label={`${ACTION_NAMES[action]} activation write`} aria-pressed={inputAction === action} data-input-active={inputAction === action ? "true" : "false"} onPointerDown={() => beginManualAction(action)} onPointerUp={endManualAction} onPointerCancel={endManualAction} onPointerLeave={endManualAction}>{PAD_LABELS[index]}</button>
+            {PAD_ACTIONS.map(({ action, label }) => (
+              <button key={action} type="button" className={inputAction === action ? styles.padActive : undefined} aria-label={`${ACTION_NAMES[action]} activation write`} aria-pressed={inputAction === action} data-pad-action={action} onPointerDown={() => beginManualAction(action)} onPointerUp={endManualAction} onPointerCancel={endManualAction} onPointerLeave={endManualAction}>{label}</button>
             ))}
           </div>
-          <div className={styles.liveTransport}>
-            {status === "running" ? <button type="button" onClick={() => { stopPlayback(); setStatus("paused"); }}><Pause aria-hidden="true" /> Pause dream</button> : <button type="button" onClick={startPlayback} disabled={!modelLoaded || status === "loading"}><Play aria-hidden="true" /> Enter dream</button>}
-            <button type="button" onClick={resetDream} disabled={!modelLoaded}><RotateCcw aria-hidden="true" /> Reset rollout</button>
-          </div>
-          <p className={styles.liveHint}>Hold WASD or arrow keys to keep writing the recovered velocity directions into the green circle&apos;s spatial activation. The white puck has no controls.</p>
+          <button className={styles.liveReset} type="button" onClick={resetDream} disabled={status === "idle" || status === "loading"}><RotateCcw aria-hidden="true" /> Reset</button>
+          {error && <p className={styles.liveError}>{error}</p>}
         </aside>
       </div>
     </div>
