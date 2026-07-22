@@ -154,7 +154,7 @@ function drawWorld(
     context.fillStyle = "rgba(7, 11, 16, 0.72)";
     context.fillRect(0.3, 0.43, 0.4, 0.14);
     context.fillStyle = "#eeb53e";
-    context.font = "500 0.055px Geist, sans-serif";
+    context.font = "500 0.055px system-ui, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText("GOAL", 0.5, 0.5);
@@ -204,6 +204,9 @@ export function BlocketLeagueLab() {
         <a className={styles.wordmark} href="#top" aria-label="Blocket League home">
           <span className={styles.mark}><CircleDot aria-hidden="true" /></span>
           <span>BLOCKET LEAGUE</span>
+        </a>
+        <a className={styles.githubLink} href="https://github.com/jayhack/blocket-league" target="_blank" rel="noreferrer">
+          GitHub ↗
         </a>
       </header>
 

@@ -1,30 +1,26 @@
 .root {
-  --ink: #eef2e9;
-  --muted: #8b9a98;
-  --line: #263438;
-  --surface: #0c1318;
-  --surface-raised: #111b20;
+  --ink: #fafafa;
+  --muted: #a1a1aa;
+  --line: #262626;
+  --surface: #050505;
+  --surface-raised: #0a0a0a;
   --mint: #32d5ad;
   --gold: #eeb53e;
   min-height: 100vh;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 82% 7%, rgb(50 213 173 / 7%), transparent 27rem),
-    #070b10;
+  background: #000;
   color: var(--ink);
 }
 
 .header {
-  width: min(1240px, calc(100% - 48px));
+  width: min(960px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 28px 0;
+  padding: 24px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: 14px;
 }
 
 .wordmark {
@@ -33,7 +29,20 @@
   gap: 11px;
   color: var(--ink);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.githubLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #d4d4d8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.githubLink:hover {
+  color: var(--ink);
 }
 
 .mark {
@@ -66,9 +75,9 @@
 }
 
 .hero {
-  width: min(1240px, calc(100% - 48px));
+  width: min(960px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 84px 0 100px;
+  padding: 64px 0 88px;
   position: relative;
 }
 
@@ -82,27 +91,26 @@
 }
 
 .hero h1 {
-  max-width: 980px;
+  max-width: 632px;
   margin: 0;
   position: relative;
   z-index: 1;
-  font-size: clamp(48px, 5.6vw, 76px);
-  font-weight: 450;
-  line-height: 0.96;
-  letter-spacing: -0.06em;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 40px;
+  letter-spacing: -0.9px;
 }
 
 .heroCopy {
-  max-width: 790px;
-  margin: 30px 0 0;
-  color: #a9b5b2;
-  font-size: clamp(18px, 2vw, 23px);
-  line-height: 1.45;
-  letter-spacing: -0.025em;
+  max-width: 632px;
+  margin: 20px 0 0;
+  color: #d4d4d8;
+  font-size: 16.8px;
+  line-height: 32px;
 }
 
 .heroGame {
-  margin-top: 52px;
+  margin-top: 40px;
 }
 
 .jumpLink {
@@ -138,9 +146,9 @@
 .lensSection,
 .emergenceSection,
 .interpretabilitySection {
-  width: min(1240px, calc(100% - 48px));
+  width: min(960px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 100px 0;
+  padding: 80px 0;
   border-top: 1px solid var(--line);
 }
 
@@ -1290,9 +1298,9 @@
 }
 
 .trajectorySection {
-  width: min(1240px, calc(100% - 48px));
+  width: min(960px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 100px 0 120px;
+  padding: 80px 0 100px;
   border-top: 1px solid var(--line);
 }
 
@@ -1731,25 +1739,26 @@
 }
 
 .sectionHeading {
+  max-width: 632px;
   display: block;
-  margin-bottom: 52px;
+  margin-bottom: 40px;
 }
 
 .sectionHeading h2,
 .scaleIntro h2 {
   margin: 0;
-  font-size: clamp(32px, 3.4vw, 46px);
-  font-weight: 450;
-  line-height: 1.04;
-  letter-spacing: -0.045em;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+  letter-spacing: -0.6px;
 }
 
 .sectionHeading > p {
-  max-width: 1040px;
-  margin: 22px 0 0;
-  color: #bec8c5;
-  font-size: clamp(21px, 2vw, 26px);
-  line-height: 1.52;
+  max-width: 632px;
+  margin: 16px 0 0;
+  color: #d4d4d8;
+  font-size: 16.8px;
+  line-height: 32px;
 }
 
 .simulatorShell {
@@ -3322,7 +3331,7 @@
 }
 
 .footer {
-  width: min(1240px, calc(100% - 48px));
+  width: min(960px, calc(100% - 48px));
   margin: 0 auto;
   padding: 27px 0 34px;
   display: flex;
@@ -3496,7 +3505,7 @@
   .emergenceSection,
   .interpretabilitySection,
   .footer {
-    width: min(100% - 30px, 1240px);
+    width: min(100% - 30px, 960px);
   }
 
   .hero {
@@ -3504,7 +3513,8 @@
   }
 
   .hero h1 {
-    font-size: clamp(42px, 12vw, 62px);
+    font-size: 34px;
+    line-height: 38px;
   }
 
   .heroGame {
