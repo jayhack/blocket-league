@@ -33,6 +33,8 @@ The Python package contains the simulator, pixel transformer, Modal training ent
 uv sync --extra training
 uv run python -m unittest discover tests
 uv run modal run blocket_league/modal_app.py --stage pixel-direct --preset tiny
+uv run --extra training python -m blocket_league.hallucination_assets checkpoint.pt \
+  public/blocket-league/hallucinations
 uv run --extra training python -m blocket_league.ring_probe checkpoint.pt ring-probe.json \
   --causal-manifest public/blocket-league/interpretability/passive-pixel-manifest.json
 ```

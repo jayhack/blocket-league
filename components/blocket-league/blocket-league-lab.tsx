@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import {
   ArrowRight,
   CircleDot,
@@ -19,6 +18,7 @@ import {
 } from "@/lib/blocket-league/sim";
 
 import styles from "./blocket-league-lab.module.css";
+import { HallucinationFilmstrip } from "./hallucination-filmstrip";
 import { LiveWorldModel } from "./live-world-model";
 import { PhysicsEmergenceViewer } from "./physics-emergence-viewer";
 import { PixelInterpretabilityViewer } from "./pixel-interpretability-viewer";
@@ -211,11 +211,15 @@ export function BlocketLeagueLab() {
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>Play a video game inside a transformer hallucination.</h1>
+        <h1>A pixel transformer learns physics. We turn its hidden state into a game.</h1>
         <p className={styles.heroCopy}>
-          This is not a simulator receiving your keystrokes. A frozen video transformer predicts
-          every frame, and the controls work by writing recovered velocity directions into its
-          hidden activations. You are steering the green circle by editing the model&apos;s imagined physics.
+          In this lab, we construct a pixel-to-pixel transformer that models a toy world with
+          collisions, goals, and resets. Using methods inspired by <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer"><em>Interpreting Physics in Video World Models</em></a> and Anthropic&apos;s <a href="https://www.anthropic.com/research/global-workspace" target="_blank" rel="noreferrer">J-space work</a>, we show that its hidden activations contain a compact model of high-level physical phenomena—including velocity and collisions—and causal directions for motion.
+        </p>
+        <p className={styles.heroCopy}>
+          We then manipulate those directions directly and change the model&apos;s predicted future.
+          The result is a steerable video game built from pure video observations: every frame is a
+          transformer hallucination, and your keyboard edits the physics inside it.
         </p>
         <div className={styles.heroGame}>
           <LiveWorldModel />
@@ -269,75 +273,32 @@ export function BlocketLeagueLab() {
         </div>
 
         <div
-          className={styles.architectureDiagram}
+          className={styles.simpleArchitecture}
           role="img"
-          aria-label="Previous pixel frames are patch embedded and connected into six causal transformer blocks. A linear pixel head then predicts the next categorical image, which can be appended to the history."
+          aria-label="Three previous rendered frames enter a causal video transformer, which predicts the next rendered frame."
         >
-          <div className={styles.architectureFlow}>
-            <div className={styles.architectureInput}>
-              <div className={styles.architectureLabel}>
-                <span>OBSERVED PIXEL FRAMES</span>
-                <strong>x<sub>≤t</sub> ∈ &#123;1 … 9&#125;<sup>64×64</sup></strong>
-                <small>previous images only · no action channel</small>
-              </div>
-              <div className={styles.historyAcademic} aria-hidden="true">
-                {MODEL_HISTORY.slice(3).map((frame, index) => (
-                  <DiagramFrame
-                    key={frame.label}
-                    {...frame}
-                    label={["t−4", "t−3", "t−2", "t−1", "t"][index]}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.academicConnector} aria-hidden="true">
-              <span>4 × 4 patches<br />linear embedding</span>
-              <svg viewBox="0 0 130 120">
-                <path d="M2 12 H24 L82 60" />
-                <path d="M2 42 H34 L82 60" />
-                <path d="M2 78 H34 L82 60" />
-                <path d="M2 108 H24 L82 60" />
-                <path d="M82 60 H119" />
-                <path className={styles.connectorArrowhead} d="M119 55 L128 60 L119 65 Z" />
-              </svg>
-            </div>
-
-            <div className={`${styles.architectureNode} ${styles.transformerNode}`}>
-              <span>CAUSAL VIDEO TRANSFORMER</span>
-              <small>T × 16 × 16 tokens · d = 192</small>
-              <div className={styles.academicBlockStack} aria-hidden="true">
-                {Array.from({ length: 6 }, (_, index) => (
-                  <i key={index}><b>L{index + 1}</b><em>S<br />T<br />MLP</em></i>
-                ))}
-              </div>
-              <strong>six factorized causal blocks</strong>
-            </div>
-
-            <div className={`${styles.academicConnector} ${styles.outputConnector}`} aria-hidden="true">
-              <span>pixel head<br />9-way logits</span>
-              <svg viewBox="0 0 90 40">
-                <path d="M2 20 H77" />
-                <path className={styles.connectorArrowhead} d="M77 15 L88 20 L77 25 Z" />
-              </svg>
-            </div>
-
-            <div className={styles.architecturePrediction}>
-              <span>PREDICTED FRAME</span>
-              <DiagramFrame
-                label="x̂t+1"
-                player={[63, 29]}
-                puck={[41, 59]}
-                predicted
-              />
-              <small>64 × 64 × 9 logits → argmax</small>
-            </div>
+          <div className={styles.simpleArchitectureFrames} aria-hidden="true">
+            {MODEL_HISTORY.slice(-3).map((frame) => (
+              <DiagramFrame key={frame.label} {...frame} />
+            ))}
           </div>
-
-          <div className={styles.feedbackRail}>
-            <span>AUTOREGRESSIVE ROLLOUT</span>
-            <strong>x̂<sub>t+1</sub> is appended to the observed history</strong>
-            <span>t ← t + 1</span>
+          <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
+          <div className={styles.simpleTransformerBlock}>
+            <strong>Transformer</strong>
+            <span>6 causal blocks</span>
+          </div>
+          <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
+          <div className={styles.simpleArchitectureOutput} aria-hidden="true">
+            <DiagramFrame
+              label="next frame"
+              player={[63, 29]}
+              puck={[41, 59]}
+              predicted
+            />
+          </div>
+          <div className={styles.simpleArchitectureLabels}>
+            <span>Previous frames</span>
+            <span>Predict the next frame</span>
           </div>
         </div>
       </section>
@@ -345,18 +306,16 @@ export function BlocketLeagueLab() {
       <section className={styles.trajectorySection} aria-labelledby="prediction-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="prediction-title">It keeps both circles in motion.</h2>
+            <h2 id="prediction-title">It predicts collisions, bounces, and goals.</h2>
           </div>
           <p>
-            On 128 unseen worlds, the model averages 0.93 pixels of entity-position error through
-            frame 12. It was also trained on its own predicted histories and split-disc corruptions,
-            so malformed circles are pulled back toward the game manifold instead of compounding.
+            Each held-out film begins with 12 rendered input frames. The next 36 are generated one
+            frame at a time, with every prediction fed back into the model. Across contact, wall,
+            and goal-reset scenarios, the futures remain structured and event-specific rather than
+            collapsing into random pixels.
           </p>
         </div>
-        <figure className={styles.pixelRolloutFigure}>
-          <Image src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/blocket-league/passive/rollout.png`} width={2356} height={658} unoptimized alt="Observed context, true future, and pixel-transformer prediction across twelve frames." />
-          <figcaption><span>8 observed frames → 12 autonomous predictions</span><span>0.93 px short-horizon · 6.53 px over 64 frames</span></figcaption>
-        </figure>
+        <HallucinationFilmstrip />
       </section>
 
       <section className={styles.lensSection} aria-labelledby="lens-title">
