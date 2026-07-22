@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Cpu, Gauge, Pause, Play, RotateCcw } from "lucide-react";
 
 import { ACTION_NAMES, ACTION_VECTORS, keyboardAction } from "@/lib/blocket-league/sim";
@@ -45,6 +45,8 @@ type EngineState = {
 
 type DreamFrame = { image: ImageData; action: number };
 type PlayerStatus = "idle" | "loading" | "ready" | "running" | "paused" | "error";
+
+let activeLivePlayerId: string | null = null;
 
 function assetUrl(path: string) {
   return `${BASE_PATH}${path}`;
@@ -183,6 +185,7 @@ async function generateFrame(engine: EngineState, action: number) {
 }
 
 export function LiveWorldModel() {
+  const instanceId = useId();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<EngineState | null>(null);
   const keysRef = useRef(new Set<string>());
@@ -357,8 +360,10 @@ export function LiveWorldModel() {
   useEffect(() => { startPlaybackRef.current = startPlayback; });
 
   useEffect(() => {
+    if (activeLivePlayerId === null) activeLivePlayerId = instanceId;
     const publish = () => setInputAction(manualActionRef.current ?? keyboardAction(keysRef.current));
     const keyDown = (event: KeyboardEvent) => {
+      if (activeLivePlayerId !== instanceId) return;
       const key = normalizeMovementKey(event.key);
       if (!MOVEMENT_KEYS.has(key)) return;
       event.preventDefault();
@@ -367,6 +372,7 @@ export function LiveWorldModel() {
       if (engineRef.current && !runningRef.current) startPlaybackRef.current();
     };
     const keyUp = (event: KeyboardEvent) => {
+      if (activeLivePlayerId !== instanceId) return;
       const key = normalizeMovementKey(event.key);
       if (!MOVEMENT_KEYS.has(key)) return;
       event.preventDefault();
@@ -381,8 +387,9 @@ export function LiveWorldModel() {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
       window.removeEventListener("blur", clear);
+      if (activeLivePlayerId === instanceId) activeLivePlayerId = null;
     };
-  }, []);
+  }, [instanceId]);
 
   const resetDream = () => {
     stopPlayback();
@@ -414,7 +421,11 @@ export function LiveWorldModel() {
   const theoreticalFps = frameMilliseconds ? 1_000 / frameMilliseconds : null;
 
   return (
-    <div className={styles.livePlayer}>
+    <div
+      className={styles.livePlayer}
+      onFocusCapture={() => { activeLivePlayerId = instanceId; }}
+      onPointerEnter={() => { activeLivePlayerId = instanceId; }}
+    >
       <div className={styles.livePlayerHeader}>
         <div className={styles.liveLabel}><span className={status === "running" ? styles.livePulse : undefined} />FROZEN PIXEL TRANSFORMER · {provider?.toUpperCase() ?? "NOT LOADED"}</div>
         <div>{(modelParameters / 1_000_000).toFixed(2)}M PARAMETERS · {modelMegabytes.toFixed(1)} MB FP32</div>

@@ -208,12 +208,15 @@ export function BlocketLeagueLab() {
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>Find the physics inside a transformer. Then steer it.</h1>
+        <h1>Play a video game inside a transformer hallucination.</h1>
         <p className={styles.heroCopy}>
-          A next-frame predictor invents a causal model of motion in its hidden activations.
-          Recover that representation, write to it, and its uncontrolled video hallucination
-          becomes a playable game.
+          This is not a simulator receiving your keystrokes. A frozen video transformer predicts
+          every frame, and the controls work by writing recovered velocity directions into its
+          hidden activations. You are steering the green circle by editing the model&apos;s imagined physics.
         </p>
+        <div className={styles.heroGame}>
+          <LiveWorldModel />
+        </div>
       </section>
 
       <section className={styles.labSection} id="world" aria-labelledby="world-title">
@@ -462,18 +465,6 @@ export function BlocketLeagueLab() {
         </div>
       </section>
 
-      <section className={styles.emergenceSection} aria-labelledby="emergence-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <h2 id="emergence-title">Our physics emergence zone has two stages.</h2>
-          </div>
-          <p>
-            Following <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer">Interpreting Physics in Video World Models</a>, we probe motion in polar coordinates rather than assuming that x/y velocity is a factorized state variable. Direction becomes linearly accessible after the first block, but the MLP population only develops clean circular geometry at blocks 4–5. Removing 74 orthogonal residual dimensions is required to collapse direction decoding, compared with 50 for speed.
-          </p>
-        </div>
-        <PhysicsEmergenceViewer />
-      </section>
-
       <section className={styles.interpretabilitySection} aria-labelledby="interpretability-title">
         <div className={styles.sectionHeading}>
           <div>
@@ -500,6 +491,18 @@ export function BlocketLeagueLab() {
           </p>
         </div>
         <LiveWorldModel />
+      </section>
+
+      <section className={styles.emergenceSection} aria-labelledby="emergence-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="emergence-title">The learned direction code has circular geometry.</h2>
+          </div>
+          <p>
+            Finally, following <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer">Interpreting Physics in Video World Models</a>, we ask how motion is arranged inside the network rather than assuming x/y velocity is a factorized state variable. Direction becomes linearly readable after the first block, while a clean circular population code organizes at blocks 4–5. Removing 74 orthogonal residual dimensions is required to collapse direction decoding, compared with 50 for speed.
+          </p>
+        </div>
+        <PhysicsEmergenceViewer />
       </section>
 
       <footer className={styles.footer}>

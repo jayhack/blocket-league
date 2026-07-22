@@ -67,25 +67,9 @@
 
 .hero {
   width: min(1240px, calc(100% - 48px));
-  min-height: 600px;
   margin: 0 auto;
-  padding: 110px 0 80px;
+  padding: 84px 0 100px;
   position: relative;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  width: min(38vw, 470px);
-  aspect-ratio: 1;
-  right: -7%;
-  top: 84px;
-  border: 1px solid rgb(78 106 106 / 24%);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 54px rgb(48 79 78 / 5%),
-    0 0 0 108px rgb(48 79 78 / 3%);
-  pointer-events: none;
 }
 
 .eyebrow,
@@ -98,23 +82,27 @@
 }
 
 .hero h1 {
-  max-width: 900px;
+  max-width: 980px;
   margin: 0;
   position: relative;
   z-index: 1;
-  font-size: clamp(52px, 6.7vw, 92px);
+  font-size: clamp(48px, 5.6vw, 76px);
   font-weight: 450;
-  line-height: 0.9;
-  letter-spacing: -0.075em;
+  line-height: 0.96;
+  letter-spacing: -0.06em;
 }
 
 .heroCopy {
-  max-width: 470px;
-  margin: 42px 0 0;
+  max-width: 790px;
+  margin: 30px 0 0;
   color: #a9b5b2;
   font-size: clamp(18px, 2vw, 23px);
   line-height: 1.45;
   letter-spacing: -0.025em;
+}
+
+.heroGame {
+  margin-top: 52px;
 }
 
 .jumpLink {
@@ -3630,17 +3618,15 @@
   }
 
   .hero {
-    min-height: 570px;
-    padding-top: 92px;
-  }
-
-  .hero::after {
-    width: 270px;
-    right: -28%;
+    padding: 68px 0 80px;
   }
 
   .hero h1 {
-    font-size: clamp(46px, 13vw, 68px);
+    font-size: clamp(42px, 12vw, 62px);
+  }
+
+  .heroGame {
+    margin-top: 38px;
   }
 
   .sectionHeading {
