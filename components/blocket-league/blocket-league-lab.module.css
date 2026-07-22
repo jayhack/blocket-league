@@ -113,8 +113,28 @@
   margin-top: 12px;
 }
 
+.heroGameIntro {
+  max-width: 960px;
+  margin-top: 64px;
+}
+
+.heroGameIntro h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+  letter-spacing: -0.6px;
+}
+
+.heroGameIntro p {
+  margin: 12px 0 0;
+  color: #d4d4d8;
+  font-size: 20px;
+  line-height: 34px;
+}
+
 .heroGame {
-  margin-top: 40px;
+  margin-top: 24px;
 }
 
 .jumpLink {
@@ -153,7 +173,6 @@
   width: min(960px, calc(100% - 48px));
   margin: 0 auto;
   padding: 80px 0;
-  border-top: 1px solid var(--line);
 }
 
 .entropySection {
@@ -1305,7 +1324,6 @@
   width: min(960px, calc(100% - 48px));
   margin: 0 auto;
   padding: 80px 0 100px;
-  border-top: 1px solid var(--line);
 }
 
 .trajectoryViewer {
@@ -1897,6 +1915,10 @@
   color: #d4d4d8;
   font-size: 20px;
   line-height: 34px;
+}
+
+.sectionHeading > p + p {
+  margin-top: 12px;
 }
 
 .simulatorShell {

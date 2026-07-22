@@ -214,13 +214,21 @@ export function BlocketLeagueLab() {
         <h1>Video models learn interpretable physics. We turn their hidden state into a game.</h1>
         <p className={styles.heroCopy}>
           In this lab, we construct a pixel-to-pixel transformer that models a toy world with
-          collisions, goals, and resets. Using methods inspired by <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer"><em>Interpreting Physics in Video World Models</em></a> and Anthropic&apos;s <a href="https://www.anthropic.com/research/global-workspace" target="_blank" rel="noreferrer">J-space work</a>, we show that its hidden activations contain a compact model of high-level physical phenomena—including velocity and collisions—and causal directions for motion.
+          collisions, goals, and resets. Using methods inspired by <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer"><em>Interpreting Physics in Video World Models</em></a> and Anthropic&apos;s <a href="https://www.anthropic.com/research/global-workspace" target="_blank" rel="noreferrer">J-space work</a>, we show that its hidden activations contain a compact model of high-level physical phenomena, including velocity, collisions, and causal directions for motion.
         </p>
         <p className={styles.heroCopy}>
           We then manipulate those directions directly and change the model&apos;s predicted future.
           The result is a steerable video game built from pure video observations: every frame is a
           transformer hallucination, and your keyboard edits the physics inside it.
         </p>
+        <div className={styles.heroGameIntro}>
+          <h2>Play the game</h2>
+          <p>
+            This is real-time writing to the activations of a 3.67M-parameter transformer running
+            in your browser. The screen is the direct output of its next-frame prediction, so every
+            image you see is part of a live hallucination.
+          </p>
+        </div>
         <div className={styles.heroGame}>
           <LiveWorldModel />
         </div>
@@ -229,12 +237,21 @@ export function BlocketLeagueLab() {
       <section className={styles.labSection} id="world" aria-labelledby="world-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="world-title">Train a video model on simple physics simulations.</h2>
+            <h2 id="world-title">To study video model representations, train a model on a toy simulation dataset.</h2>
           </div>
           <p>
-            Every clip begins with randomized momentum. After that, the two circles simply coast,
-            collide, bounce, and score. Goal-centered clips teach the pause and a moving kickoff
-            selected by the visible score. The training set contains pixels—not actions or state vectors.
+            We want to understand how video models store physical information. A useful first step
+            is to strip the problem down: generate a world whose rules we know, train a small
+            predictor on its pixels, then inspect what appears inside the weights. Pixel-to-pixel
+            transformers make a clean object of study because the path from observation to prediction
+            is unusually direct; the complete model architecture lives in <a href="https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py" target="_blank" rel="noreferrer">one Python file</a>.
+          </p>
+          <p>
+            The world has a green disc, a white puck, walls, collision physics, and a goal/reset
+            state. We generate 16,384 deterministic rollouts of 24 frames, randomizing initial
+            positions and momentum and oversampling goal-centered clips so the dataset includes
+            collisions, bounces, scores, pauses, and kickoffs. The model receives only rendered
+            pixels—never actions, coordinates, or simulator state.
           </p>
         </div>
 
