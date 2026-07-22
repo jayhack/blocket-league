@@ -211,7 +211,7 @@ export function BlocketLeagueLab() {
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>A pixel transformer learns physics. We turn its hidden state into a game.</h1>
+        <h1>Video models learn interpretable physics. We turn their hidden state into a game.</h1>
         <p className={styles.heroCopy}>
           In this lab, we construct a pixel-to-pixel transformer that models a toy world with
           collisions, goals, and resets. Using methods inspired by <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer"><em>Interpreting Physics in Video World Models</em></a> and Anthropic&apos;s <a href="https://www.anthropic.com/research/global-workspace" target="_blank" rel="noreferrer">J-space work</a>, we show that its hidden activations contain a compact model of high-level physical phenomena—including velocity and collisions—and causal directions for motion.

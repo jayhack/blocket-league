@@ -95,18 +95,18 @@
   margin: 0;
   position: relative;
   z-index: 1;
-  font-size: 36px;
+  font-size: 48px;
   font-weight: 800;
-  line-height: 40px;
-  letter-spacing: -0.9px;
+  line-height: 52px;
+  letter-spacing: -1.2px;
 }
 
 .heroCopy {
   max-width: 960px;
   margin: 20px 0 0;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 22px;
+  line-height: 38px;
 }
 
 .heroCopy + .heroCopy {
@@ -3126,8 +3126,8 @@
 
 .heroCopy a,
 .sectionHeading a {
-  color: #b7c4c0;
-  text-decoration-color: rgb(50 213 173 / 45%);
+  color: var(--gold);
+  text-decoration-color: rgb(238 181 62 / 60%);
   text-underline-offset: 4px;
 }
 
