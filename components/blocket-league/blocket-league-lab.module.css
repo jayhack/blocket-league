@@ -91,7 +91,7 @@
 }
 
 .hero h1 {
-  max-width: 560px;
+  max-width: 960px;
   margin: 0;
   position: relative;
   z-index: 1;
@@ -102,11 +102,11 @@
 }
 
 .heroCopy {
-  max-width: 560px;
+  max-width: 960px;
   margin: 20px 0 0;
   color: #d4d4d8;
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 20px;
+  line-height: 34px;
 }
 
 .heroCopy + .heroCopy {
@@ -1634,30 +1634,29 @@
 }
 
 .hallucinationViewer {
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
   border: 1px solid var(--line);
   background: #050505;
 }
 
 .hallucinationTabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
 }
 
 .hallucinationTabs button {
-  min-height: 58px;
+  min-height: 68px;
+  padding: 0 22px;
   border: 0;
-  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   background: transparent;
   color: #a1a1aa;
   font: inherit;
   font-size: 16px;
+  text-align: left;
   cursor: pointer;
-}
-
-.hallucinationTabs button:last-child {
-  border-right: 0;
 }
 
 .hallucinationTabs button:hover,
@@ -1667,46 +1666,72 @@
 }
 
 .hallucinationTabs .hallucinationTabActive {
-  box-shadow: inset 0 -2px var(--mint);
+  box-shadow: inset 3px 0 var(--mint);
 }
 
-.hallucinationScenarioCopy {
-  padding: 18px 20px;
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  border-bottom: 1px solid var(--line);
-}
-
-.hallucinationScenarioCopy strong {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.hallucinationScenarioCopy span {
+.hallucinationTabs p {
+  margin: 22px;
   color: #a1a1aa;
-  font-size: 16px;
+  font-size: 15px;
+  line-height: 24px;
 }
 
-.hallucinationGrid {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 4px;
+.hallucinationStage {
+  min-width: 0;
   background: #000;
 }
 
-.hallucinationFrame {
+.hallucinationVideoHeader {
+  min-height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.hallucinationVideoHeader > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.hallucinationVideoHeader strong {
+  font-size: 18px;
+}
+
+.hallucinationVideoHeader span {
+  color: #a1a1aa;
+  font-size: 15px;
+}
+
+.hallucinationVideoHeader button {
+  min-width: 78px;
+  padding: 9px 14px;
+  border: 1px solid #334040;
+  background: #0a1112;
+  color: #d4d4d8;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.hallucinationVideo {
   width: 100%;
   aspect-ratio: 1;
   display: block;
-  border: 1px solid #313131;
   background: #070b10;
   image-rendering: pixelated;
 }
 
-.hallucinationFrameImagined {
-  border-color: rgb(50 213 173 / 38%);
+.hallucinationTransport {
+  padding: 16px 20px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.hallucinationTransport input {
+  width: 100%;
+  accent-color: var(--mint);
 }
 
 .hallucinationPhases {
@@ -1720,10 +1745,16 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
+  color: #777;
 }
 
 .hallucinationPhases > div + div {
-  border-left: 2px solid var(--mint);
+  border-left: 1px solid var(--line);
+}
+
+.hallucinationPhases .hallucinationPhaseActive {
+  color: var(--ink);
+  box-shadow: inset 0 -3px var(--mint);
 }
 
 .hallucinationPhases strong {
@@ -1846,7 +1877,7 @@
 }
 
 .sectionHeading {
-  max-width: 560px;
+  max-width: 960px;
   display: block;
   margin-bottom: 40px;
 }
@@ -1861,11 +1892,11 @@
 }
 
 .sectionHeading > p {
-  max-width: 560px;
+  max-width: 960px;
   margin: 16px 0 0;
   color: #d4d4d8;
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 20px;
+  line-height: 34px;
 }
 
 .simulatorShell {
@@ -3739,15 +3770,31 @@
     display: none;
   }
 
-  .hallucinationGrid {
-    padding: 14px;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .hallucinationViewer {
+    grid-template-columns: 1fr;
   }
 
-  .hallucinationScenarioCopy {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
+  .hallucinationTabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hallucinationTabs button {
+    min-height: 58px;
+    padding: 0 8px;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+    text-align: center;
+  }
+
+  .hallucinationTabs .hallucinationTabActive {
+    box-shadow: inset 0 -3px var(--mint);
+  }
+
+  .hallucinationTabs p {
+    display: none;
   }
 
   .hallucinationPhases > div {

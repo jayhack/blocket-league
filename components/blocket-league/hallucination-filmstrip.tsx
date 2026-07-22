@@ -26,13 +26,11 @@ function FilmFrame({
   image,
   index,
   size,
-  imagined,
   label,
 }: {
   image: HTMLImageElement | null;
   index: number;
   size: number;
-  imagined: boolean;
   label: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,11 +47,11 @@ function FilmFrame({
   return (
     <canvas
       ref={canvasRef}
-      className={`${styles.hallucinationFrame} ${imagined ? styles.hallucinationFrameImagined : ""}`}
+      className={styles.hallucinationVideo}
       width={size}
       height={size}
       role="img"
-      aria-label={`${label}, frame ${index + 1}, ${imagined ? "model hallucination" : "input"}`}
+      aria-label={`${label}, animated frame ${index + 1}`}
     />
   );
 }
@@ -62,6 +60,8 @@ export function HallucinationFilmstrip() {
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [atlas, setAtlas] = useState<HTMLImageElement | null>(null);
+  const [frameIndex, setFrameIndex] = useState(0);
+  const [playing, setPlaying] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -77,6 +77,7 @@ export function HallucinationFilmstrip() {
   }, []);
 
   const scenario = manifest?.scenarios[scenarioIndex];
+  const totalFrames = manifest ? manifest.inputFrames + manifest.hallucinationFrames : 0;
 
   useEffect(() => {
     if (!scenario) return;
@@ -87,10 +88,23 @@ export function HallucinationFilmstrip() {
     return () => { cancelled = true; };
   }, [scenario]);
 
+  useEffect(() => {
+    if (!atlas || !playing || totalFrames === 0) return;
+    const timer = window.setInterval(() => {
+      setFrameIndex((current) => (current + 1) % totalFrames);
+    }, 140);
+    return () => window.clearInterval(timer);
+  }, [atlas, playing, totalFrames]);
+
   if (error) return <p className={styles.trajectoryLoading}>Hallucination samples could not be loaded.</p>;
   if (!manifest || !scenario) return <p className={styles.trajectoryLoading}>Loading hallucinations…</p>;
 
-  const totalFrames = manifest.inputFrames + manifest.hallucinationFrames;
+  const hallucinating = frameIndex >= manifest.inputFrames;
+  const phaseFrame = hallucinating
+    ? frameIndex - manifest.inputFrames + 1
+    : frameIndex + 1;
+  const phaseTotal = hallucinating ? manifest.hallucinationFrames : manifest.inputFrames;
+
   return (
     <div className={styles.hallucinationViewer}>
       <div className={styles.hallucinationTabs} role="group" aria-label="Held-out physical scenario">
@@ -102,32 +116,53 @@ export function HallucinationFilmstrip() {
             className={scenarioIndex === index ? styles.hallucinationTabActive : undefined}
             onClick={() => {
               setAtlas(null);
+              setFrameIndex(0);
+              setPlaying(true);
               setScenarioIndex(index);
             }}
           >
             {item.title}
           </button>
         ))}
+        <p>{scenario.description}</p>
       </div>
-      <div className={styles.hallucinationScenarioCopy}>
-        <strong>{scenario.title}</strong>
-        <span>{scenario.description}</span>
-      </div>
-      <div className={styles.hallucinationGrid}>
-        {Array.from({ length: totalFrames }, (_, index) => (
-          <FilmFrame
-            key={index}
-            image={atlas}
-            index={index}
-            size={manifest.frameSize}
-            imagined={index >= manifest.inputFrames}
-            label={scenario.title}
+      <div className={styles.hallucinationStage}>
+        <div className={styles.hallucinationVideoHeader}>
+          <div>
+            <strong>{hallucinating ? "Hallucination" : "Input"}</strong>
+            <span>{phaseFrame} / {phaseTotal}</span>
+          </div>
+          <button type="button" onClick={() => setPlaying((value) => !value)}>
+            {playing ? "Pause" : "Play"}
+          </button>
+        </div>
+        <FilmFrame
+          image={atlas}
+          index={frameIndex}
+          size={manifest.frameSize}
+          label={scenario.title}
+        />
+        <div className={styles.hallucinationTransport}>
+          <input
+            type="range"
+            min={0}
+            max={totalFrames - 1}
+            value={frameIndex}
+            aria-label="Scrub through observed and hallucinated frames"
+            onChange={(event) => {
+              setFrameIndex(Number(event.target.value));
+              setPlaying(false);
+            }}
           />
-        ))}
-      </div>
-      <div className={styles.hallucinationPhases}>
-        <div><strong>Input</strong><span>{manifest.inputFrames} observed frames</span></div>
-        <div><strong>Hallucination</strong><span>{manifest.hallucinationFrames} autoregressive frames</span></div>
+        </div>
+        <div className={styles.hallucinationPhases}>
+          <div className={!hallucinating ? styles.hallucinationPhaseActive : undefined}>
+            <strong>Input</strong><span>{manifest.inputFrames} observed frames</span>
+          </div>
+          <div className={hallucinating ? styles.hallucinationPhaseActive : undefined}>
+            <strong>Hallucination</strong><span>{manifest.hallucinationFrames} predicted frames</span>
+          </div>
+        </div>
       </div>
     </div>
   );
