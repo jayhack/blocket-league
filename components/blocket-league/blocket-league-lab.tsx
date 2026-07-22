@@ -20,6 +20,7 @@ import {
 
 import styles from "./blocket-league-lab.module.css";
 import { LiveWorldModel } from "./live-world-model";
+import { PhysicsEmergenceViewer } from "./physics-emergence-viewer";
 import { PixelInterpretabilityViewer } from "./pixel-interpretability-viewer";
 
 const MODEL_HISTORY = [
@@ -459,6 +460,18 @@ export function BlocketLeagueLab() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className={styles.emergenceSection} aria-labelledby="emergence-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="emergence-title">Our physics emergence zone has two stages.</h2>
+          </div>
+          <p>
+            Following <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer">Interpreting Physics in Video World Models</a>, we probe motion in polar coordinates rather than assuming that x/y velocity is a factorized state variable. Direction becomes linearly accessible after the first block, but the MLP population only develops clean circular geometry at blocks 4–5. Removing 74 orthogonal residual dimensions is required to collapse direction decoding, compared with 50 for speed.
+          </p>
+        </div>
+        <PhysicsEmergenceViewer />
       </section>
 
       <section className={styles.interpretabilitySection} aria-labelledby="interpretability-title">
