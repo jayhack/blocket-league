@@ -3934,6 +3934,8 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
+  border: 0;
+  background: transparent;
 }
 
 .lensStageVisual {
@@ -3953,21 +3955,25 @@
 }
 
 .contextFan {
-  width: 116px;
-  height: 108px;
+  width: 164px;
+  height: 142px;
   position: relative;
   margin: 0;
 }
 
 .contextFan .diagramFrame {
-  width: 76px;
+  width: 108px;
   position: absolute;
   box-shadow: -10px 12px 24px rgb(0 0 0 / 42%);
 }
 
-.contextFan .diagramFrame:nth-child(1) { left: 0; top: 24px; }
-.contextFan .diagramFrame:nth-child(2) { left: 18px; top: 12px; }
-.contextFan .diagramFrame:nth-child(3) { left: 36px; top: 0; }
+.contextFan .diagramFrame:nth-child(1) { left: 0; top: 34px; }
+.contextFan .diagramFrame:nth-child(2) { left: 26px; top: 17px; }
+.contextFan .diagramFrame:nth-child(3) { left: 52px; top: 0; }
+
+.contextFan .diagramFrame small {
+  display: none;
+}
 
 .lensActivation,
 .lensTrace {
@@ -4093,10 +4099,8 @@
 .centroidCrossY { width: 1px; height: 38px; }
 
 .lensDirections {
-  border-color: rgb(33 150 210 / 48%);
-  background:
-    radial-gradient(circle at 50% 58%, rgb(33 150 210 / 10%), transparent 56%),
-    #07111f;
+  border-color: transparent;
+  background: transparent;
 }
 
 .lensTraceVisual {

@@ -452,7 +452,6 @@ export function BlocketLeagueLab({
           <div className={styles.lensFlow}>
             <div className={`${styles.lensStage} ${styles.lensContexts}`}>
               <div className={styles.diagramStageHeader}>
-                <span>01</span>
                 <strong>Sample 512 worlds</strong>
               </div>
               <div className={styles.lensStageVisual}>
@@ -471,7 +470,6 @@ export function BlocketLeagueLab({
 
             <div className={`${styles.lensStage} ${styles.lensTrace}`}>
               <div className={styles.diagramStageHeader}>
-                <span>02</span>
                 <strong>Trace downstream motion</strong>
               </div>
               <div className={`${styles.lensStageVisual} ${styles.lensTraceVisual}`} aria-hidden="true">
@@ -496,7 +494,6 @@ export function BlocketLeagueLab({
 
             <div className={`${styles.lensStage} ${styles.lensDirections}`}>
               <div className={styles.diagramStageHeader}>
-                <span>03</span>
                 <strong>Average one direction</strong>
               </div>
               <div className={styles.lensStageVisual}>
@@ -506,7 +503,7 @@ export function BlocketLeagueLab({
                 </div>
               </div>
               <p className={styles.lensStageCaption}>
-                Average across worlds to get a reusable vector we can write into activations—not weights.
+                Average across worlds to get a reusable vector we can write into the residual-stream activations.
               </p>
             </div>
           </div>
