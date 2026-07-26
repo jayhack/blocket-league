@@ -51,6 +51,8 @@ type EngineState = {
   starterContext: Float32Array;
   history: Float32Array;
   lastGreenSpatialMask: Float32Array;
+  steeringPhase: number;
+  lastRequestedAction: number;
 };
 
 type DreamFrame = { image: ImageData; action: number };
@@ -129,25 +131,35 @@ export function greenTokenMask(
   const pixels = manifest.frameSize * manifest.frameSize;
   const offset = history.length - pixels;
   const spatial = new Float32Array(manifest.gridSize * manifest.gridSize);
-  let peakMass = 0;
+  let mass = 0;
+  let centroidX = 0;
+  let centroidY = 0;
   for (let pixel = 0; pixel < pixels; pixel += 1) {
     const value = Number(history[offset + pixel]);
     if (value !== 5 && value !== 6) continue;
-    const patchX = Math.floor((pixel % manifest.frameSize) / manifest.patchSize);
-    const patchY = Math.floor(Math.floor(pixel / manifest.frameSize) / manifest.patchSize);
-    const patch = patchY * manifest.gridSize + patchX;
-    spatial[patch] += 1;
-    peakMass = Math.max(peakMass, spatial[patch]);
+    mass += 1;
+    centroidX += (pixel % manifest.frameSize) + 0.5;
+    centroidY += Math.floor(pixel / manifest.frameSize) + 0.5;
+  }
+  if (mass > 0) {
+    const patchX = Math.min(
+      manifest.gridSize - 1,
+      Math.max(0, Math.floor((centroidX / mass) / manifest.patchSize)),
+    );
+    const patchY = Math.min(
+      manifest.gridSize - 1,
+      Math.max(0, Math.floor((centroidY / mass) / manifest.patchSize)),
+    );
+    spatial[patchY * manifest.gridSize + patchX] = 1;
   }
   const mask = new Float32Array(manifest.historyFrames * manifest.gridSize * manifest.gridSize);
-  const routed = peakMass > 0 ? spatial : fallback;
+  const routed = mass > 0 ? spatial : fallback;
   if (!routed?.some((value) => value > 0)) return { mask, spatial };
-  const scale = peakMass > 0 ? peakMass : Math.max(...routed);
   const timeOffset = (manifest.historyFrames - 1) * manifest.gridSize * manifest.gridSize;
   for (let patch = 0; patch < routed.length; patch += 1) {
-    mask[timeOffset + patch] = routed[patch] / Math.max(scale, 1);
+    mask[timeOffset + patch] = routed[patch];
   }
-  return { mask, spatial: peakMass > 0 ? spatial : routed.slice() };
+  return { mask, spatial: mass > 0 ? spatial : routed.slice() };
 }
 
 function steeringVector(action: number, manifest: LiveManifest) {
@@ -166,6 +178,12 @@ function steeringVector(action: number, manifest: LiveManifest) {
 
 async function generateFrame(engine: EngineState, action: number) {
   const { manifest, runtime } = engine;
+  if (action !== engine.lastRequestedAction) {
+    engine.steeringPhase = 0;
+    engine.lastRequestedAction = action;
+  }
+  const appliedAction = action !== 0 && engine.steeringPhase < 4 ? action : 0;
+  engine.steeringPhase = action === 0 ? 0 : (engine.steeringPhase + 1) % 8;
   const greenRouting = greenTokenMask(engine.history, manifest, engine.lastGreenSpatialMask);
   const result = await engine.dynamics.run({
     pixel_history: new runtime.Tensor(
@@ -175,7 +193,7 @@ async function generateFrame(engine: EngineState, action: number) {
     ),
     intervention: new runtime.Tensor(
       "float32",
-      steeringVector(action, manifest),
+      steeringVector(appliedAction, manifest),
       [1, manifest.hiddenSize],
     ),
     intervention_mask: new runtime.Tensor(
@@ -299,6 +317,8 @@ export function LiveWorldModel() {
         starterContext: starterContext.slice(),
         history: starterContext.slice(),
         lastGreenSpatialMask: greenTokenMask(starterContext, manifest).spatial,
+        steeringPhase: 0,
+        lastRequestedAction: 0,
       };
       setLoadProgress(1);
       setStatus("ready");
@@ -396,6 +416,8 @@ export function LiveWorldModel() {
     if (engine) {
       engine.history = engine.starterContext.slice();
       engine.lastGreenSpatialMask = greenTokenMask(engine.history, engine.manifest).spatial;
+      engine.steeringPhase = 0;
+      engine.lastRequestedAction = 0;
     }
     keysRef.current.clear();
     manualActionRef.current = null;

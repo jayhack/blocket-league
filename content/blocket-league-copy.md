@@ -17,11 +17,13 @@ This is not perfect but clearly has grokked the basic physics of the game, inclu
 <!-- /block -->
 
 <!-- block:dataset -->
-Blocket League is a deliberately simple world with two freely moving discs, elastic collisions, wall bounces, and a goal. We sample *M* trajectories with randomized initial positions and velocities, then record the resulting frames. Neither disc is controlled by an agent or player, so every trajectory is an autonomous physics sample.
+Blocket League is a deliberately simple world with two freely moving discs, elastic collisions, wall bounces, and a goal. We render a fixed training cache of 16,384 autonomous worlds, each 24 frames long, with randomized initial positions and velocities. Neither disc is controlled by an agent or player, so every trajectory is a passive physics sample.
 <!-- /block -->
 
 <!-- block:model -->
 For this lab, we train an 8-frame × 16 × 16-patch pixel transformer. Pixel transformers, following the autoregressive formulation of the [Image Transformer](https://arxiv.org/abs/1802.05751), ingest raw pixels and learn to predict the next frame. Our complete 3.67M-parameter architecture lives in [one Python file](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py).
+
+The exported checkpoint is trained for 42,000 optimizer steps—30,000 base minibatches plus a 12,000-step recovery fine-tune—at batch size 16. Because training windows are sampled with replacement, conventional epochs do not apply. Across both phases, the model sees 672,000 sampled histories and 5.376 million next-frame prediction targets. Rendering the caches, training, and evaluation take 24 minutes and 59 seconds on one H100.
 <!-- /block -->
 
 <!-- block:model-results -->
