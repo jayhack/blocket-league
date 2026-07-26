@@ -4,8 +4,9 @@
   --line: #262626;
   --surface: #050505;
   --surface-raised: #0a0a0a;
-  --mint: #32d5ad;
-  --gold: #eeb53e;
+  --mint: #2196d2;
+  --mint-dark: #0d5f8c;
+  --gold: #f47a2c;
   min-height: 100vh;
   overflow: hidden;
   background: #000;
@@ -136,7 +137,7 @@
   margin-right: 8px;
   border-radius: 50%;
   background: var(--mint);
-  box-shadow: 0 0 12px rgb(50 213 173 / 70%);
+  box-shadow: 0 0 12px rgb(33 150 210 / 70%);
 }
 
 .hero {
@@ -399,7 +400,7 @@
 }
 
 .causalWriteRegion {
-  fill: rgb(50 213 173 / 5%);
+  fill: rgb(33 150 210 / 5%);
 }
 
 .causalGridline line {
@@ -561,7 +562,7 @@
   justify-content: center;
   gap: 8px;
   border-right: 1px solid var(--line);
-  background: rgb(50 213 173 / 3%);
+  background: rgb(33 150 210 / 3%);
 }
 
 .evidenceStrip > div:last-child {
@@ -588,7 +589,7 @@
 }
 
 .evidenceStrip .evidenceCaution {
-  background: rgb(238 181 62 / 4%);
+  background: rgb(244 122 44 / 4%);
 }
 
 .evidenceStrip .evidenceCaution span,
@@ -597,7 +598,7 @@
 }
 
 .evidenceStrip .evidenceCausal {
-  background: rgb(50 213 173 / 8%);
+  background: rgb(33 150 210 / 8%);
 }
 
 .evidenceStrip .evidenceCausal strong {
@@ -669,7 +670,7 @@
 
 .interventionScenarioPicker button[aria-pressed="true"] {
   border-color: var(--mint-dark);
-  background: rgb(50 213 173 / 11%);
+  background: rgb(33 150 210 / 11%);
   color: var(--mint);
 }
 
@@ -704,8 +705,8 @@
 }
 
 .interventionBoards .interventionBoardActive {
-  border-color: rgb(238 181 62 / 44%);
-  box-shadow: 0 0 44px rgb(238 181 62 / 7%);
+  border-color: rgb(244 122 44 / 44%);
+  box-shadow: 0 0 44px rgb(244 122 44 / 7%);
 }
 
 .interventionBoardActive > div span,
@@ -816,7 +817,7 @@
 }
 
 .probeTaskBar .probeTaskActive {
-  background: rgb(50 213 173 / 8%);
+  background: rgb(33 150 210 / 8%);
   color: var(--mint);
   box-shadow: inset 0 -2px var(--mint);
 }
@@ -940,7 +941,7 @@
 }
 
 .probeLayerPicker .probeLayerActive {
-  background: rgb(50 213 173 / 10%);
+  background: rgb(33 150 210 / 10%);
   color: var(--mint);
   box-shadow: inset 0 -2px var(--mint);
 }
@@ -1050,7 +1051,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(360px, 0.8fr);
   gap: 42px;
   border-top: 1px solid var(--line);
-  background: rgb(238 181 62 / 3%);
+  background: rgb(244 122 44 / 3%);
 }
 
 .causalAudit > div:first-child > span {
@@ -1116,8 +1117,8 @@
 }
 
 .causalControl {
-  border-top: 1px solid rgb(50 213 173 / 35%);
-  background: linear-gradient(180deg, rgb(50 213 173 / 6%), transparent 54%);
+  border-top: 1px solid rgb(33 150 210 / 35%);
+  background: linear-gradient(180deg, rgb(33 150 210 / 6%), transparent 54%);
 }
 
 .activationLocatorStrip {
@@ -1134,7 +1135,7 @@
   justify-content: center;
   gap: 7px;
   border-right: 1px solid var(--line);
-  background: rgb(50 213 173 / 3%);
+  background: rgb(33 150 210 / 3%);
 }
 
 .activationLocatorStrip > div:last-child {
@@ -1216,7 +1217,7 @@
 }
 
 .causalMetricPicker button[aria-pressed="true"] {
-  background: rgb(50 213 173 / 12%);
+  background: rgb(33 150 210 / 12%);
   color: var(--mint);
   box-shadow: inset 0 -2px var(--mint);
 }
@@ -1416,7 +1417,7 @@
   flex: 0 0 auto;
   border-radius: 50%;
   background: var(--mint);
-  box-shadow: 0 0 14px rgb(50 213 173 / 55%);
+  box-shadow: 0 0 14px rgb(33 150 210 / 55%);
 }
 
 .liveDreamColumn {
@@ -1471,7 +1472,7 @@
 }
 
 .liveCanvasOverlay button:hover {
-  border-color: rgb(50 213 173 / 58%);
+  border-color: rgb(33 150 210 / 58%);
   color: var(--mint);
 }
 
@@ -1531,7 +1532,7 @@
 }
 
 .liveReset:hover:not(:disabled) {
-  border-color: rgb(50 213 173 / 58%);
+  border-color: rgb(33 150 210 / 58%);
   color: var(--mint);
 }
 
@@ -1632,16 +1633,16 @@
 }
 
 .entropyTimeline > i:nth-of-type(2) {
-  background: rgb(50 213 173 / 58%);
+  background: rgb(33 150 210 / 58%);
 }
 
 .entropyTimeline > i:nth-of-type(3) {
-  background: rgb(238 181 62 / 52%);
+  background: rgb(244 122 44 / 52%);
 }
 
 .entropyTimeline > .entropyTail {
   flex: 1;
-  background: linear-gradient(90deg, rgb(238 181 62 / 46%), rgb(117 77 63 / 62%));
+  background: linear-gradient(90deg, rgb(244 122 44 / 46%), rgb(117 77 63 / 62%));
 }
 
 .trajectorySection {
@@ -1777,7 +1778,7 @@
 }
 
 .modelPicker .modelActive {
-  background: rgb(50 213 173 / 8%);
+  background: rgb(33 150 210 / 8%);
   color: var(--ink);
   box-shadow: inset 0 -2px var(--mint);
 }
@@ -1812,7 +1813,7 @@
 }
 
 .scenarioPicker .scenarioActive {
-  background: rgb(50 213 173 / 8%);
+  background: rgb(33 150 210 / 8%);
   color: var(--ink);
   box-shadow: inset 0 -2px var(--mint);
 }
@@ -2003,7 +2004,7 @@
 
 .hallucinationTabs button:hover,
 .hallucinationTabs .hallucinationTabActive {
-  background: rgb(50 213 173 / 7%);
+  background: rgb(33 150 210 / 7%);
   color: var(--ink);
 }
 
@@ -2196,11 +2197,11 @@
 }
 
 .branchTimeline .branchFuture {
-  background: rgb(50 213 173 / 42%);
+  background: rgb(33 150 210 / 42%);
 }
 
 .branchTimeline .branchRolled {
-  background: rgb(238 181 62 / 48%);
+  background: rgb(244 122 44 / 48%);
 }
 
 .branchTimeline .branchCurrent {
@@ -2257,9 +2258,11 @@
   width: min(532px, 100%);
   margin: 0 auto;
   display: block;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  box-shadow: 0 26px 80px rgb(0 0 0 / 28%);
+  border: 1px solid #596166;
+  background: #02040c;
+  box-shadow:
+    0 26px 80px rgb(0 0 0 / 46%),
+    0 0 44px rgb(255 255 255 / 4%);
 }
 
 .canvasColumn {
@@ -2283,10 +2286,10 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border: 1px solid #647578;
+  border: 1px solid #0754a8;
   border-radius: 4px;
-  background: #131f23;
-  color: var(--ink);
+  background: #04142c;
+  color: #c8efff;
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 500;
@@ -2295,8 +2298,8 @@
 }
 
 .simulatorReset:hover {
-  border-color: var(--mint);
-  background: #17272a;
+  border-color: #19c4e8;
+  background: #06234a;
 }
 
 .simulatorReset svg {
@@ -2308,7 +2311,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: #cbd4d1;
+  color: #8ebed6;
   font-family: var(--font-sans);
   font-size: 18px;
   letter-spacing: -0.02em;
@@ -2328,7 +2331,7 @@
 }
 
 .score strong {
-  color: var(--gold);
+  color: #ffc53d;
   font-family: var(--font-sans);
   font-size: 28px;
   font-weight: 500;
@@ -2340,8 +2343,8 @@
   aspect-ratio: 1;
   display: block;
   margin: 0 auto;
-  background: #070b10;
-  outline: 1px solid #202d30;
+  background: #010106;
+  outline: 1px solid #69747a;
   touch-action: none;
 }
 
@@ -2416,8 +2419,8 @@
 }
 
 .iconButtonActive {
-  border-color: rgb(50 213 173 / 54%);
-  background: rgb(50 213 173 / 10%);
+  border-color: rgb(33 150 210 / 54%);
+  background: rgb(33 150 210 / 10%);
   color: var(--mint);
 }
 
@@ -2464,16 +2467,16 @@
 
 .pad button:hover,
 .pad button:active {
-  border-color: rgb(50 213 173 / 58%);
-  background: rgb(50 213 173 / 10%);
+  border-color: rgb(33 150 210 / 58%);
+  background: rgb(33 150 210 / 10%);
   color: var(--mint);
 }
 
 .pad .padActive {
-  border-color: rgb(50 213 173 / 72%);
-  background: rgb(50 213 173 / 14%);
+  border-color: rgb(33 150 210 / 72%);
+  background: rgb(33 150 210 / 14%);
   color: var(--mint);
-  box-shadow: inset 0 0 0 1px rgb(50 213 173 / 16%), 0 0 14px rgb(50 213 173 / 9%);
+  box-shadow: inset 0 0 0 1px rgb(33 150 210 / 16%), 0 0 14px rgb(33 150 210 / 9%);
 }
 
 .transport {
@@ -2551,7 +2554,7 @@
 }
 
 .xrayActive {
-  border-color: rgb(50 213 173 / 34%);
+  border-color: rgb(33 150 210 / 34%);
   color: var(--mint);
 }
 
@@ -2573,7 +2576,7 @@
 }
 
 .xrayActive .switchTrack {
-  background: rgb(50 213 173 / 25%);
+  background: rgb(33 150 210 / 25%);
 }
 
 .xrayActive .switchTrack span {
@@ -2723,8 +2726,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid rgb(50 213 173 / 58%);
-  background: rgb(50 213 173 / 5%);
+  border: 1px solid rgb(33 150 210 / 58%);
+  background: rgb(33 150 210 / 5%);
   text-align: center;
 }
 
@@ -2852,7 +2855,7 @@
 
 .academicConnector path {
   fill: none;
-  stroke: rgb(50 213 173 / 55%);
+  stroke: rgb(33 150 210 / 55%);
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
 }
@@ -2907,7 +2910,7 @@
   position: absolute;
   right: 0;
   transform-origin: 100% 50%;
-  background: linear-gradient(90deg, transparent, rgb(50 213 173 / 72%));
+  background: linear-gradient(90deg, transparent, rgb(33 150 210 / 72%));
 }
 
 .convergenceLines span:nth-child(1) { width: 118px; top: 8px; transform: rotate(29deg); }
@@ -2967,15 +2970,15 @@
   aspect-ratio: 1;
   min-height: 0;
   padding: 18px;
-  border-color: rgb(50 213 173 / 42%);
-  box-shadow: 0 0 44px rgb(50 213 173 / 7%);
+  border-color: rgb(33 150 210 / 42%);
+  box-shadow: 0 0 44px rgb(33 150 210 / 7%);
 }
 
 .transformerNode {
   min-height: 270px;
   padding: 20px;
   align-items: stretch;
-  border-color: rgb(50 213 173 / 44%);
+  border-color: rgb(33 150 210 / 44%);
   background: rgb(11 21 24 / 84%);
 }
 
@@ -3004,8 +3007,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(50 213 173 / 32%);
-  background: rgb(50 213 173 / 3%);
+  border: 1px solid rgb(33 150 210 / 32%);
+  background: rgb(33 150 210 / 3%);
   color: #71807d;
   font-family: var(--font-mono);
   font-style: normal;
@@ -3024,7 +3027,7 @@
   display: grid;
   place-items: center;
   padding: 7px 2px;
-  border-top: 1px solid rgb(50 213 173 / 18%);
+  border-top: 1px solid rgb(33 150 210 / 18%);
   color: #879491;
   font-size: 7px;
   font-style: normal;
@@ -3062,7 +3065,7 @@
 
 .architectureHistory {
   background:
-    linear-gradient(135deg, rgb(50 213 173 / 5%), transparent 58%),
+    linear-gradient(135deg, rgb(33 150 210 / 5%), transparent 58%),
     #0b1317;
 }
 
@@ -3119,8 +3122,8 @@
   overflow: visible;
   border: 1px solid #354447;
   background:
-    linear-gradient(90deg, transparent 49%, rgb(75 118 115 / 25%) 50%, transparent 51%),
-    #0c2022;
+    linear-gradient(90deg, transparent 49%, rgb(52 101 137 / 25%) 50%, transparent 51%),
+    #06172a;
 }
 
 .diagramFrame::before {
@@ -3175,8 +3178,8 @@
 .diagramFramePredicted {
   width: 112px;
   margin: auto auto 18px;
-  border-color: rgb(50 213 173 / 62%);
-  box-shadow: 0 0 32px rgb(50 213 173 / 8%);
+  border-color: rgb(33 150 210 / 62%);
+  box-shadow: 0 0 32px rgb(33 150 210 / 8%);
 }
 
 .architectureArrow,
@@ -3199,8 +3202,8 @@
 
 .patchGrid span,
 .patchGrid i {
-  border: 1px solid rgb(50 213 173 / 40%);
-  background: rgb(50 213 173 / 8%);
+  border: 1px solid rgb(33 150 210 / 40%);
+  background: rgb(33 150 210 / 8%);
 }
 
 .patchGrid i {
@@ -3218,9 +3221,9 @@
 }
 
 .transformerStage {
-  border-color: rgb(50 213 173 / 42%);
+  border-color: rgb(33 150 210 / 42%);
   background:
-    radial-gradient(circle at 50% 42%, rgb(50 213 173 / 9%), transparent 58%),
+    radial-gradient(circle at 50% 42%, rgb(33 150 210 / 9%), transparent 58%),
     #0b1518;
 }
 
@@ -3268,7 +3271,7 @@
   min-height: 20px;
   display: grid;
   place-items: center;
-  border: 1px solid rgb(50 213 173 / 30%);
+  border: 1px solid rgb(33 150 210 / 30%);
   color: #77918b;
   font: 7px var(--font-mono);
 }
@@ -3278,7 +3281,7 @@
 }
 
 .architectureOutput {
-  background: rgb(50 213 173 / 3%);
+  background: rgb(33 150 210 / 3%);
 }
 
 .feedbackRail {
@@ -3291,7 +3294,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 18px;
-  border-top: 1px dashed rgb(50 213 173 / 32%);
+  border-top: 1px dashed rgb(33 150 210 / 32%);
   color: #667573;
   font-family: var(--font-mono);
   font-size: 7px;
@@ -3431,7 +3434,7 @@
 }
 
 .depthEmergenceZone {
-  fill: rgb(50 213 173 / 6%);
+  fill: rgb(33 150 210 / 6%);
 }
 
 .depthGridline line {
@@ -3690,7 +3693,7 @@
 }
 
 .pcaRingLine {
-  fill: rgb(50 213 173 / 5%);
+  fill: rgb(33 150 210 / 5%);
   stroke: rgb(214 224 220 / 62%);
   stroke-width: 3;
   stroke-linecap: round;
@@ -3798,7 +3801,7 @@
 }
 
 .emergenceZone {
-  fill: rgb(50 213 173 / 6%);
+  fill: rgb(33 150 210 / 6%);
 }
 
 .emergenceGrid,
@@ -3855,7 +3858,7 @@
 }
 
 .populationRing {
-  stroke: rgb(50 213 173 / 72%);
+  stroke: rgb(33 150 210 / 72%);
   stroke-width: 1.5;
 }
 
@@ -3880,7 +3883,7 @@
 }
 
 .compassTarget {
-  stroke: rgb(238 181 62 / 28%);
+  stroke: rgb(244 122 44 / 28%);
   stroke-width: 1;
 }
 
@@ -3914,7 +3917,7 @@
 .heroCopy a,
 .sectionHeading a {
   color: var(--gold);
-  text-decoration-color: rgb(238 181 62 / 60%);
+  text-decoration-color: rgb(244 122 44 / 60%);
   text-underline-offset: 4px;
 }
 
@@ -3954,7 +3957,7 @@
 .contextFan .diagramFrame:nth-child(3) { left: 36px; top: 0; }
 
 .lensActivation {
-  border-color: rgb(50 213 173 / 40%);
+  border-color: rgb(33 150 210 / 40%);
 }
 
 .activationGrid {
@@ -3973,8 +3976,8 @@
 
 .activationGrid .activationCellActive {
   border-color: var(--mint);
-  background: rgb(50 213 173 / 38%);
-  box-shadow: 0 0 18px rgb(50 213 173 / 30%);
+  background: rgb(33 150 210 / 38%);
+  box-shadow: 0 0 18px rgb(33 150 210 / 30%);
 }
 
 .jacobianBridge {
@@ -3999,12 +4002,12 @@
 }
 
 .forwardRail {
-  border-bottom: 1px solid rgb(50 213 173 / 40%);
+  border-bottom: 1px solid rgb(33 150 210 / 40%);
   color: var(--mint);
 }
 
 .backwardRail {
-  border-top: 1px solid rgb(238 181 62 / 45%);
+  border-top: 1px solid rgb(244 122 44 / 45%);
   color: var(--gold);
 }
 
@@ -4036,7 +4039,7 @@
 }
 
 .lensReadout {
-  background: rgb(238 181 62 / 3%);
+  background: rgb(244 122 44 / 3%);
 }
 
 .centroidBoard {
@@ -4046,8 +4049,8 @@
   margin: auto;
   border: 1px solid #354447;
   background:
-    linear-gradient(90deg, transparent 49%, rgb(75 118 115 / 22%) 50%, transparent 51%),
-    #0c2022;
+    linear-gradient(90deg, transparent 49%, rgb(52 101 137 / 22%) 50%, transparent 51%),
+    #06172a;
 }
 
 .centroidDisc {
@@ -4059,7 +4062,7 @@
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: var(--mint);
-  box-shadow: inset 0 0 0 6px #163d38;
+  box-shadow: inset 0 0 0 6px #0b3654;
 }
 
 .centroidCrossX,
@@ -4076,9 +4079,9 @@
 .centroidCrossY { width: 1px; height: 38px; }
 
 .lensDirections {
-  border-color: rgb(50 213 173 / 48%);
+  border-color: rgb(33 150 210 / 48%);
   background:
-    radial-gradient(circle at 50% 58%, rgb(50 213 173 / 10%), transparent 56%),
+    radial-gradient(circle at 50% 58%, rgb(33 150 210 / 10%), transparent 56%),
     #0b1518;
 }
 
@@ -4094,7 +4097,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgb(50 213 173 / 30%);
+  border: 1px solid rgb(33 150 210 / 30%);
   color: var(--mint);
   font-family: var(--font-mono);
 }
@@ -4162,15 +4165,15 @@
 }
 
 .pipelineCore {
-  border-color: rgb(50 213 173 / 43%);
+  border-color: rgb(33 150 210 / 43%);
   background:
-    radial-gradient(circle at 50% 30%, rgb(50 213 173 / 12%), transparent 58%),
+    radial-gradient(circle at 50% 30%, rgb(33 150 210 / 12%), transparent 58%),
     #0d171a;
 }
 
 .pipelineCore > span {
   color: var(--mint);
-  border-color: rgb(50 213 173 / 38%);
+  border-color: rgb(33 150 210 / 38%);
 }
 
 .pipelineArrow {
@@ -4189,7 +4192,7 @@
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  border-top: 1px solid rgb(50 213 173 / 28%);
+  border-top: 1px solid rgb(33 150 210 / 28%);
 }
 
 .probeRail::before,
@@ -4199,7 +4202,7 @@
   height: 22px;
   position: absolute;
   top: -22px;
-  background: rgb(50 213 173 / 28%);
+  background: rgb(33 150 210 / 28%);
 }
 
 .probeRail::before { left: 25%; }

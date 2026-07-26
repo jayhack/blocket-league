@@ -123,25 +123,54 @@ function DiagramFrame({
   );
 }
 
-function drawDisc(
+function drawCelestialDisc(
   context: CanvasRenderingContext2D,
   position: Vec2,
   radius: number,
-  fill: string,
-  core: string,
+  colors: {
+    glow: string;
+    outer: string;
+    middle: string;
+    inner: string;
+    core: string;
+  },
 ) {
-  context.shadowColor = "rgba(0, 0, 0, 0.38)";
-  context.shadowBlur = 0.022;
-  context.shadowOffsetY = 0.012;
-  context.fillStyle = fill;
+  const halo = context.createRadialGradient(
+    position.x,
+    position.y,
+    radius * 0.25,
+    position.x,
+    position.y,
+    radius * 1.75,
+  );
+  halo.addColorStop(0, colors.glow);
+  halo.addColorStop(0.55, colors.glow.replace(/[\d.]+\)$/, "0.12)"));
+  halo.addColorStop(1, "rgba(0, 0, 0, 0)");
+  context.fillStyle = halo;
+  context.beginPath();
+  context.arc(position.x, position.y, radius * 1.75, 0, Math.PI * 2);
+  context.fill();
+
+  const surface = context.createRadialGradient(
+    position.x - radius * 0.18,
+    position.y - radius * 0.18,
+    radius * 0.04,
+    position.x,
+    position.y,
+    radius,
+  );
+  surface.addColorStop(0, colors.core);
+  surface.addColorStop(0.28, colors.inner);
+  surface.addColorStop(0.64, colors.middle);
+  surface.addColorStop(1, colors.outer);
+  context.fillStyle = surface;
   context.beginPath();
   context.arc(position.x, position.y, radius, 0, Math.PI * 2);
   context.fill();
-  context.shadowColor = "transparent";
-  context.fillStyle = core;
-  context.beginPath();
-  context.arc(position.x, position.y, radius * 0.31, 0, Math.PI * 2);
-  context.fill();
+
+  context.strokeStyle = "rgba(235, 242, 244, 0.42)";
+  context.lineWidth = radius * 0.045;
+  context.stroke();
 }
 
 function drawWorld(
@@ -161,34 +190,51 @@ function drawWorld(
   if (!context) return;
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, side, side);
-  context.fillStyle = "#070b10";
+  context.fillStyle = "#010106";
   context.fillRect(0, 0, side, side);
 
   context.save();
   context.scale(side, side);
   const wall = WORLD.wall;
-  context.fillStyle = "#0c2022";
-  context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
-  const wash = context.createRadialGradient(0.5, 0.5, 0.05, 0.5, 0.5, 0.7);
-  wash.addColorStop(0, "rgba(29, 78, 77, 0.16)");
-  wash.addColorStop(1, "rgba(3, 9, 12, 0.08)");
-  context.fillStyle = wash;
+  context.fillStyle = "#020610";
   context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
 
-  context.strokeStyle = "rgba(78, 132, 126, 0.32)";
-  context.lineWidth = 0.006;
+  context.save();
+  context.beginPath();
+  context.rect(wall, wall, 1 - wall * 2, 1 - wall * 2);
+  context.clip();
+  const wash = context.createRadialGradient(0.48, 0.44, 0.03, 0.5, 0.5, 0.72);
+  wash.addColorStop(0, "rgba(4, 93, 173, 0.28)");
+  wash.addColorStop(0.48, "rgba(0, 43, 111, 0.18)");
+  wash.addColorStop(1, "rgba(1, 2, 10, 0)");
+  context.fillStyle = wash;
+  context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
+  context.restore();
+
+  context.strokeStyle = "rgba(91, 151, 183, 0.3)";
+  context.lineWidth = 0.004;
   context.beginPath();
   context.moveTo(0.5, wall);
   context.lineTo(0.5, 1 - wall);
   context.stroke();
+  context.strokeStyle = "rgba(113, 177, 200, 0.38)";
   context.beginPath();
   context.arc(0.5, 0.5, 0.14, 0, Math.PI * 2);
   context.stroke();
 
-  context.fillStyle = "rgba(238, 181, 62, 0.18)";
+  const goalGlow = context.createLinearGradient(
+    1 - wall - 0.06,
+    0,
+    1 - wall + 0.01,
+    0,
+  );
+  goalGlow.addColorStop(0, "rgba(227, 35, 20, 0)");
+  goalGlow.addColorStop(0.55, "rgba(239, 53, 20, 0.34)");
+  goalGlow.addColorStop(1, "rgba(255, 194, 55, 0.64)");
+  context.fillStyle = goalGlow;
   context.fillRect(1 - wall - 0.045, WORLD.goalLow, 0.045, WORLD.goalHigh - WORLD.goalLow);
-  context.strokeStyle = "#526769";
-  context.lineWidth = 0.013;
+  context.strokeStyle = "#073f9c";
+  context.lineWidth = 0.018;
   context.lineCap = "round";
   context.beginPath();
   context.moveTo(wall, wall);
@@ -203,20 +249,39 @@ function drawWorld(
   context.lineTo(1 - wall, 1 - wall);
   context.stroke();
 
-  context.strokeStyle = "#eeb53e";
-  context.lineWidth = 0.012;
+  context.strokeStyle = "#15bce4";
+  context.lineWidth = 0.006;
+  context.stroke();
+
+  context.strokeStyle = "#ffba32";
+  context.lineWidth = 0.014;
   context.beginPath();
   context.moveTo(1 - wall, WORLD.goalLow);
   context.lineTo(1 - wall, WORLD.goalHigh);
   context.stroke();
 
-  drawDisc(context, state.playerPosition, WORLD.playerRadius, "#32d5ad", "#0b3934");
-  drawDisc(context, state.puckPosition, WORLD.puckRadius, "#eff2e9", "#96a199");
+  drawCelestialDisc(context, state.playerPosition, WORLD.playerRadius, {
+    glow: "rgba(255, 72, 18, 0.4)",
+    outer: "#e32613",
+    middle: "#ff5b1a",
+    inner: "#ffb52f",
+    core: "#ffe173",
+  });
+  drawCelestialDisc(context, state.puckPosition, WORLD.puckRadius, {
+    glow: "rgba(20, 157, 255, 0.38)",
+    outer: "#123fa8",
+    middle: "#087ac7",
+    inner: "#19c4e8",
+    core: "#b7f4ff",
+  });
 
   if (state.resetTimer > 0) {
-    context.fillStyle = "rgba(7, 11, 16, 0.72)";
+    context.fillStyle = "rgba(1, 2, 8, 0.82)";
     context.fillRect(0.3, 0.43, 0.4, 0.14);
-    context.fillStyle = "#eeb53e";
+    context.strokeStyle = "#0b8dd0";
+    context.lineWidth = 0.003;
+    context.strokeRect(0.3, 0.43, 0.4, 0.14);
+    context.fillStyle = "#ffc53d";
     context.font = "500 0.055px system-ui, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
@@ -324,7 +389,7 @@ export function BlocketLeagueLab({
               ref={canvasRef}
               className={styles.canvas}
               role="img"
-              aria-label="A square physics arena with a teal disc, a white disc, and a gold goal on the right."
+              aria-label="A galactic square physics arena with a warm solar disc, a blue satellite disc, and a gold goal on the right."
             />
           </div>
         </div>

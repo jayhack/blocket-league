@@ -52,10 +52,10 @@ function eventPath(layers: Array<{ depth: number; roc_auc: number }>) {
 
 const collisionSeries = [
   { horizon: 1, color: "#f4f4f0", result: collisionAnticipation.results["1"] },
-  { horizon: 2, color: "#8fe7d1", result: collisionAnticipation.results["2"] },
-  { horizon: 4, color: "#32d5ad", result: collisionAnticipation.results["4"] },
-  { horizon: 6, color: "#eeb53e", result: collisionAnticipation.results["6"] },
-  { horizon: 8, color: "#e47b5f", result: collisionAnticipation.results["8"] },
+  { horizon: 2, color: "#8bd5f2", result: collisionAnticipation.results["2"] },
+  { horizon: 4, color: "#2196d2", result: collisionAnticipation.results["4"] },
+  { horizon: 6, color: "#f4a261", result: collisionAnticipation.results["6"] },
+  { horizon: 8, color: "#e85d2a", result: collisionAnticipation.results["8"] },
 ] as const;
 
 export function PhysicsEmergenceViewer() {
