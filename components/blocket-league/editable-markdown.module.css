@@ -1,0 +1,141 @@
+.block {
+  position: relative;
+}
+
+.editable {
+  cursor: text;
+  border-radius: 4px;
+  outline: 1px dashed transparent;
+  outline-offset: 8px;
+  transition: background 140ms ease, outline-color 140ms ease;
+}
+
+.editable:hover,
+.editable:focus-visible {
+  background: rgb(50 213 173 / 4%);
+  outline-color: rgb(50 213 173 / 42%);
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  z-index: 2;
+  padding: 4px 7px;
+  border: 1px solid rgb(50 213 173 / 42%);
+  border-radius: 3px;
+  background: #07100f;
+  color: #32d5ad;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  pointer-events: none;
+  text-transform: uppercase;
+  transform: translateY(-100%);
+  transition: opacity 140ms ease;
+}
+
+.editable:hover .badge,
+.editable:focus-visible .badge {
+  opacity: 1;
+}
+
+.rendered > :first-child {
+  margin-top: 0;
+}
+
+.rendered > :last-child {
+  margin-bottom: 0;
+}
+
+.rendered a {
+  color: #eeb53e;
+  text-decoration-color: rgb(238 181 62 / 60%);
+  text-underline-offset: 4px;
+}
+
+.editor {
+  padding: 16px;
+  border: 1px solid rgb(50 213 173 / 58%);
+  border-radius: 5px;
+  background: #07100f;
+  box-shadow: 0 16px 50px rgb(0 0 0 / 45%);
+}
+
+.editorLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+  color: #32d5ad;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.editorLabel span {
+  color: #71717a;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.editor textarea {
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid #334044;
+  border-radius: 3px;
+  outline: none;
+  background: #030606;
+  color: #f4f4f5;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.editor textarea:focus {
+  border-color: #32d5ad;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.actions button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid #3f4d50;
+  border-radius: 3px;
+  background: transparent;
+  color: #d4d4d8;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.actions button:last-child {
+  border-color: #32d5ad;
+  background: #0d2a23;
+  color: #f4f4f5;
+}
+
+.actions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.error {
+  margin: 10px 0 0;
+  color: #e99b88;
+  font-size: 13px;
+}

@@ -16,6 +16,12 @@ const PAD_ACTIONS = [
 const MOVEMENT_KEYS = new Set(["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft", "w", "a", "s", "d"]);
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+function isTextEditingActive(target: EventTarget | null) {
+  if (document.querySelector("[data-markdown-editor]")) return true;
+  if (!(target instanceof Element)) return false;
+  return Boolean(target.closest("input, textarea, select, [contenteditable='true']"));
+}
+
 type OrtRuntime = typeof import("onnxruntime-web");
 type OrtSession = import("onnxruntime-web").InferenceSession;
 
@@ -346,8 +352,13 @@ export function LiveWorldModel() {
   useEffect(() => {
     if (activeLivePlayerId === null) activeLivePlayerId = instanceId;
     const publish = () => setInputAction(manualActionRef.current ?? keyboardAction(keysRef.current));
+    const clear = () => { keysRef.current.clear(); manualActionRef.current = null; setInputAction(0); };
     const keyDown = (event: KeyboardEvent) => {
       if (activeLivePlayerId !== instanceId) return;
+      if (isTextEditingActive(event.target)) {
+        clear();
+        return;
+      }
       const key = normalizeMovementKey(event.key);
       if (!MOVEMENT_KEYS.has(key)) return;
       event.preventDefault();
@@ -357,13 +368,16 @@ export function LiveWorldModel() {
     };
     const keyUp = (event: KeyboardEvent) => {
       if (activeLivePlayerId !== instanceId) return;
+      if (isTextEditingActive(event.target)) {
+        clear();
+        return;
+      }
       const key = normalizeMovementKey(event.key);
       if (!MOVEMENT_KEYS.has(key)) return;
       event.preventDefault();
       keysRef.current.delete(key);
       publish();
     };
-    const clear = () => { keysRef.current.clear(); manualActionRef.current = null; setInputAction(0); };
     window.addEventListener("keydown", keyDown);
     window.addEventListener("keyup", keyUp);
     window.addEventListener("blur", clear);
@@ -431,6 +445,10 @@ export function LiveWorldModel() {
           {error && <p className={styles.liveError}>{error}</p>}
         </aside>
       </div>
+      <p className={styles.livePlayerClaim}>
+        <span aria-hidden="true" />
+        Real-time sampling from a video transformer—with steering.
+      </p>
     </div>
   );
 }

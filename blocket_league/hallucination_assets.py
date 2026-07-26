@@ -21,7 +21,7 @@ SCENARIOS = (
         "id": "collision",
         "title": "Collision",
         "description": "The discs meet and exchange momentum.",
-        "seed": 30_000_014,
+        "seed": 30_000_044,
         "event": "contact",
     },
     {

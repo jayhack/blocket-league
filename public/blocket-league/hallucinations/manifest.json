@@ -9,10 +9,10 @@
       "id": "collision",
       "title": "Collision",
       "description": "The discs meet and exchange momentum.",
-      "seed": 30000014,
+      "seed": 30000044,
       "event": "contact",
       "atlas": "/blocket-league/hallucinations/collision.png",
-      "meanEntityErrorPixels": 3.07
+      "meanEntityErrorPixels": 1.5
     },
     {
       "id": "wall-bounce",

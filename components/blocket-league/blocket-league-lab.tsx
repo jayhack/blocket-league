@@ -16,12 +16,25 @@ import {
   type Vec2,
   type WorldState,
 } from "@/lib/blocket-league/sim";
+import type { BlocketLeagueCopy } from "@/lib/blocket-league/content-types";
 
 import styles from "./blocket-league-lab.module.css";
+import { EditableMarkdown } from "./editable-markdown";
 import { HallucinationFilmstrip } from "./hallucination-filmstrip";
 import { LiveWorldModel } from "./live-world-model";
 import { PhysicsEmergenceViewer } from "./physics-emergence-viewer";
 import { PixelInterpretabilityViewer } from "./pixel-interpretability-viewer";
+
+const TABLE_OF_CONTENTS = [
+  { id: "top", label: "Introduction" },
+  { id: "play", label: "Play the game" },
+  { id: "world", label: "Dataset" },
+  { id: "model", label: "Pixel transformer" },
+  { id: "lens", label: "Jacobian lens" },
+  { id: "intervention", label: "Causal intervention" },
+  { id: "game-surgery", label: "Brain surgery" },
+  { id: "representations", label: "Representation geometry" },
+] as const;
 
 const MODEL_HISTORY = [
   { label: "t−7", player: [24, 68], puck: [72, 28] },
@@ -33,6 +46,55 @@ const MODEL_HISTORY = [
   { label: "t−1", player: [53, 38], puck: [49, 51] },
   { label: "t", player: [58, 33], puck: [45, 55] },
 ] as const;
+
+function TableOfContents() {
+  const [activeId, setActiveId] = useState<string>(TABLE_OF_CONTENTS[0].id);
+
+  useEffect(() => {
+    const sections = TABLE_OF_CONTENTS.map(({ id }) => document.getElementById(id)).filter(
+      (section): section is HTMLElement => section !== null,
+    );
+
+    const updateActiveSection = () => {
+      const readingLine = window.innerHeight * 0.3;
+      let nextId = sections[0]?.id ?? TABLE_OF_CONTENTS[0].id;
+
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= readingLine) nextId = section.id;
+      }
+
+      setActiveId(nextId);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
+  return (
+    <nav className={styles.tableOfContents} aria-label="Table of contents">
+      <span className={styles.tableOfContentsTitle}>Contents</span>
+      <ol>
+        {TABLE_OF_CONTENTS.map(({ id, label }) => (
+          <li key={id}>
+            <a
+              className={activeId === id ? styles.tableOfContentsActive : undefined}
+              href={`#${id}`}
+              aria-current={activeId === id ? "location" : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
 
 function DiagramFrame({
   label,
@@ -140,6 +202,7 @@ function drawWorld(
   context.moveTo(1 - wall, WORLD.goalHigh);
   context.lineTo(1 - wall, 1 - wall);
   context.stroke();
+
   context.strokeStyle = "#eeb53e";
   context.lineWidth = 0.012;
   context.beginPath();
@@ -162,7 +225,13 @@ function drawWorld(
   context.restore();
 }
 
-export function BlocketLeagueLab() {
+export function BlocketLeagueLab({
+  copy,
+  editable = false,
+}: {
+  copy: BlocketLeagueCopy;
+  editable?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [initialWorld] = useState(() => createPassiveWorld(17));
   const worldRef = useRef<WorldState>(initialWorld);
@@ -200,6 +269,7 @@ export function BlocketLeagueLab() {
 
   return (
     <main className={styles.root}>
+      <TableOfContents />
       <header className={styles.header}>
         <a className={styles.wordmark} href="#top" aria-label="Blocket League home">
           <span className={styles.mark}><CircleDot aria-hidden="true" /></span>
@@ -211,48 +281,32 @@ export function BlocketLeagueLab() {
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>Video models learn interpretable physics. We turn their hidden state into a game.</h1>
-        <p className={styles.heroCopy}>
-          In this lab, we construct a pixel-to-pixel transformer that models a toy world with
-          collisions, goals, and resets. Using methods inspired by <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer"><em>Interpreting Physics in Video World Models</em></a> and Anthropic&apos;s <a href="https://www.anthropic.com/research/global-workspace" target="_blank" rel="noreferrer">J-space work</a>, we show that its hidden activations contain a compact model of high-level physical phenomena, including velocity, collisions, and causal directions for motion.
-        </p>
-        <p className={styles.heroCopy}>
-          We then manipulate those directions directly and change the model&apos;s predicted future.
-          The result is a steerable video game built from pure video observations: every frame is a
-          transformer hallucination, and your keyboard edits the physics inside it.
-        </p>
-        <div className={styles.heroGameIntro}>
-          <h2>Play the game</h2>
-          <p>
-            This is real-time writing to the activations of a 3.67M-parameter transformer running
-            in your browser. The screen is the direct output of its next-frame prediction, so every
-            image you see is part of a live hallucination.
-          </p>
+        <h1>J-Lens for video models: uncovering steerable, interpretable physical dynamics.</h1>
+        <div className={styles.heroMeta}>
+          <span>by <a href="https://jay.ai" target="_blank" rel="noreferrer">Jay Hack</a></span>
+          <span aria-hidden="true">·</span>
+          <a href="https://github.com/jayhack/blocket-league" target="_blank" rel="noreferrer">View the code ↗</a>
+        </div>
+        <EditableMarkdown blockId="hero-intro" markdown={copy["hero-intro"]} editable={editable} className={styles.heroCopy} />
+        <EditableMarkdown blockId="hero-sources" markdown={copy["hero-sources"]} editable={editable} className={styles.heroCopy} />
+        <div className={styles.heroGameIntro} id="play">
+          <h2>Play the game: &quot;Blocket League&quot;</h2>
+          <EditableMarkdown blockId="play-intro" markdown={copy["play-intro"]} editable={editable} className={styles.heroGameCopy} />
         </div>
         <div className={styles.heroGame}>
           <LiveWorldModel />
+        </div>
+        <div className={styles.heroGameIntro}>
+          <EditableMarkdown blockId="play-takeaway" markdown={copy["play-takeaway"]} editable={editable} className={styles.heroGameCopy} />
         </div>
       </section>
 
       <section className={styles.labSection} id="world" aria-labelledby="world-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="world-title">To study video model representations, train a model on a toy simulation dataset.</h2>
+            <h2 id="world-title">The dataset: raw physics rollouts from &quot;Blocket League&quot;.</h2>
           </div>
-          <p>
-            We want to understand how video models store physical information. A useful first step
-            is to strip the problem down: generate a world whose rules we know, train a small
-            predictor on its pixels, then inspect what appears inside the weights. Pixel-to-pixel
-            transformers make a clean object of study because the path from observation to prediction
-            is unusually direct; the complete model architecture lives in <a href="https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py" target="_blank" rel="noreferrer">one Python file</a>.
-          </p>
-          <p>
-            The world has a green disc, a white puck, walls, collision physics, and a goal/reset
-            state. We generate 16,384 deterministic rollouts of 24 frames, randomizing initial
-            positions and momentum and oversampling goal-centered clips so the dataset includes
-            collisions, bounces, scores, pauses, and kickoffs. The model receives only rendered
-            pixels—never actions, coordinates, or simulator state.
-          </p>
+          <EditableMarkdown blockId="dataset" markdown={copy.dataset} editable={editable} className={styles.sectionCopy} />
         </div>
 
         <div className={styles.simulatorShell}>
@@ -270,23 +324,18 @@ export function BlocketLeagueLab() {
               ref={canvasRef}
               className={styles.canvas}
               role="img"
-              aria-label="A playable square arena with a teal player disc, a white puck, and a gold goal on the right."
+              aria-label="A square physics arena with a teal disc, a white disc, and a gold goal on the right."
             />
           </div>
         </div>
       </section>
 
-      <section className={styles.modelSection} aria-labelledby="model-title">
+      <section className={styles.modelSection} id="model" aria-labelledby="model-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="model-title">Pixel transformers work surprisingly well.</h2>
+            <h2 id="model-title">The model: pixel transformers for unsupervised prediction.</h2>
           </div>
-          <p>
-            The transformer is trained like a visual next-token predictor: previous rendered frames
-            go in, and it predicts the pixels of the next. There are no actions or coordinates in the
-            input. During a rollout, each predicted image becomes part of the history, so position,
-            motion, collisions, and resets must survive through the model&apos;s own pixels.
-          </p>
+          <EditableMarkdown blockId="model" markdown={copy.model} editable={editable} className={styles.sectionCopy} />
         </div>
 
         <div
@@ -318,42 +367,22 @@ export function BlocketLeagueLab() {
             <span>Predict the next frame</span>
           </div>
         </div>
-      </section>
-
-      <section className={styles.trajectorySection} aria-labelledby="prediction-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <h2 id="prediction-title">It predicts collisions, bounces, and goals.</h2>
-          </div>
-          <p>
-            Each held-out film begins with 12 rendered input frames. The next 36 are generated one
-            frame at a time, with every prediction fed back into the model. Across contact, wall,
-            and goal-reset scenarios, the futures remain structured and event-specific rather than
-            collapsing into random pixels.
-          </p>
-        </div>
+        <EditableMarkdown blockId="model-results" markdown={copy["model-results"]} editable={editable} className={styles.modelResultsCopy} />
         <HallucinationFilmstrip />
       </section>
 
-      <section className={styles.lensSection} aria-labelledby="lens-title">
+      <section className={styles.lensSection} id="lens" aria-labelledby="lens-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="lens-title">Hidden-state activation directions predict downstream physics.</h2>
+            <h2 id="lens-title">Identifying latent activations for physical phenomena</h2>
           </div>
-          <p>
-            These directions are vectors in the transformer&apos;s 192-dimensional hidden state—not
-            directions on the game board. Linear probes recover position at 0.99 R² and velocity at
-            0.90 R² on unseen clips. We then adapt the <a href="https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens" target="_blank" rel="noreferrer">J-space paper&apos;s Jacobian lens</a> to extract
-            reusable activation-space vectors by averaging how each hidden activation changes the next
-            generated frame. Collision outcomes appear in the video, but we have not yet isolated a
-            single collision vector.
-          </p>
+          <EditableMarkdown blockId="jacobian-lens" markdown={copy["jacobian-lens"]} editable={editable} className={styles.sectionCopy} />
         </div>
 
         <div
           className={styles.lensDiagram}
           role="img"
-          aria-label="Across 512 rendered contexts, select the block five activation at the green disc's spatial token, run the frozen downstream model to the next rendered frame, backpropagate the green centroid's x and y coordinates, and average those gradients into global x and y steering directions."
+          aria-label="Across 512 rendered trajectories, select the block five activation at the green puck's spatial token, run the frozen downstream model to the next rendered frame, backpropagate the green puck centroid's x and y coordinates, and average those gradients into reusable x and y velocity directions."
         >
           <div className={styles.lensFlow}>
             <div className={`${styles.lensStage} ${styles.lensContexts}`}>
@@ -375,7 +404,7 @@ export function BlocketLeagueLab() {
               <div className={styles.diagramStageHeader}>
                 <span>LOCATE</span>
                 <strong>h<sub>ℓ,p</sub> at block 5</strong>
-                <small>p = green spatial token</small>
+                <small>p = green-puck spatial token</small>
               </div>
               <div className={styles.activationGrid} aria-hidden="true">
                 {Array.from({ length: 25 }, (_, index) => (
@@ -390,14 +419,14 @@ export function BlocketLeagueLab() {
               <div className={styles.bridgeBlocks}>
                 <span>B6</span><span>NORM</span><span>PIXEL HEAD</span>
               </div>
-              <div className={styles.backwardRail}><ArrowRight aria-hidden="true" /><span>BACKPROP ∂ŷ / ∂h</span></div>
+              <div className={styles.backwardRail}><ArrowRight aria-hidden="true" /><span>BACKPROP ∂(x̂, ŷ) / ∂h</span></div>
             </div>
 
             <div className={`${styles.lensStage} ${styles.lensReadout}`}>
               <div className={styles.diagramStageHeader}>
                 <span>MEASURE</span>
-                <strong>Next-frame centroid</strong>
-                <small>soft readout from green logits</small>
+                <strong>Green-puck centroid</strong>
+                <small>next-frame x/y readout from green logits</small>
               </div>
               <div className={styles.centroidBoard} aria-hidden="true">
                 <span className={styles.centroidDisc} />
@@ -412,8 +441,8 @@ export function BlocketLeagueLab() {
             <div className={`${styles.lensStage} ${styles.lensDirections}`}>
               <div className={styles.diagramStageHeader}>
                 <span>AVERAGE</span>
-                <strong>Global directions</strong>
-                <small>reusable across unseen rollouts</small>
+                <strong>Velocity directions</strong>
+                <small>emphasize downstream +x / +y movement</small>
               </div>
               <div className={styles.directionAxes} aria-hidden="true">
                 <div><span>v<sub>x</sub></span><i>→</i></div>
@@ -423,69 +452,48 @@ export function BlocketLeagueLab() {
             </div>
           </div>
 
-          <div className={styles.lensEquation}>
-            <span>PHYSICS J-LENS</span>
-            <strong>v<sub>x</sub> = normalize [ 1/K · Σ<sub>i</sub> ∂x̂<sub>i,t+1</sub> / ∂h<sub>i,ℓ,p</sub> ]</strong>
-            <small>Repeat for y. Average across contexts to remove rollout-specific accidents and retain a reusable downstream effect.</small>
-          </div>
-
-          <div className={styles.lensComparison}>
-            <div>
-              <span>ANTHROPIC J-LENS</span>
-              <strong>activation → future final residuals → vocabulary logits</strong>
-              <small>Average across prompts, source positions, and future positions.</small>
-            </div>
-            <div>
-              <span>OUR MOTION LENS</span>
-              <strong>player token → next-frame pixels → rendered centroid</strong>
-              <small>Average across worlds; then write the resulting x/y direction back into the same token.</small>
-            </div>
-          </div>
         </div>
       </section>
 
-      <section className={styles.interpretabilitySection} aria-labelledby="interpretability-title">
+      <section className={styles.interpretabilitySection} id="intervention" aria-labelledby="interpretability-title">
         <div className={styles.sectionHeading}>
           <div>
             <h2 id="interpretability-title">These variables are causal. Write to them and the hallucination changes.</h2>
           </div>
-          <p>
-            Write the recovered +x direction for four frames, then stop. By frame 12, the green circle
-            is 3.51 pixels farther right on average across 256 unseen worlds, and 85.9% move in the
-            intended direction. A random activation direction has almost no effect.
-          </p>
+          <EditableMarkdown blockId="causal-intervention" markdown={copy["causal-intervention"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <PixelInterpretabilityViewer />
       </section>
 
-      <section className={styles.liveSection} aria-labelledby="live-title">
+      <section className={styles.liveSection} id="game-surgery" aria-labelledby="live-title">
         <div className={styles.sectionHeading}>
           <div>
             <h2 id="live-title">This is a video game. You play it through brain surgery.</h2>
           </div>
-          <p>
-            The model never trained on keystrokes. Here, WASD is mapped directly onto the recovered
-            ±x and ±y activation directions for the green circle. The white puck moves only when the
-            hallucinated physics says it should.
-          </p>
+          <EditableMarkdown blockId="brain-surgery" markdown={copy["brain-surgery"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <LiveWorldModel />
       </section>
 
-      <section className={styles.emergenceSection} aria-labelledby="emergence-title">
+      <section className={styles.emergenceSection} id="representations" aria-labelledby="emergence-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="emergence-title">The learned direction code has circular geometry.</h2>
+            <h2 id="emergence-title">A linear probe shows where motion becomes readable.</h2>
           </div>
-          <p>
-            Finally, following <a href="https://arxiv.org/abs/2602.07050" target="_blank" rel="noreferrer">Interpreting Physics in Video World Models</a>, we ask how motion is arranged inside the network rather than assuming x/y velocity is a factorized state variable. Direction becomes linearly readable after the first block, while a clean circular population code organizes at blocks 4–5. Removing 74 orthogonal residual dimensions is required to collapse direction decoding, compared with 50 for speed.
-          </p>
+          <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <PhysicsEmergenceViewer />
       </section>
 
       <footer className={styles.footer}>
         <span>BLOCKET LEAGUE</span>
+        <a
+          href="https://github.com/jayhack/blocket-league"
+          target="_blank"
+          rel="noreferrer"
+        >
+          View the code on GitHub ↗
+        </a>
       </footer>
     </main>
   );

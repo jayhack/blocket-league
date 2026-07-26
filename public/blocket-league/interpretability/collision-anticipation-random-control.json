@@ -1,0 +1,324 @@
+{
+  "version": 1,
+  "control": "untrained transformers with the checkpoint architecture",
+  "device": "cuda",
+  "horizons": [
+    1,
+    2,
+    4,
+    6,
+    8
+  ],
+  "random_initializations": [
+    101,
+    211,
+    307
+  ],
+  "results": {
+    "1": {
+      "horizon_frames": 1,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "random_initializations": [
+        101,
+        211,
+        307
+      ],
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc_mean": 0.5,
+          "roc_auc_std": 0.0,
+          "matched_pair_accuracy_mean": 0.5
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc_mean": 0.5863367915153503,
+          "roc_auc_std": 0.005125854164361954,
+          "matched_pair_accuracy_mean": 0.59375
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc_mean": 0.5949859619140625,
+          "roc_auc_std": 0.011103732511401176,
+          "matched_pair_accuracy_mean": 0.615234375
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc_mean": 0.5996010899543762,
+          "roc_auc_std": 0.003142495872452855,
+          "matched_pair_accuracy_mean": 0.625
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc_mean": 0.5997574925422668,
+          "roc_auc_std": 0.002151692984625697,
+          "matched_pair_accuracy_mean": 0.6276041865348816
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc_mean": 0.6037985682487488,
+          "roc_auc_std": 0.010284281335771084,
+          "matched_pair_accuracy_mean": 0.630859375
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc_mean": 0.6061007380485535,
+          "roc_auc_std": 0.008199146948754787,
+          "matched_pair_accuracy_mean": 0.6282551884651184
+        }
+      ]
+    },
+    "2": {
+      "horizon_frames": 2,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "random_initializations": [
+        101,
+        211,
+        307
+      ],
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc_mean": 0.5,
+          "roc_auc_std": 0.0,
+          "matched_pair_accuracy_mean": 0.5
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc_mean": 0.5922362208366394,
+          "roc_auc_std": 0.008028900250792503,
+          "matched_pair_accuracy_mean": 0.6106770634651184
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc_mean": 0.6011829376220703,
+          "roc_auc_std": 0.013102676719427109,
+          "matched_pair_accuracy_mean": 0.6119791865348816
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc_mean": 0.6020450592041016,
+          "roc_auc_std": 0.013244402594864368,
+          "matched_pair_accuracy_mean": 0.609375
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc_mean": 0.6035938262939453,
+          "roc_auc_std": 0.01329794991761446,
+          "matched_pair_accuracy_mean": 0.6126301884651184
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc_mean": 0.5982043147087097,
+          "roc_auc_std": 0.01625887118279934,
+          "matched_pair_accuracy_mean": 0.61328125
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc_mean": 0.5940806269645691,
+          "roc_auc_std": 0.019210010766983032,
+          "matched_pair_accuracy_mean": 0.6184895634651184
+        }
+      ]
+    },
+    "4": {
+      "horizon_frames": 4,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "random_initializations": [
+        101,
+        211,
+        307
+      ],
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc_mean": 0.5,
+          "roc_auc_std": 0.0,
+          "matched_pair_accuracy_mean": 0.5
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc_mean": 0.5962759852409363,
+          "roc_auc_std": 0.005696477834135294,
+          "matched_pair_accuracy_mean": 0.6158854365348816
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc_mean": 0.5875542759895325,
+          "roc_auc_std": 0.009234071709215641,
+          "matched_pair_accuracy_mean": 0.607421875
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc_mean": 0.5904521942138672,
+          "roc_auc_std": 0.011914120987057686,
+          "matched_pair_accuracy_mean": 0.6178385615348816
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc_mean": 0.5875129699707031,
+          "roc_auc_std": 0.00282313022762537,
+          "matched_pair_accuracy_mean": 0.6022135615348816
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc_mean": 0.5890083312988281,
+          "roc_auc_std": 0.004211280960589647,
+          "matched_pair_accuracy_mean": 0.6139323115348816
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc_mean": 0.5895608067512512,
+          "roc_auc_std": 0.008362388238310814,
+          "matched_pair_accuracy_mean": 0.6158854365348816
+        }
+      ]
+    },
+    "6": {
+      "horizon_frames": 6,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "random_initializations": [
+        101,
+        211,
+        307
+      ],
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc_mean": 0.5,
+          "roc_auc_std": 0.0,
+          "matched_pair_accuracy_mean": 0.5
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc_mean": 0.5888341069221497,
+          "roc_auc_std": 0.003832286223769188,
+          "matched_pair_accuracy_mean": 0.5930989384651184
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc_mean": 0.5869414210319519,
+          "roc_auc_std": 0.008167137391865253,
+          "matched_pair_accuracy_mean": 0.609375
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc_mean": 0.5846583247184753,
+          "roc_auc_std": 0.0041703833267092705,
+          "matched_pair_accuracy_mean": 0.6028645634651184
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc_mean": 0.5815855860710144,
+          "roc_auc_std": 0.001295390073210001,
+          "matched_pair_accuracy_mean": 0.6022135615348816
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc_mean": 0.580376923084259,
+          "roc_auc_std": 0.0016779388533905149,
+          "matched_pair_accuracy_mean": 0.5983073115348816
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc_mean": 0.5803241729736328,
+          "roc_auc_std": 0.007227920927107334,
+          "matched_pair_accuracy_mean": 0.6061198115348816
+        }
+      ]
+    },
+    "8": {
+      "horizon_frames": 8,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "random_initializations": [
+        101,
+        211,
+        307
+      ],
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc_mean": 0.5,
+          "roc_auc_std": 0.0,
+          "matched_pair_accuracy_mean": 0.5
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc_mean": 0.562300980091095,
+          "roc_auc_std": 0.01767432503402233,
+          "matched_pair_accuracy_mean": 0.5716145634651184
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc_mean": 0.5690619349479675,
+          "roc_auc_std": 0.0197234358638525,
+          "matched_pair_accuracy_mean": 0.5748698115348816
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc_mean": 0.5684083104133606,
+          "roc_auc_std": 0.016411134973168373,
+          "matched_pair_accuracy_mean": 0.5872395634651184
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc_mean": 0.5693766474723816,
+          "roc_auc_std": 0.018456369638442993,
+          "matched_pair_accuracy_mean": 0.5872395634651184
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc_mean": 0.5668519139289856,
+          "roc_auc_std": 0.016625992953777313,
+          "matched_pair_accuracy_mean": 0.5859375
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc_mean": 0.5638771057128906,
+          "roc_auc_std": 0.011530478484928608,
+          "matched_pair_accuracy_mean": 0.5852864384651184
+        }
+      ]
+    }
+  }
+}

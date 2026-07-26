@@ -1,0 +1,538 @@
+{
+  "version": 1,
+  "model": "passive direct pixel transformer",
+  "parameters": 3667992,
+  "device": "cuda",
+  "history_frames": 8,
+  "horizons": [
+    1,
+    2,
+    4,
+    6,
+    8
+  ],
+  "probe_features": "last-frame spatial mean + pixel-located player token + pixel-located puck token",
+  "protocol": "At every horizon, positive and negative histories end in identical disc positions with matched per-object speed magnitudes. Positive motion produces its first impact at the requested future frame; negative motion produces a drag-adjusted timed miss. Linear ridge probes are trained on frozen activations and disjoint test seeds.",
+  "results": {
+    "1": {
+      "horizon_frames": 1,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "positive_definition": "first disc impact occurs exactly 1 frames after the observation",
+      "negative_definition": "matched positions and per-object speeds; closest approach occurs at the same effective time but misses",
+      "raw_trajectory_linear_baseline": {
+        "features": "pixel-derived player and puck centroids across all eight input frames",
+        "roc_auc": 0.5296783447265625,
+        "balanced_accuracy": 0.52734375,
+        "matched_pair_accuracy": 0.52734375,
+        "shuffled_labels": {
+          "repeats": 8,
+          "roc_auc_mean": 0.5095036029815674,
+          "roc_auc_std": 0.01585371419787407
+        }
+      },
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc": 0.5,
+          "balanced_accuracy": 0.5,
+          "matched_pair_accuracy": 0.5,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5,
+            "roc_auc_std": 0.0
+          }
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc": 0.5848236083984375,
+          "balanced_accuracy": 0.5615234375,
+          "matched_pair_accuracy": 0.609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49791812896728516,
+            "roc_auc_std": 0.007349887862801552
+          }
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc": 0.6417427062988281,
+          "balanced_accuracy": 0.6044921875,
+          "matched_pair_accuracy": 0.685546875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.504453182220459,
+            "roc_auc_std": 0.011081776581704617
+          }
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc": 0.7725028991699219,
+          "balanced_accuracy": 0.6923828125,
+          "matched_pair_accuracy": 0.873046875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5074794292449951,
+            "roc_auc_std": 0.01599716581404209
+          }
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc": 0.9863090515136719,
+          "balanced_accuracy": 0.94921875,
+          "matched_pair_accuracy": 0.99609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.505418062210083,
+            "roc_auc_std": 0.020105615258216858
+          }
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc": 0.9999351501464844,
+          "balanced_accuracy": 0.9951171875,
+          "matched_pair_accuracy": 1.0,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5115771293640137,
+            "roc_auc_std": 0.019497565925121307
+          }
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc": 0.9999122619628906,
+          "balanced_accuracy": 0.99609375,
+          "matched_pair_accuracy": 1.0,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5021753311157227,
+            "roc_auc_std": 0.01652517542243004
+          }
+        }
+      ]
+    },
+    "2": {
+      "horizon_frames": 2,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "positive_definition": "first disc impact occurs exactly 2 frames after the observation",
+      "negative_definition": "matched positions and per-object speeds; closest approach occurs at the same effective time but misses",
+      "raw_trajectory_linear_baseline": {
+        "features": "pixel-derived player and puck centroids across all eight input frames",
+        "roc_auc": 0.5110321044921875,
+        "balanced_accuracy": 0.509765625,
+        "matched_pair_accuracy": 0.509765625,
+        "shuffled_labels": {
+          "repeats": 8,
+          "roc_auc_mean": 0.5015652179718018,
+          "roc_auc_std": 0.014334435574710369
+        }
+      },
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc": 0.5,
+          "balanced_accuracy": 0.5,
+          "matched_pair_accuracy": 0.5,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5,
+            "roc_auc_std": 0.0
+          }
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc": 0.5619087219238281,
+          "balanced_accuracy": 0.5439453125,
+          "matched_pair_accuracy": 0.59765625,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5029451847076416,
+            "roc_auc_std": 0.008182435296475887
+          }
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc": 0.6181640625,
+          "balanced_accuracy": 0.5869140625,
+          "matched_pair_accuracy": 0.67578125,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4996504783630371,
+            "roc_auc_std": 0.01701102964580059
+          }
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc": 0.7294578552246094,
+          "balanced_accuracy": 0.6708984375,
+          "matched_pair_accuracy": 0.802734375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49884033203125,
+            "roc_auc_std": 0.015797890722751617
+          }
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc": 0.9622535705566406,
+          "balanced_accuracy": 0.8974609375,
+          "matched_pair_accuracy": 0.986328125,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4865150451660156,
+            "roc_auc_std": 0.014132492244243622
+          }
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc": 0.9966201782226562,
+          "balanced_accuracy": 0.978515625,
+          "matched_pair_accuracy": 0.998046875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4998774528503418,
+            "roc_auc_std": 0.013798492960631847
+          }
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc": 0.9981918334960938,
+          "balanced_accuracy": 0.9814453125,
+          "matched_pair_accuracy": 1.0,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49236226081848145,
+            "roc_auc_std": 0.020258264616131783
+          }
+        }
+      ]
+    },
+    "4": {
+      "horizon_frames": 4,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "positive_definition": "first disc impact occurs exactly 4 frames after the observation",
+      "negative_definition": "matched positions and per-object speeds; closest approach occurs at the same effective time but misses",
+      "raw_trajectory_linear_baseline": {
+        "features": "pixel-derived player and puck centroids across all eight input frames",
+        "roc_auc": 0.49039459228515625,
+        "balanced_accuracy": 0.4990234375,
+        "matched_pair_accuracy": 0.48828125,
+        "shuffled_labels": {
+          "repeats": 8,
+          "roc_auc_mean": 0.49997520446777344,
+          "roc_auc_std": 0.009632603265345097
+        }
+      },
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc": 0.5,
+          "balanced_accuracy": 0.5,
+          "matched_pair_accuracy": 0.5,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5,
+            "roc_auc_std": 0.0
+          }
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc": 0.6071872711181641,
+          "balanced_accuracy": 0.5791015625,
+          "matched_pair_accuracy": 0.609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5027344226837158,
+            "roc_auc_std": 0.008287214674055576
+          }
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc": 0.6303253173828125,
+          "balanced_accuracy": 0.580078125,
+          "matched_pair_accuracy": 0.6640625,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4994187355041504,
+            "roc_auc_std": 0.009206789545714855
+          }
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc": 0.6956634521484375,
+          "balanced_accuracy": 0.6474609375,
+          "matched_pair_accuracy": 0.748046875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49997496604919434,
+            "roc_auc_std": 0.010136023163795471
+          }
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc": 0.840301513671875,
+          "balanced_accuracy": 0.759765625,
+          "matched_pair_accuracy": 0.875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5022478103637695,
+            "roc_auc_std": 0.018164807930588722
+          }
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc": 0.9776115417480469,
+          "balanced_accuracy": 0.9208984375,
+          "matched_pair_accuracy": 0.99609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5024740695953369,
+            "roc_auc_std": 0.012129932641983032
+          }
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc": 0.9735870361328125,
+          "balanced_accuracy": 0.92578125,
+          "matched_pair_accuracy": 0.978515625,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49188804626464844,
+            "roc_auc_std": 0.024719392880797386
+          }
+        }
+      ]
+    },
+    "6": {
+      "horizon_frames": 6,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "positive_definition": "first disc impact occurs exactly 6 frames after the observation",
+      "negative_definition": "matched positions and per-object speeds; closest approach occurs at the same effective time but misses",
+      "raw_trajectory_linear_baseline": {
+        "features": "pixel-derived player and puck centroids across all eight input frames",
+        "roc_auc": 0.50762939453125,
+        "balanced_accuracy": 0.509765625,
+        "matched_pair_accuracy": 0.505859375,
+        "shuffled_labels": {
+          "repeats": 8,
+          "roc_auc_mean": 0.49945068359375,
+          "roc_auc_std": 0.024879159405827522
+        }
+      },
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc": 0.5,
+          "balanced_accuracy": 0.5,
+          "matched_pair_accuracy": 0.5,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5,
+            "roc_auc_std": 0.0
+          }
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc": 0.6010627746582031,
+          "balanced_accuracy": 0.576171875,
+          "matched_pair_accuracy": 0.64453125,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4987030029296875,
+            "roc_auc_std": 0.010362427681684494
+          }
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc": 0.6410179138183594,
+          "balanced_accuracy": 0.6025390625,
+          "matched_pair_accuracy": 0.68359375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4975457191467285,
+            "roc_auc_std": 0.010934787802398205
+          }
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc": 0.7037887573242188,
+          "balanced_accuracy": 0.634765625,
+          "matched_pair_accuracy": 0.74609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.498415470123291,
+            "roc_auc_std": 0.01664464734494686
+          }
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc": 0.810546875,
+          "balanced_accuracy": 0.7353515625,
+          "matched_pair_accuracy": 0.84375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5021603107452393,
+            "roc_auc_std": 0.01986236870288849
+          }
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc": 0.935028076171875,
+          "balanced_accuracy": 0.8662109375,
+          "matched_pair_accuracy": 0.962890625,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4905281066894531,
+            "roc_auc_std": 0.022758712992072105
+          }
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc": 0.9152908325195312,
+          "balanced_accuracy": 0.8310546875,
+          "matched_pair_accuracy": 0.9453125,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5079808235168457,
+            "roc_auc_std": 0.00843592919409275
+          }
+        }
+      ]
+    },
+    "8": {
+      "horizon_frames": 8,
+      "fit_pairs": 1024,
+      "test_pairs": 512,
+      "positive_definition": "first disc impact occurs exactly 8 frames after the observation",
+      "negative_definition": "matched positions and per-object speeds; closest approach occurs at the same effective time but misses",
+      "raw_trajectory_linear_baseline": {
+        "features": "pixel-derived player and puck centroids across all eight input frames",
+        "roc_auc": 0.48290252685546875,
+        "balanced_accuracy": 0.490234375,
+        "matched_pair_accuracy": 0.470703125,
+        "shuffled_labels": {
+          "repeats": 8,
+          "roc_auc_mean": 0.5053408145904541,
+          "roc_auc_std": 0.01787790283560753
+        }
+      },
+      "layers": [
+        {
+          "stage": "patch embedding",
+          "depth": 0,
+          "roc_auc": 0.5,
+          "balanced_accuracy": 0.5,
+          "matched_pair_accuracy": 0.5,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5,
+            "roc_auc_std": 0.0
+          }
+        },
+        {
+          "stage": "block 1",
+          "depth": 1,
+          "roc_auc": 0.6059989929199219,
+          "balanced_accuracy": 0.57421875,
+          "matched_pair_accuracy": 0.6484375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.5001978874206543,
+            "roc_auc_std": 0.013180151581764221
+          }
+        },
+        {
+          "stage": "block 2",
+          "depth": 2,
+          "roc_auc": 0.64697265625,
+          "balanced_accuracy": 0.609375,
+          "matched_pair_accuracy": 0.6875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.49240827560424805,
+            "roc_auc_std": 0.012799820862710476
+          }
+        },
+        {
+          "stage": "block 3",
+          "depth": 3,
+          "roc_auc": 0.7145404815673828,
+          "balanced_accuracy": 0.6591796875,
+          "matched_pair_accuracy": 0.783203125,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.4887678623199463,
+            "roc_auc_std": 0.0213521346449852
+          }
+        },
+        {
+          "stage": "block 4",
+          "depth": 4,
+          "roc_auc": 0.7889747619628906,
+          "balanced_accuracy": 0.7001953125,
+          "matched_pair_accuracy": 0.849609375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.482846736907959,
+            "roc_auc_std": 0.018396660685539246
+          }
+        },
+        {
+          "stage": "block 5",
+          "depth": 5,
+          "roc_auc": 0.8822250366210938,
+          "balanced_accuracy": 0.794921875,
+          "matched_pair_accuracy": 0.927734375,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.47835540771484375,
+            "roc_auc_std": 0.01822017692029476
+          }
+        },
+        {
+          "stage": "block 6",
+          "depth": 6,
+          "roc_auc": 0.8712272644042969,
+          "balanced_accuracy": 0.779296875,
+          "matched_pair_accuracy": 0.921875,
+          "shuffled_labels": {
+            "repeats": 8,
+            "roc_auc_mean": 0.48137378692626953,
+            "roc_auc_std": 0.02053380012512207
+          }
+        }
+      ]
+    }
+  }
+}

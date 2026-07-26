@@ -1,21 +1,22 @@
 import ringProbe from "@/public/blocket-league/interpretability/ring-probe.json";
+import collisionAnticipation from "@/public/blocket-league/interpretability/collision-anticipation-probes.json";
+import collisionRandomControl from "@/public/blocket-league/interpretability/collision-anticipation-random-control.json";
 
 import styles from "./blocket-league-lab.module.css";
 
-
-const plot = {
-  left: 34,
-  right: 310,
-  top: 24,
-  bottom: 178,
+const depthPlot = {
+  left: 82,
+  right: 888,
+  top: 62,
+  bottom: 286,
 };
 
 function depthX(depth: number) {
-  return plot.left + (depth / 6) * (plot.right - plot.left);
+  return depthPlot.left + (depth / 6) * (depthPlot.right - depthPlot.left);
 }
 
 function scoreY(score: number) {
-  return plot.bottom - Math.max(0, Math.min(1, score)) * (plot.bottom - plot.top);
+  return depthPlot.bottom - Math.max(0, Math.min(1, score)) * (depthPlot.bottom - depthPlot.top);
 }
 
 function pathFor(key: "direction_r2" | "speed_r2") {
@@ -24,120 +25,299 @@ function pathFor(key: "direction_r2" | "speed_r2") {
     .join(" ");
 }
 
+function directionColor(angle: number) {
+  return `hsl(${angle} 72% 62%)`;
+}
+
+const eventPlot = {
+  left: 82,
+  right: 872,
+  top: 52,
+  bottom: 282,
+};
+
+function eventX(depth: number) {
+  return eventPlot.left + (depth / 6) * (eventPlot.right - eventPlot.left);
+}
+
+function eventY(auc: number) {
+  return eventPlot.bottom - ((auc - 0.5) / 0.5) * (eventPlot.bottom - eventPlot.top);
+}
+
+function eventPath(layers: Array<{ depth: number; roc_auc: number }>) {
+  return layers
+    .map((layer, index) => `${index ? "L" : "M"}${eventX(layer.depth)},${eventY(layer.roc_auc)}`)
+    .join(" ");
+}
+
+const collisionSeries = [
+  { horizon: 1, color: "#f4f4f0", result: collisionAnticipation.results["1"] },
+  { horizon: 2, color: "#8fe7d1", result: collisionAnticipation.results["2"] },
+  { horizon: 4, color: "#32d5ad", result: collisionAnticipation.results["4"] },
+  { horizon: 6, color: "#eeb53e", result: collisionAnticipation.results["6"] },
+  { horizon: 8, color: "#e47b5f", result: collisionAnticipation.results["8"] },
+] as const;
+
 export function PhysicsEmergenceViewer() {
   const blockFive = ringProbe.mlp_direction_tuning.find((row) => row.block === 5);
   if (!blockFive) return null;
-  const coordinates = blockFive.angle_bin_population_geometry.coordinates;
-  const ringPoints = coordinates
-    .map((point) => `${120 + point.x * 72},${105 - point.y * 72}`)
+
+  const geometry = blockFive.angle_bin_population_geometry;
+  const coordinates = geometry.coordinates;
+  const pcaCenter = { x: 480, y: 292 };
+  const pcaScale = 222;
+  const pcaPoints = coordinates
+    .map((point) => `${pcaCenter.x + point.x * pcaScale},${pcaCenter.y - point.y * pcaScale}`)
     .join(" ");
-  const causal = ringProbe.causal_direction_circle;
-  const maxDisplacement = Math.max(...causal.angles.map((row) => row.mean_displacement_pixels));
+  const eightFrameResult = collisionAnticipation.results["8"];
+  const eightFrameRandom = collisionRandomControl.results["8"].layers.find(
+    (layer) => layer.depth === 5,
+  );
 
   return (
-    <figure className={styles.emergenceFigure}>
-      <div className={styles.emergencePanels}>
-        <div className={styles.emergencePanel}>
-          <div className={styles.emergencePanelHeader}>
-            <span>01 / ACCESS</span>
-            <strong>Direction becomes readable</strong>
-            <small>held-out linear probes · rendered-pixel labels</small>
+    <div className={styles.emergenceStory}>
+      <figure className={styles.depthFigure}>
+        <header className={styles.depthFigureHeader}>
+          <p>
+            Held-out linear-probe R² for motion direction and speed, using motion labels
+            measured directly from rendered pixels.
+          </p>
+        </header>
+
+        <div className={styles.depthChart}>
+          <div className={styles.depthLegend} aria-hidden="true">
+            <span data-series="direction"><i /> Motion direction</span>
+            <span data-series="speed"><i /> Speed</span>
           </div>
-          <svg viewBox="0 0 340 220" role="img" aria-label="Direction and speed probe R squared by transformer depth. Direction rises from zero at the patch embedding to 0.63 at block one and peaks at 0.88 at block five.">
-            <rect className={styles.emergenceZone} x={depthX(3.65)} y="12" width={depthX(5.35) - depthX(3.65)} height="178" />
+          <svg viewBox="0 0 960 356" role="img" aria-labelledby="depth-title depth-description">
+            <title id="depth-title">Direction and speed become linearly readable across transformer depth</title>
+            <desc id="depth-description">
+              Held-out linear probe scores are near zero at the patch embedding, jump above
+              one half after block one, and peak around blocks five and six.
+            </desc>
+
             {[0, 0.5, 1].map((tick) => (
-              <g key={tick}>
-                <line className={styles.emergenceGrid} x1={plot.left} x2={plot.right} y1={scoreY(tick)} y2={scoreY(tick)} />
-                <text className={styles.emergenceAxisText} x="4" y={scoreY(tick) + 3}>{tick.toFixed(1)}</text>
+              <g key={tick} className={styles.depthGridline}>
+                <line x1={depthPlot.left} x2={depthPlot.right} y1={scoreY(tick)} y2={scoreY(tick)} />
+                <text x={depthPlot.left - 20} y={scoreY(tick) + 6} textAnchor="end">{tick.toFixed(1)}</text>
               </g>
             ))}
-            <path className={styles.emergenceDirectionLine} d={pathFor("direction_r2")} />
-            <path className={styles.emergenceSpeedLine} d={pathFor("speed_r2")} />
+
+            <path className={styles.depthDirectionLine} d={pathFor("direction_r2")} />
+            <path className={styles.depthSpeedLine} d={pathFor("speed_r2")} />
+
             {ringProbe.layer_probes.map((row) => (
               <g key={row.depth}>
-                <circle className={styles.emergenceDirectionPoint} cx={depthX(row.depth)} cy={scoreY(row.direction_r2)} r="3" />
-                <circle className={styles.emergenceSpeedPoint} cx={depthX(row.depth)} cy={scoreY(row.speed_r2)} r="2.5" />
-                <text className={styles.emergenceAxisText} x={depthX(row.depth)} y="205" textAnchor="middle">
-                  {row.depth === 0 ? "embed" : `B${row.depth}`}
+                <circle className={styles.depthDirectionPoint} cx={depthX(row.depth)} cy={scoreY(row.direction_r2)} r="6" />
+                <circle className={styles.depthSpeedPoint} cx={depthX(row.depth)} cy={scoreY(row.speed_r2)} r="5" />
+                <text className={styles.depthAxisLabel} x={depthX(row.depth)} y="326" textAnchor="middle">
+                  {row.depth === 0 ? "Embedding" : `Block ${row.depth}`}
                 </text>
               </g>
             ))}
-            <text className={styles.emergenceZoneLabel} x={depthX(4.5)} y="22" textAnchor="middle">RING ORGANIZES</text>
-            <g className={styles.emergenceLegend}>
-              <line className={styles.emergenceDirectionLine} x1="44" x2="60" y1="16" y2="16" />
-              <text x="65" y="19">direction</text>
-              <line className={styles.emergenceSpeedLine} x1="128" x2="144" y1="16" y2="16" />
-              <text x="149" y="19">speed</text>
+
+            <text className={styles.depthEndpointDirection} x={depthX(5) + 14} y={scoreY(ringProbe.layer_probes[5].direction_r2) - 13}>
+              direction
+            </text>
+            <text className={styles.depthEndpointSpeed} x={depthX(5) + 14} y={scoreY(ringProbe.layer_probes[5].speed_r2) + 26}>
+              speed
+            </text>
+            <text
+              className={styles.depthYLabel}
+              x="22"
+              y={(depthPlot.top + depthPlot.bottom) / 2}
+              textAnchor="middle"
+              transform={`rotate(-90 22 ${(depthPlot.top + depthPlot.bottom) / 2})`}
+            >
+              Held-out linear-probe R²
+            </text>
+          </svg>
+        </div>
+
+        <figcaption className={styles.depthCaption}>
+          Linear probes use only held-out clips and motion labels measured from rendered pixels.
+          The largest single jump occurs at block 1; the representation continues organizing through block 5.
+        </figcaption>
+      </figure>
+
+      <div className={styles.eventProbeHeading}>
+        <h3>The model anticipates collisions before they happen.</h3>
+        <p>
+          We construct matched histories in which the two discs have identical current positions
+          and speeds. One pair will collide exactly 1, 2, 4, 6, or 8 frames later; the other reaches
+          closest approach at the same time but misses. Neither disc is touching when we read the
+          model&apos;s activations.
+        </p>
+      </div>
+
+      <figure className={styles.eventFigure}>
+        <header className={styles.eventFigureHeader}>
+          <p>Held-out AUROC · 1,024 matched fit pairs and 512 disjoint test pairs per horizon</p>
+        </header>
+
+        <div className={styles.eventChart}>
+          <div className={styles.eventLegend} aria-hidden="true">
+            {collisionSeries.map((series) => (
+              <span key={series.horizon}>
+                <i style={{ background: series.color }} />
+                {series.horizon} {series.horizon === 1 ? "frame" : "frames"} ahead
+              </span>
+            ))}
+          </div>
+          <svg viewBox="0 0 960 350" role="img" aria-labelledby="event-title event-description">
+            <title id="event-title">Future collision decodability across transformer depth and anticipation horizon</title>
+            <desc id="event-description">
+              Linear probes become better at predicting future disc collisions through progressively
+              deeper blocks. Block five remains strongly predictive even eight frames before contact.
+            </desc>
+
+            {[0.5, 0.75, 1].map((tick) => (
+              <g key={tick} className={styles.eventGridline}>
+                <line x1={eventPlot.left} x2={eventPlot.right} y1={eventY(tick)} y2={eventY(tick)} />
+                <text x={eventPlot.left - 19} y={eventY(tick) + 6} textAnchor="end">{tick.toFixed(2)}</text>
+              </g>
+            ))}
+            <text
+              className={styles.eventYLabel}
+              x="22"
+              y={(eventPlot.top + eventPlot.bottom) / 2}
+              textAnchor="middle"
+              transform={`rotate(-90 22 ${(eventPlot.top + eventPlot.bottom) / 2})`}
+            >
+              Held-out AUROC
+            </text>
+            <line
+              className={styles.eventChanceLine}
+              x1={eventPlot.left}
+              x2={eventPlot.right}
+              y1={eventY(0.5)}
+              y2={eventY(0.5)}
+            />
+
+            {collisionSeries.map((series) => (
+              <g key={series.horizon}>
+                <path
+                  className={styles.eventHorizonLine}
+                  d={eventPath(series.result.layers)}
+                  style={{ stroke: series.color }}
+                />
+                {series.result.layers.map((layer) => (
+                  <circle
+                    key={layer.depth}
+                    className={styles.eventPoint}
+                    cx={eventX(layer.depth)}
+                    cy={eventY(layer.roc_auc)}
+                    r="5"
+                    style={{ stroke: series.color }}
+                  />
+                ))}
+              </g>
+            ))}
+
+            {eightFrameResult.layers.map((layer) => (
+              <text key={layer.depth} className={styles.eventAxisLabel} x={eventX(layer.depth)} y="326" textAnchor="middle">
+                {layer.depth === 0 ? "Embedding" : `Block ${layer.depth}`}
+              </text>
+            ))}
+          </svg>
+        </div>
+
+        <figcaption className={styles.eventCaption}>
+          <p>
+            <strong>At block 5, collisions remain predictable eight frames—or 400 ms—ahead.</strong>{" "}
+            Held-out AUROC reaches {eightFrameResult.layers[5].roc_auc.toFixed(3)} at that horizon,
+            compared with {eightFrameResult.raw_trajectory_linear_baseline.roc_auc.toFixed(3)} for a
+            linear readout of the explicit pixel trajectory.
+          </p>
+          <p>
+            An untrained transformer with the same architecture reaches only{" "}
+            {eightFrameRandom?.roc_auc_mean.toFixed(3) ?? "0.567"} at block 5, averaged across three
+            random initializations. Shuffled-label controls remain near chance. Training therefore
+            organizes a substantially more predictive collision representation than either raw
+            linear pixels or random transformer features.
+          </p>
+        </figcaption>
+      </figure>
+
+      <div className={styles.geometryHeading}>
+        <h3>Lastly, motion directions form a “ring” in activation space.</h3>
+        <p>
+          When we sample clips with puck motion in a given direction, then average activations
+          in block 5, we see that the directions in activation space form a ring—and that we
+          progress along this ring as we change the angle θ of motion, represented here by color.
+        </p>
+      </div>
+
+      <figure className={styles.pcaFigure}>
+        <header className={styles.pcaFigureHeader}>
+          <p>
+            24 observed motion-direction bins projected from 768 activation dimensions to two principal components.
+          </p>
+        </header>
+
+        <div className={styles.pcaChart}>
+          <svg viewBox="0 0 960 610" role="img" aria-labelledby="pca-title pca-description">
+            <title id="pca-title">Principal component projection of direction-conditioned hidden activations</title>
+            <desc id="pca-description">
+              Twenty-four mean block-five MLP activation vectors projected from 768 dimensions
+              onto their first two principal components form a single closed ring. Point color
+              represents observed physical motion direction.
+            </desc>
+
+            <line className={styles.pcaAxis} x1="130" x2="830" y1={pcaCenter.y} y2={pcaCenter.y} />
+            <line className={styles.pcaAxis} x1={pcaCenter.x} x2={pcaCenter.x} y1="42" y2="542" />
+            <text className={styles.pcaAxisLabel} x="820" y={pcaCenter.y - 16} textAnchor="end">PC1</text>
+            <text className={styles.pcaAxisLabel} x={pcaCenter.x + 18} y="62">PC2</text>
+
+            <polygon className={styles.pcaRingLine} points={pcaPoints} />
+
+            {coordinates.map((point) => {
+              const labelPoint = [7.5, 97.5, 187.5, 277.5].some(
+                (angle) => Math.abs(point.angle_degrees - angle) < 0.2,
+              );
+              const x = pcaCenter.x + point.x * pcaScale;
+              const y = pcaCenter.y - point.y * pcaScale;
+              return (
+                <g key={point.angle_degrees}>
+                  <circle
+                    className={styles.pcaPoint}
+                    cx={x}
+                    cy={y}
+                    r="9"
+                    style={{ fill: directionColor(point.angle_degrees) }}
+                  />
+                  {labelPoint ? (
+                    <text
+                      className={styles.pcaDirectionLabel}
+                      x={x + (point.x >= 0 ? 16 : -16)}
+                      y={y + (point.y >= 0 ? -13 : 24)}
+                      textAnchor={point.x >= 0 ? "start" : "end"}
+                    >
+                      {Math.round(point.angle_degrees)}°
+                    </text>
+                  ) : null}
+                </g>
+              );
+            })}
+
+            <g transform="translate(270 574)">
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, index) => (
+                <rect key={angle} x={index * 52} y="0" width="52" height="8" style={{ fill: directionColor(angle) }} />
+              ))}
+              <text className={styles.pcaLegendLabel} x="-18" y="10" textAnchor="end">0°</text>
+              <text className={styles.pcaLegendLabel} x="434" y="10">360°</text>
+              <text className={styles.pcaLegendTitle} x="208" y="32" textAnchor="middle">observed motion direction</text>
             </g>
           </svg>
         </div>
 
-        <div className={styles.emergencePanel}>
-          <div className={styles.emergencePanelHeader}>
-            <span>02 / ORGANIZE</span>
-            <strong>The population closes into a ring</strong>
-            <small>block 5 MLP · means across 24 direction bins</small>
-          </div>
-          <svg viewBox="0 0 240 220" role="img" aria-label="The block five MLP population traces a closed loop as the observed motion direction rotates through 360 degrees.">
-            <circle className={styles.populationGuide} cx="120" cy="105" r="72" />
-            <polygon className={styles.populationRing} points={ringPoints} />
-            {coordinates.map((point) => (
-              <circle
-                className={styles.populationPoint}
-                key={point.angle_degrees}
-                cx={120 + point.x * 72}
-                cy={105 - point.y * 72}
-                r="3"
-              />
-            ))}
-            <text className={styles.populationValue} x="120" y="101" textAnchor="middle">305 / 768</text>
-            <text className={styles.populationCaption} x="120" y="117" textAnchor="middle">direction-tuned units</text>
-            <text className={styles.populationMetric} x="120" y="206" textAnchor="middle">circular distance r = 0.976 · winding = 1</text>
-          </svg>
-        </div>
+      </figure>
 
-        <div className={styles.emergencePanel}>
-          <div className={styles.emergencePanelHeader}>
-            <span>03 / CONTROL</span>
-            <strong>Two writes chart the whole circle</strong>
-            <small>256 unseen 12-frame hallucinations</small>
-          </div>
-          <svg viewBox="0 0 240 220" role="img" aria-label="Eight interpolated activation writes produce generated displacement directions with 5.1 degrees of mean angular error.">
-            <circle className={styles.populationGuide} cx="120" cy="105" r="72" />
-            <line className={styles.compassAxis} x1="38" x2="202" y1="105" y2="105" />
-            <line className={styles.compassAxis} x1="120" x2="120" y1="23" y2="187" />
-            {causal.angles.map((row) => {
-              const target = row.target_degrees * Math.PI / 180;
-              const observed = row.mean_direction_degrees * Math.PI / 180;
-              const radius = 72 * row.mean_displacement_pixels / maxDisplacement;
-              return (
-                <g key={row.target_degrees}>
-                  <line
-                    className={styles.compassTarget}
-                    x1="120"
-                    y1="105"
-                    x2={120 + Math.cos(target) * 72}
-                    y2={105 + Math.sin(target) * 72}
-                  />
-                  <circle
-                    className={styles.compassObserved}
-                    cx={120 + Math.cos(observed) * radius}
-                    cy={105 + Math.sin(observed) * radius}
-                    r="4"
-                  />
-                </g>
-              );
-            })}
-            <text className={styles.populationValue} x="120" y="101" textAnchor="middle">5.1°</text>
-            <text className={styles.populationCaption} x="120" y="117" textAnchor="middle">mean steering error</text>
-            <text className={styles.populationMetric} x="120" y="206" textAnchor="middle">v(θ) = cos θ · vₓ + sin θ · vᵧ</text>
-          </svg>
-        </div>
-      </div>
-      <figcaption className={styles.emergenceCaption}>
-        <span><strong>Readable is not organized.</strong> The first temporal-attention block exposes direction, but sinusoidally tuned MLP units only form a clean circular population at blocks 4–5.</span>
-        <span><strong>Distributed is not uncontrollable.</strong> Direction occupies 74 residual dimensions, yet downstream averaging supplies a two-vector causal chart over the code.</span>
-      </figcaption>
-    </figure>
+      <p className={styles.geometryConclusion}>
+        This is significant because it implies that the geometry of the representation is similar
+        to the geometry of what it represents. There is a clear correspondence between the model&apos;s
+        internal representation and external “reality,” uncovered from pure video frames.
+      </p>
+    </div>
   );
 }

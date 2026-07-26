@@ -376,6 +376,97 @@ def interpret_pixel_checkpoint_remote(
 
 @app.function(
     image=image,
+    gpu="H100",
+    cpu=16.0,
+    memory=65_536,
+    timeout=60 * 60,
+    single_use_containers=True,
+)
+def probe_pixel_events_remote(
+    checkpoint_bytes: bytes,
+    fit_pairs: int,
+    test_pairs: int,
+    batch_size: int,
+) -> dict[str, object]:
+    sys.path.insert(0, REMOTE_PROJECT)
+    from blocket_league.event_probe import run_event_probes
+
+    checkpoint = Path("/tmp/passive-pixel-checkpoint.pt")
+    output = Path("/tmp/event-probes.json")
+    checkpoint.write_bytes(checkpoint_bytes)
+    return run_event_probes(
+        checkpoint,
+        output,
+        fit_pairs=fit_pairs,
+        test_pairs=test_pairs,
+        batch_size=batch_size,
+    )
+
+
+@app.function(
+    image=image,
+    gpu="H100",
+    cpu=16.0,
+    memory=65_536,
+    timeout=60 * 60,
+    single_use_containers=True,
+)
+def probe_collision_anticipation_remote(
+    checkpoint_bytes: bytes,
+    horizons: tuple[int, ...],
+    fit_pairs: int,
+    test_pairs: int,
+    batch_size: int,
+) -> dict[str, object]:
+    sys.path.insert(0, REMOTE_PROJECT)
+    from blocket_league.collision_anticipation_probe import run_collision_anticipation_probes
+
+    checkpoint = Path("/tmp/passive-pixel-checkpoint.pt")
+    output = Path("/tmp/collision-anticipation-probes.json")
+    checkpoint.write_bytes(checkpoint_bytes)
+    return run_collision_anticipation_probes(
+        checkpoint,
+        output,
+        horizons=horizons,
+        fit_pairs=fit_pairs,
+        test_pairs=test_pairs,
+        batch_size=batch_size,
+    )
+
+
+@app.function(
+    image=image,
+    gpu="H100",
+    cpu=16.0,
+    memory=65_536,
+    timeout=60 * 60,
+    single_use_containers=True,
+)
+def probe_collision_anticipation_random_remote(
+    checkpoint_bytes: bytes,
+    horizons: tuple[int, ...],
+    fit_pairs: int,
+    test_pairs: int,
+    batch_size: int,
+) -> dict[str, object]:
+    sys.path.insert(0, REMOTE_PROJECT)
+    from blocket_league.collision_anticipation_probe import run_random_weight_control
+
+    checkpoint = Path("/tmp/passive-pixel-checkpoint.pt")
+    output = Path("/tmp/collision-anticipation-random-control.json")
+    checkpoint.write_bytes(checkpoint_bytes)
+    return run_random_weight_control(
+        checkpoint,
+        output,
+        horizons=horizons,
+        fit_pairs=fit_pairs,
+        test_pairs=test_pairs,
+        batch_size=batch_size,
+    )
+
+
+@app.function(
+    image=image,
     gpu="A100",
     cpu=8.0,
     memory=32_768,
@@ -503,6 +594,12 @@ def main(
     interpret_checkpoint: str = "",
     interpret_direct_checkpoint: str = "",
     interpret_pixel_checkpoint: str = "",
+    event_probe_checkpoint: str = "",
+    collision_anticipation_checkpoint: str = "",
+    collision_anticipation_random_checkpoint: str = "",
+    collision_anticipation_horizons: str = "1,2,4,6,8",
+    event_fit_pairs: int = 1024,
+    event_test_pairs: int = 512,
     interpret_samples: int = 768,
     interpret_batch_size: int = 32,
     intervention_samples: int = 32,
@@ -663,6 +760,83 @@ def main(
         destination.write_text(json.dumps(interpretation, indent=2), encoding="utf-8")
         print(json.dumps(interpretation, indent=2))
         print(f"Passive pixel interpretability results downloaded to: {destination}")
+        return
+    if event_probe_checkpoint:
+        checkpoint = Path(event_probe_checkpoint).expanduser().resolve()
+        if not checkpoint.is_file():
+            raise FileNotFoundError(checkpoint)
+        event_results = probe_pixel_events_remote.remote(
+            checkpoint.read_bytes(),
+            event_fit_pairs,
+            event_test_pairs,
+            interpret_batch_size,
+        )
+        destination_dir = (
+            Path(output_dir).expanduser().resolve()
+            if output_dir
+            else HERE.parent / "public" / "blocket-league" / "interpretability"
+        )
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = destination_dir / "event-probes.json"
+        destination.write_text(json.dumps(event_results, indent=2), encoding="utf-8")
+        print(json.dumps(event_results, indent=2))
+        print(f"Event probe results downloaded to: {destination}")
+        return
+    if collision_anticipation_checkpoint:
+        checkpoint = Path(collision_anticipation_checkpoint).expanduser().resolve()
+        if not checkpoint.is_file():
+            raise FileNotFoundError(checkpoint)
+        horizons = tuple(
+            int(value.strip())
+            for value in collision_anticipation_horizons.split(",")
+            if value.strip()
+        )
+        if not horizons or any(horizon < 1 for horizon in horizons):
+            raise ValueError("collision_anticipation_horizons must contain positive integers")
+        anticipation_results = probe_collision_anticipation_remote.remote(
+            checkpoint.read_bytes(),
+            horizons,
+            event_fit_pairs,
+            event_test_pairs,
+            interpret_batch_size,
+        )
+        destination_dir = (
+            Path(output_dir).expanduser().resolve()
+            if output_dir
+            else HERE.parent / "public" / "blocket-league" / "interpretability"
+        )
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = destination_dir / "collision-anticipation-probes.json"
+        destination.write_text(json.dumps(anticipation_results, indent=2), encoding="utf-8")
+        print(json.dumps(anticipation_results, indent=2))
+        print(f"Collision anticipation probe results downloaded to: {destination}")
+        return
+    if collision_anticipation_random_checkpoint:
+        checkpoint = Path(collision_anticipation_random_checkpoint).expanduser().resolve()
+        if not checkpoint.is_file():
+            raise FileNotFoundError(checkpoint)
+        horizons = tuple(
+            int(value.strip())
+            for value in collision_anticipation_horizons.split(",")
+            if value.strip()
+        )
+        control_results = probe_collision_anticipation_random_remote.remote(
+            checkpoint.read_bytes(),
+            horizons,
+            event_fit_pairs,
+            event_test_pairs,
+            interpret_batch_size,
+        )
+        destination_dir = (
+            Path(output_dir).expanduser().resolve()
+            if output_dir
+            else HERE.parent / "public" / "blocket-league" / "interpretability"
+        )
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = destination_dir / "collision-anticipation-random-control.json"
+        destination.write_text(json.dumps(control_results, indent=2), encoding="utf-8")
+        print(json.dumps(control_results, indent=2))
+        print(f"Random-weight control downloaded to: {destination}")
         return
     if trajectory_checkpoint:
         checkpoint = Path(trajectory_checkpoint).expanduser().resolve()

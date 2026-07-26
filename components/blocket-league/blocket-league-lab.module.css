@@ -12,6 +12,71 @@
   color: var(--ink);
 }
 
+.tableOfContents {
+  width: 176px;
+  position: fixed;
+  top: 50%;
+  left: max(24px, calc(50vw - 700px));
+  z-index: 20;
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+}
+
+.tableOfContentsTitle {
+  display: block;
+  margin: 0 0 14px 18px;
+  color: #71717a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tableOfContents ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tableOfContents li {
+  margin: 0;
+}
+
+.tableOfContents a {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 8px 10px 8px 17px;
+  border-left: 2px solid #202024;
+  color: #5f5f67;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.tableOfContents a:hover {
+  border-left-color: #71717a;
+  color: #d4d4d8;
+}
+
+.tableOfContents a.tableOfContentsActive {
+  border-left-color: var(--mint);
+  color: #f4f4f5;
+}
+
+.hero,
+.heroGameIntro,
+.labSection,
+.modelSection,
+.lensSection,
+.interpretabilitySection,
+.liveSection,
+.emergenceSection {
+  scroll-margin-top: 32px;
+}
+
 .header {
   width: min(960px, calc(100% - 48px));
   margin: 0 auto;
@@ -95,10 +160,36 @@
   margin: 0;
   position: relative;
   z-index: 1;
-  font-size: 48px;
+  font-size: 40px;
   font-weight: 800;
   line-height: 52px;
   letter-spacing: -1.2px;
+}
+
+.heroMeta {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  color: #92929a;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.heroMeta a {
+  color: #a1a1aa;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #71717a;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.heroMeta a:hover {
+  color: #d4d4d8;
+  text-decoration-color: #a1a1aa;
 }
 
 .heroCopy {
@@ -128,6 +219,13 @@
 
 .heroGameIntro p {
   margin: 12px 0 0;
+  color: #d4d4d8;
+  font-size: 20px;
+  line-height: 34px;
+}
+
+.heroGameCopy {
+  margin-top: 12px;
   color: #d4d4d8;
   font-size: 20px;
   line-height: 34px;
@@ -203,6 +301,206 @@
   border: 1px solid var(--line);
   background: #090f13;
   box-shadow: 0 26px 80px rgb(0 0 0 / 28%);
+}
+
+.causalSimple {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #080e11;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  box-shadow: 0 26px 80px rgb(0 0 0 / 24%);
+}
+
+.causalSimpleHeader {
+  padding: 22px 38px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+.causalSimpleHeader > div:first-child {
+  max-width: 720px;
+}
+
+.causalSimpleHeader p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.causalSimpleMetric {
+  flex: 0 0 230px;
+  padding-left: 28px;
+  border-left: 1px solid #2b3839;
+}
+
+.causalSimpleMetric strong {
+  display: block;
+  color: var(--mint);
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 560;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.causalSimpleMetric span {
+  margin-top: 9px;
+  display: block;
+  color: #aeb5b3;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.causalSimpleChart {
+  padding: 26px 30px 8px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #0a1114;
+}
+
+.causalSimpleLegend {
+  padding: 0 8px;
+  display: flex;
+  gap: 26px;
+  color: #b7bfbd;
+  font-size: 15px;
+}
+
+.causalSimpleLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.causalSimpleLegend i {
+  width: 24px;
+  height: 3px;
+  display: inline-block;
+  border-radius: 99px;
+  background: #7b8886;
+}
+
+.causalSimpleLegend [data-series="positive"] i {
+  background: var(--mint);
+}
+
+.causalSimpleLegend [data-series="negative"] i {
+  background: var(--gold);
+}
+
+.causalSimpleChart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.causalWriteRegion {
+  fill: rgb(50 213 173 / 5%);
+}
+
+.causalGridline line {
+  stroke: #283537;
+  stroke-width: 1;
+}
+
+.causalGridline text,
+.causalAxisLabel,
+.causalWriteLabel,
+.causalReleaseLabel,
+.causalEndpointPositive,
+.causalEndpointNegative,
+.causalEndpointRandom {
+  font-family: var(--font-sans);
+}
+
+.causalGridline text,
+.causalAxisLabel {
+  fill: #7f8b89;
+  font-size: 14px;
+}
+
+.causalReleaseLine {
+  stroke: #6f7e7b;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 7;
+}
+
+.causalWriteLabel,
+.causalReleaseLabel {
+  fill: #aeb9b6;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.causalPositiveLine,
+.causalNegativeLine,
+.causalRandomLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.causalPositiveLine {
+  stroke: var(--mint);
+}
+
+.causalNegativeLine {
+  stroke: var(--gold);
+}
+
+.causalRandomLine {
+  stroke: #7b8886;
+  stroke-width: 3;
+}
+
+.causalSimpleChart circle {
+  fill: #0a1114;
+  stroke-width: 3;
+}
+
+.causalSimpleChart circle[data-series="positive"] {
+  stroke: var(--mint);
+}
+
+.causalSimpleChart circle[data-series="negative"] {
+  stroke: var(--gold);
+}
+
+.causalSimpleChart circle[data-series="random"] {
+  stroke: #7b8886;
+}
+
+.causalEndpointPositive,
+.causalEndpointNegative,
+.causalEndpointRandom {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.causalEndpointPositive {
+  fill: var(--mint);
+}
+
+.causalEndpointNegative {
+  fill: var(--gold);
+}
+
+.causalEndpointRandom {
+  fill: #9da8a6;
+}
+
+.causalSimpleCaption {
+  margin: 0;
+  padding: 22px 38px 25px;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.55;
 }
 
 .probeProtocol {
@@ -1095,6 +1393,32 @@
   background: var(--line);
 }
 
+.livePlayerClaim {
+  margin: 0;
+  padding: 17px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border-top: 1px solid var(--line);
+  background: #050708;
+  color: #f4f4f5;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.livePlayerClaim span {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 14px rgb(50 213 173 / 55%);
+}
+
 .liveDreamColumn {
   min-width: 0;
   padding: 14px;
@@ -1917,12 +2241,20 @@
   line-height: 34px;
 }
 
+.sectionCopy {
+  max-width: 960px;
+  margin-top: 16px;
+  color: #d4d4d8;
+  font-size: 20px;
+  line-height: 34px;
+}
+
 .sectionHeading > p + p {
   margin-top: 12px;
 }
 
 .simulatorShell {
-  width: min(760px, 100%);
+  width: min(532px, 100%);
   margin: 0 auto;
   display: block;
   border: 1px solid var(--line);
@@ -1936,12 +2268,12 @@
 }
 
 .canvasHeader {
-  min-height: 66px;
+  min-height: 44px;
+  padding-bottom: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  gap: 24px;
 }
 
 .simulatorReset {
@@ -1972,8 +2304,9 @@
 }
 
 .score {
+  min-height: 44px;
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 9px;
   color: #cbd4d1;
   font-family: var(--font-sans);
@@ -2003,7 +2336,7 @@
 }
 
 .canvas {
-  width: min(100%, 680px);
+  width: 100%;
   aspect-ratio: 1;
   display: block;
   margin: 0 auto;
@@ -2315,6 +2648,14 @@
 
 .modelSection {
   padding-bottom: 60px;
+}
+
+.modelResultsCopy {
+  max-width: 960px;
+  margin: 40px 0;
+  color: #d4d4d8;
+  font-size: 20px;
+  line-height: 34px;
 }
 
 .architectureDiagram,
@@ -2976,6 +3317,430 @@
   padding-bottom: 60px;
 }
 
+.emergenceStory {
+  display: grid;
+  gap: 56px;
+}
+
+.depthFigure,
+.pcaFigure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #080e11;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
+}
+
+.depthFigureHeader,
+.pcaFigureHeader {
+  padding: 22px 38px;
+}
+
+.eventProbeHeading h3,
+.geometryHeading h3 {
+  margin: 0 0 12px;
+  color: #f1f1ed;
+  font-family: var(--font-sans);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 36px;
+}
+
+.depthFigureHeader p,
+.pcaFigureHeader p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.depthFigureMetric,
+.pcaMetric {
+  flex: 0 0 220px;
+  padding-left: 28px;
+  border-left: 1px solid #2b3839;
+}
+
+.depthFigureMetric strong,
+.pcaMetric strong {
+  display: block;
+  color: var(--mint);
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 560;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.depthFigureMetric span,
+.pcaMetric span {
+  margin-top: 9px;
+  display: block;
+  color: #aeb5b3;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.depthChart,
+.pcaChart {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #0a1114;
+}
+
+.depthChart {
+  padding: 26px 28px 4px;
+}
+
+.depthLegend {
+  padding: 0 10px;
+  display: flex;
+  gap: 26px;
+  color: #b7bfbd;
+  font-size: 15px;
+}
+
+.depthLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.depthLegend i {
+  width: 24px;
+  height: 3px;
+  display: inline-block;
+  border-radius: 99px;
+}
+
+.depthLegend [data-series="direction"] i {
+  background: var(--mint);
+}
+
+.depthLegend [data-series="speed"] i {
+  background: var(--gold);
+}
+
+.depthChart svg,
+.pcaChart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.depthEmergenceZone {
+  fill: rgb(50 213 173 / 6%);
+}
+
+.depthGridline line {
+  stroke: #293638;
+  stroke-width: 1;
+}
+
+.depthGridline text,
+.depthAxisLabel,
+.depthYLabel,
+.depthEndpointDirection,
+.depthEndpointSpeed {
+  font-family: var(--font-sans);
+}
+
+.depthGridline text,
+.depthAxisLabel {
+  fill: #899492;
+  font-size: 14px;
+}
+
+.depthYLabel {
+  fill: #aab4b1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.depthDirectionLine,
+.depthSpeedLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.depthDirectionLine {
+  stroke: var(--mint);
+}
+
+.depthSpeedLine {
+  stroke: var(--gold);
+}
+
+.depthDirectionPoint,
+.depthSpeedPoint {
+  fill: #0a1114;
+  stroke-width: 3;
+}
+
+.depthDirectionPoint {
+  stroke: var(--mint);
+}
+
+.depthSpeedPoint {
+  stroke: var(--gold);
+}
+
+.depthEndpointDirection,
+.depthEndpointSpeed {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.depthEndpointDirection {
+  fill: var(--mint);
+}
+
+.depthEndpointSpeed {
+  fill: var(--gold);
+}
+
+.depthCaption {
+  margin: 0;
+  padding: 22px 38px 25px;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.eventProbeHeading {
+  max-width: 900px;
+}
+
+.eventProbeHeading h3 {
+  margin-bottom: 16px;
+}
+
+.eventProbeHeading p {
+  margin: 0;
+  color: #b5bbb9;
+  font-size: 20px;
+  line-height: 1.62;
+}
+
+.eventFigure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #080e11;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
+}
+
+.eventFigureHeader {
+  padding: 22px 38px;
+}
+
+.eventFigureHeader p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.eventChart {
+  padding: 24px 28px 2px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: #0a1114;
+}
+
+.eventLegend {
+  padding: 0 10px;
+  display: flex;
+  gap: 26px;
+  color: #b7bfbd;
+  font-size: 15px;
+}
+
+.eventLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.eventLegend i {
+  width: 24px;
+  height: 3px;
+  display: inline-block;
+  border-radius: 99px;
+}
+
+.eventChart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.eventGridline line {
+  stroke: #293638;
+  stroke-width: 1;
+}
+
+.eventGridline text,
+.eventYLabel,
+.eventAxisLabel {
+  font-family: var(--font-sans);
+}
+
+.eventGridline text,
+.eventAxisLabel {
+  fill: #899492;
+  font-size: 14px;
+}
+
+.eventYLabel {
+  fill: #aab4b1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.eventChanceLine {
+  stroke: #6e7977;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 7;
+}
+
+.eventHorizonLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
+}
+
+.eventPoint {
+  fill: #0a1114;
+  stroke-width: 3;
+}
+
+.eventCaption {
+  padding: 22px 38px 25px;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.eventCaption p {
+  margin: 0;
+}
+
+.eventCaption p + p {
+  margin-top: 12px;
+}
+
+.eventCaption strong {
+  color: #eff0ec;
+  font-weight: 620;
+}
+
+.geometryHeading {
+  max-width: 920px;
+}
+
+.geometryHeading h3 {
+  max-width: 900px;
+  margin-bottom: 16px;
+}
+
+.geometryHeading p {
+  max-width: 900px;
+  margin: 0;
+  color: #b5bbb9;
+  font-size: 20px;
+  line-height: 1.62;
+}
+
+.geometryConclusion {
+  max-width: 900px;
+  margin: -20px 0 0;
+  color: #d0d4d2;
+  font-size: 20px;
+  line-height: 1.62;
+}
+
+.pcaChart {
+  padding: 12px 28px 0;
+}
+
+.pcaAxis {
+  stroke: #344244;
+  stroke-width: 1;
+}
+
+.pcaAxisLabel,
+.pcaDirectionLabel,
+.pcaLegendLabel,
+.pcaLegendTitle {
+  font-family: var(--font-sans);
+}
+
+.pcaAxisLabel {
+  fill: #8d9996;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pcaRingLine {
+  fill: rgb(50 213 173 / 5%);
+  stroke: rgb(214 224 220 / 62%);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pcaPoint {
+  stroke: #071013;
+  stroke-width: 4;
+}
+
+.pcaDirectionLabel {
+  fill: #d7ddda;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.pcaLegendLabel {
+  fill: #9ba6a3;
+  font-size: 14px;
+}
+
+.pcaLegendTitle {
+  fill: #b7bfbd;
+  font-size: 15px;
+}
+
+.pcaCaption {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pcaCaption span {
+  padding: 24px 30px;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.pcaCaption span + span {
+  border-left: 1px solid var(--line);
+}
+
+.pcaCaption strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #f0f1ed;
+  font-weight: 620;
+}
+
 .emergenceFigure {
   margin: 0;
   border: 1px solid var(--line);
@@ -3343,64 +4108,6 @@
   font-style: normal;
 }
 
-.lensEquation {
-  min-height: 92px;
-  padding: 18px 24px;
-  display: grid;
-  grid-template-columns: 130px minmax(320px, 1fr) minmax(220px, 0.8fr);
-  align-items: center;
-  gap: 24px;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
-}
-
-.lensEquation > span,
-.lensComparison span {
-  color: var(--mint);
-  font-size: 8px;
-  letter-spacing: 0.12em;
-}
-
-.lensEquation strong {
-  color: #c1ccc8;
-  font-size: 12px;
-  font-weight: 400;
-  text-align: center;
-}
-
-.lensEquation small,
-.lensComparison small {
-  color: #6c7977;
-  font-size: 8px;
-  line-height: 1.55;
-}
-
-.lensComparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
-.lensComparison > div {
-  min-height: 108px;
-  padding: 20px 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-}
-
-.lensComparison > div:first-child {
-  border-right: 1px solid var(--line);
-}
-
-.lensComparison strong {
-  color: #aab6b2;
-  font-size: 10px;
-  font-weight: 400;
-}
-
 .pipeline {
   position: relative;
   display: grid;
@@ -3579,6 +4286,19 @@
   letter-spacing: 0.12em;
 }
 
+.footer a {
+  color: #a1a1aa;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #52525b;
+  text-underline-offset: 4px;
+}
+
+.footer a:hover {
+  color: #f4f4f5;
+  text-decoration-color: #a1a1aa;
+}
+
 @media (max-width: 980px) {
   .architectureDiagram {
     padding: 24px;
@@ -3670,12 +4390,6 @@
     min-height: 210px;
   }
 
-  .lensEquation {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    text-align: center;
-  }
-
   .simulatorShell {
     grid-template-columns: minmax(0, 1fr) 280px;
   }
@@ -3710,7 +4424,154 @@
   }
 }
 
+@media (max-width: 1399px) {
+  .tableOfContents {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
+  .emergenceStory {
+    gap: 40px;
+  }
+
+  .depthFigureHeader,
+  .pcaFigureHeader {
+    padding: 26px 22px 22px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .depthFigureHeader p,
+  .pcaFigureHeader p {
+    font-size: 17px;
+  }
+
+  .depthFigureMetric,
+  .pcaMetric {
+    flex-basis: auto;
+    padding: 0;
+    border-left: 0;
+  }
+
+  .depthChart,
+  .pcaChart {
+    padding-right: 14px;
+    padding-left: 14px;
+    overflow-x: auto;
+  }
+
+  .depthChart svg {
+    min-width: 720px;
+  }
+
+  .pcaChart svg {
+    min-width: 680px;
+  }
+
+  .depthCaption {
+    padding: 20px 22px 22px;
+    font-size: 16px;
+  }
+
+  .eventProbeHeading h3 {
+    font-size: 30px;
+  }
+
+  .eventProbeHeading p {
+    font-size: 19px;
+  }
+
+  .eventFigureHeader {
+    padding: 25px 22px 21px;
+  }
+
+  .eventChart {
+    padding-right: 14px;
+    padding-left: 14px;
+    overflow-x: auto;
+  }
+
+  .eventChart svg {
+    min-width: 720px;
+  }
+
+  .eventLegend {
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+
+  .eventCaption {
+    padding: 20px 22px 22px;
+    font-size: 16px;
+  }
+
+  .geometryHeading h3 {
+    font-size: 30px;
+  }
+
+  .geometryHeading p,
+  .geometryConclusion {
+    font-size: 19px;
+  }
+
+  .geometryConclusion {
+    margin-top: -8px;
+  }
+
+  .pcaCaption {
+    grid-template-columns: 1fr;
+  }
+
+  .pcaCaption span {
+    padding: 20px 22px;
+    font-size: 16px;
+  }
+
+  .pcaCaption span + span {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .causalSimpleHeader {
+    padding: 26px 22px 22px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .causalSimpleHeader p {
+    font-size: 17px;
+  }
+
+  .causalSimpleMetric {
+    flex-basis: auto;
+    padding: 0;
+    border-left: 0;
+  }
+
+  .causalSimpleChart {
+    padding: 22px 14px 4px;
+    overflow-x: auto;
+  }
+
+  .causalSimpleChart svg {
+    min-width: 700px;
+  }
+
+  .causalSimpleLegend {
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+
+  .causalSimpleCaption {
+    padding: 20px 22px 22px;
+    font-size: 16px;
+  }
+
   .interventionFilmHeader {
     align-items: flex-start;
     flex-direction: column;
@@ -3867,6 +4728,11 @@
 
   .livePlayerGrid {
     grid-template-columns: 1fr;
+  }
+
+  .livePlayerClaim {
+    padding: 15px 18px;
+    font-size: 16px;
   }
 
   .probeGrid {
@@ -4053,15 +4919,6 @@
     display: none;
   }
 
-  .lensComparison {
-    grid-template-columns: 1fr;
-  }
-
-  .lensComparison > div:first-child {
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
   .ladder li {
     grid-template-columns: 38px 1fr;
     gap: 12px;
@@ -4126,6 +4983,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .tableOfContents a,
   .jumpLink svg,
   .pad button,
   .switchTrack span,
@@ -4133,4 +4991,27 @@
     transition: none;
   }
 
+}
+
+/* Keep every rendered visualization on the same legible type system as the
+   simple transformer diagram. */
+.root :is(
+  .simulatorShell,
+  .simpleArchitecture,
+  .hallucinationViewer,
+  .lensDiagram,
+  .interpretabilityShell,
+  .emergenceFigure,
+  .livePlayer
+),
+.root :is(
+  .simulatorShell,
+  .simpleArchitecture,
+  .hallucinationViewer,
+  .lensDiagram,
+  .interpretabilityShell,
+  .emergenceFigure,
+  .livePlayer
+) * {
+  font-family: var(--font-sans);
 }
