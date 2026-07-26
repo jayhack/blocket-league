@@ -29,11 +29,11 @@ This performs surprisingly well at next-frame prediction. The video-completion s
 <!-- /block -->
 
 <!-- block:jacobian-lens -->
-Inspired by Anthropic's [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens), we investigate this model's activations to identify directions in activation space that correspond to downstream physical observations such as velocity. Concretely, for each trajectory, we locate the green puck's hidden-state token, predict the next frame, and measure the downstream x/y centroid of the green-puck pixels. We backpropagate each centroid coordinate to that token, then average the resulting gradients over 512 randomized trajectories to produce reusable x- and y-velocity directions. [See the implementation](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_probe.py#L130-L149).
+Inspired by Anthropic's [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens), we ask whether motion is not only readable from the model's hidden states, but causally addressable. We sample 512 trajectories, measure how block-5 activations affect the player disc's next-frame x/y position, and average those gradients into reusable motion directions. These directions are written into activations at inference time; the model's weights remain frozen. [See the implementation](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_probe.py#L130-L149).
 <!-- /block -->
 
 <!-- block:causal-intervention -->
-Write the recovered +x direction for four frames, then stop. By frame 12, the green circle is 3.51 pixels farther right on average across 256 unseen worlds, and 85.9% move in the intended direction. A random activation direction has almost no effect.
+Write the recovered +x direction for four frames, then stop. By frame 12, the player disc is 3.51 pixels farther right on average across 256 unseen worlds, and 85.9% move in the intended direction. A random activation direction has almost no effect.
 <!-- /block -->
 
 <!-- block:brain-surgery -->

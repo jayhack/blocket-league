@@ -447,73 +447,67 @@ export function BlocketLeagueLab({
         <div
           className={styles.lensDiagram}
           role="img"
-          aria-label="Across 512 rendered trajectories, select the block five activation at the green puck's spatial token, run the frozen downstream model to the next rendered frame, backpropagate the green puck centroid's x and y coordinates, and average those gradients into reusable x and y velocity directions."
+          aria-label="Across 512 rendered trajectories, measure how block five activations affect the player disc's next-frame position, then average those effects into reusable horizontal and vertical motion directions."
         >
           <div className={styles.lensFlow}>
             <div className={`${styles.lensStage} ${styles.lensContexts}`}>
               <div className={styles.diagramStageHeader}>
-                <span>SAMPLE</span>
-                <strong>512 worlds</strong>
-                <small>separate fit contexts</small>
+                <span>01</span>
+                <strong>Sample 512 worlds</strong>
               </div>
-              <div className={styles.contextFan} aria-hidden="true">
-                {MODEL_HISTORY.slice(2, 5).map((frame, index) => (
-                  <DiagramFrame key={frame.label} {...frame} label={`world ${index + 1}`} />
-                ))}
+              <div className={styles.lensStageVisual}>
+                <div className={styles.contextFan} aria-hidden="true">
+                  {MODEL_HISTORY.slice(2, 5).map((frame, index) => (
+                    <DiagramFrame key={frame.label} {...frame} label={`world ${index + 1}`} />
+                  ))}
+                </div>
               </div>
+              <p className={styles.lensStageCaption}>
+                Run the frozen model on many randomized motion histories.
+              </p>
             </div>
 
             <ArrowRight className={styles.lensArrow} aria-hidden="true" />
 
-            <div className={`${styles.lensStage} ${styles.lensActivation}`}>
+            <div className={`${styles.lensStage} ${styles.lensTrace}`}>
               <div className={styles.diagramStageHeader}>
-                <span>LOCATE</span>
-                <strong>h<sub>ℓ,p</sub> at block 5</strong>
-                <small>p = green-puck spatial token</small>
+                <span>02</span>
+                <strong>Trace downstream motion</strong>
               </div>
-              <div className={styles.activationGrid} aria-hidden="true">
-                {Array.from({ length: 25 }, (_, index) => (
-                  <span key={index} className={index === 17 ? styles.activationCellActive : undefined} />
-                ))}
+              <div className={`${styles.lensStageVisual} ${styles.lensTraceVisual}`} aria-hidden="true">
+                <div className={styles.activationGrid}>
+                  {Array.from({ length: 25 }, (_, index) => (
+                    <span key={index} className={index === 17 ? styles.activationCellActive : undefined} />
+                  ))}
+                </div>
+                <ArrowRight />
+                <div className={styles.centroidBoard}>
+                  <span className={styles.centroidDisc} />
+                  <span className={styles.centroidCrossX} />
+                  <span className={styles.centroidCrossY} />
+                </div>
               </div>
-              <div className={styles.activationVector}>192D activation</div>
-            </div>
-
-            <div className={styles.jacobianBridge}>
-              <div className={styles.forwardRail}><span>FROZEN FORWARD</span><ArrowRight aria-hidden="true" /></div>
-              <div className={styles.bridgeBlocks}>
-                <span>B6</span><span>NORM</span><span>PIXEL HEAD</span>
-              </div>
-              <div className={styles.backwardRail}><ArrowRight aria-hidden="true" /><span>BACKPROP ∂(x̂, ŷ) / ∂h</span></div>
-            </div>
-
-            <div className={`${styles.lensStage} ${styles.lensReadout}`}>
-              <div className={styles.diagramStageHeader}>
-                <span>MEASURE</span>
-                <strong>Green-puck centroid</strong>
-                <small>next-frame x/y readout from green logits</small>
-              </div>
-              <div className={styles.centroidBoard} aria-hidden="true">
-                <span className={styles.centroidDisc} />
-                <span className={styles.centroidCrossX} />
-                <span className={styles.centroidCrossY} />
-              </div>
-              <div className={styles.centroidCoordinates}>ŷ = (x̂, ŷ)</div>
+              <p className={styles.lensStageCaption}>
+                Backpropagate the player disc&apos;s next-frame x/y position to its block-5 hidden state.
+              </p>
             </div>
 
             <ArrowRight className={styles.lensArrow} aria-hidden="true" />
 
             <div className={`${styles.lensStage} ${styles.lensDirections}`}>
               <div className={styles.diagramStageHeader}>
-                <span>AVERAGE</span>
-                <strong>Velocity directions</strong>
-                <small>emphasize downstream +x / +y movement</small>
+                <span>03</span>
+                <strong>Average one direction</strong>
               </div>
-              <div className={styles.directionAxes} aria-hidden="true">
-                <div><span>v<sub>x</sub></span><i>→</i></div>
-                <div><span>v<sub>y</sub></span><i>↓</i></div>
+              <div className={styles.lensStageVisual}>
+                <div className={styles.directionAxes} aria-hidden="true">
+                  <div><span>v<sub>x</sub></span><i>→</i></div>
+                  <div><span>v<sub>y</sub></span><i>↓</i></div>
+                </div>
               </div>
-              <div className={styles.directionWrite}>h ← h + αv</div>
+              <p className={styles.lensStageCaption}>
+                Average across worlds to get a reusable vector we can write into activations—not weights.
+              </p>
             </div>
           </div>
 

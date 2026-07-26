@@ -300,14 +300,14 @@
 
 .interpretabilityShell {
   border: 1px solid var(--line);
-  background: #090f13;
+  background: #060b14;
   box-shadow: 0 26px 80px rgb(0 0 0 / 28%);
 }
 
 .causalSimple {
   margin: 0;
   border: 1px solid var(--line);
-  background: #080e11;
+  background: #060b14;
   color: var(--ink);
   font-family: var(--font-sans);
   box-shadow: 0 26px 80px rgb(0 0 0 / 24%);
@@ -359,7 +359,7 @@
   padding: 26px 30px 8px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: #0a1114;
+  background: #08111e;
 }
 
 .causalSimpleLegend {
@@ -404,7 +404,7 @@
 }
 
 .causalGridline line {
-  stroke: #283537;
+  stroke: #273746;
   stroke-width: 1;
 }
 
@@ -461,7 +461,7 @@
 }
 
 .causalSimpleChart circle {
-  fill: #0a1114;
+  fill: #08111e;
   stroke-width: 3;
 }
 
@@ -2664,7 +2664,7 @@
 .architectureDiagram,
 .lensDiagram {
   border: 1px solid var(--line);
-  background: #090f13;
+  background: #060b14;
   box-shadow: 0 26px 80px rgb(0 0 0 / 28%);
 }
 
@@ -3053,7 +3053,7 @@
 .lensStage {
   min-width: 0;
   border: 1px solid var(--line);
-  background: #0b1317;
+  background: #07101c;
 }
 
 .architectureStage {
@@ -3165,7 +3165,7 @@
   width: 17%;
   aspect-ratio: 1;
   background: var(--mint);
-  box-shadow: inset 0 0 0 2px #163d38;
+  box-shadow: inset 0 0 0 2px #0b3654;
 }
 
 .diagramPuck {
@@ -3922,28 +3922,41 @@
 }
 
 .lensFlow {
-  padding: 24px;
+  padding: 28px;
   display: grid;
-  grid-template-columns:
-    minmax(145px, 0.7fr) 24px
-    minmax(165px, 0.78fr) minmax(210px, 1.05fr)
-    minmax(165px, 0.78fr) 24px
-    minmax(175px, 0.85fr);
+  grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr);
   align-items: stretch;
+  gap: 10px;
 }
 
 .lensStage {
-  min-height: 266px;
-  padding: 18px;
+  min-height: 360px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
+}
+
+.lensStageVisual {
+  min-height: 166px;
+  margin: 18px 0 14px;
+  display: grid;
+  place-items: center;
+}
+
+.lensStageCaption {
+  margin: auto 0 0;
+  padding-top: 18px;
+  border-top: 1px solid #273746;
+  color: #b7c0c5;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
 .contextFan {
   width: 116px;
   height: 108px;
   position: relative;
-  margin: auto;
+  margin: 0;
 }
 
 .contextFan .diagramFrame {
@@ -3956,22 +3969,23 @@
 .contextFan .diagramFrame:nth-child(2) { left: 18px; top: 12px; }
 .contextFan .diagramFrame:nth-child(3) { left: 36px; top: 0; }
 
-.lensActivation {
+.lensActivation,
+.lensTrace {
   border-color: rgb(33 150 210 / 40%);
 }
 
 .activationGrid {
-  width: 112px;
+  width: 92px;
   aspect-ratio: 1;
-  margin: auto;
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 4px;
 }
 
 .activationGrid span {
-  border: 1px solid #2b3a3d;
-  background: #0e191d;
+  border: 1px solid #294052;
+  background: #091421;
 }
 
 .activationGrid .activationCellActive {
@@ -4043,7 +4057,7 @@
 }
 
 .centroidBoard {
-  width: 112px;
+  width: 92px;
   aspect-ratio: 1;
   position: relative;
   margin: auto;
@@ -4082,11 +4096,22 @@
   border-color: rgb(33 150 210 / 48%);
   background:
     radial-gradient(circle at 50% 58%, rgb(33 150 210 / 10%), transparent 56%),
-    #0b1518;
+    #07111f;
+}
+
+.lensTraceVisual {
+  grid-template-columns: 92px 26px 92px;
+  gap: 18px;
+}
+
+.lensTraceVisual > svg {
+  width: 24px;
+  color: #2196d2;
 }
 
 .directionAxes {
-  margin: auto 0;
+  width: min(170px, 100%);
+  margin: 0;
   display: grid;
   gap: 8px;
 }
