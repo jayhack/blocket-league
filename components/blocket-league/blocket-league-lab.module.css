@@ -3329,7 +3329,7 @@
 .pcaFigure {
   margin: 0;
   border: 1px solid var(--line);
-  background: #080e11;
+  background: #060b14;
   color: var(--ink);
   font-family: var(--font-sans);
   box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
@@ -3389,7 +3389,7 @@
 .pcaChart {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: #0a1114;
+  background: #08111e;
 }
 
 .depthChart {
@@ -3438,7 +3438,7 @@
 }
 
 .depthGridline line {
-  stroke: #293638;
+  stroke: #273746;
   stroke-width: 1;
 }
 
@@ -3480,7 +3480,7 @@
 
 .depthDirectionPoint,
 .depthSpeedPoint {
-  fill: #0a1114;
+  fill: #08111e;
   stroke-width: 3;
 }
 
@@ -3532,7 +3532,7 @@
 .eventFigure {
   margin: 0;
   border: 1px solid var(--line);
-  background: #080e11;
+  background: #060b14;
   color: var(--ink);
   font-family: var(--font-sans);
   box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
@@ -3553,7 +3553,7 @@
   padding: 24px 28px 2px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: #0a1114;
+  background: #08111e;
 }
 
 .eventLegend {
@@ -3585,7 +3585,7 @@
 }
 
 .eventGridline line {
-  stroke: #293638;
+  stroke: #273746;
   stroke-width: 1;
 }
 
@@ -3621,7 +3621,7 @@
 }
 
 .eventPoint {
-  fill: #0a1114;
+  fill: #08111e;
   stroke-width: 3;
 }
 
@@ -3675,7 +3675,7 @@
 }
 
 .pcaAxis {
-  stroke: #344244;
+  stroke: #304354;
   stroke-width: 1;
 }
 
@@ -3701,7 +3701,7 @@
 }
 
 .pcaPoint {
-  stroke: #071013;
+  stroke: #060b14;
   stroke-width: 4;
 }
 
