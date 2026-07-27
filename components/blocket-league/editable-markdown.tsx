@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 
@@ -26,12 +26,21 @@ export function EditableMarkdown({
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pendingSavedMarkdown = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!editing) {
-      setCurrentMarkdown(markdown);
-      setDraft(markdown);
+    if (editing) return;
+
+    if (pendingSavedMarkdown.current !== null) {
+      if (markdown === pendingSavedMarkdown.current) {
+        pendingSavedMarkdown.current = null;
+      } else {
+        return;
+      }
     }
+
+    setCurrentMarkdown(markdown);
+    setDraft(markdown);
   }, [editing, markdown]);
 
   const beginEditing = (event?: MouseEvent<HTMLDivElement>) => {
@@ -57,16 +66,19 @@ export function EditableMarkdown({
     setSaving(true);
     setError(null);
     try {
-      const response = await fetch("/api/local-copy", {
+      const normalizedMarkdown = draft.trim();
+      const response = await fetch("/api/local-copy/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blockId, markdown: draft }),
+        body: JSON.stringify({ blockId, markdown: normalizedMarkdown }),
       });
       const result = await response.json() as { error?: string };
 
       if (!response.ok) throw new Error(result.error ?? "Could not save this block.");
 
-      setCurrentMarkdown(draft.trim());
+      pendingSavedMarkdown.current = normalizedMarkdown;
+      setCurrentMarkdown(normalizedMarkdown);
+      setDraft(normalizedMarkdown);
       setEditing(false);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Could not save this block.");

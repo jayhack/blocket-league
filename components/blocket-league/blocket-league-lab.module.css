@@ -1409,7 +1409,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
   border-top: 1px solid var(--line);
   background: #050505;
   color: #f4f4f5;
@@ -1418,15 +1417,6 @@
   line-height: 1.4;
   text-align: center;
   letter-spacing: -0.01em;
-}
-
-.livePlayerClaim span {
-  width: 8px;
-  height: 8px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--mint);
-  box-shadow: 0 0 14px rgb(33 150 210 / 55%);
 }
 
 .liveDreamColumn {
@@ -1470,10 +1460,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid #405255;
+  border: 1px solid #62c9f5;
   border-radius: 6px;
-  background: #101a1f;
-  color: var(--ink);
+  background: #06111a;
+  color: #a9e4ff;
   font-family: inherit;
   font-size: 20px;
   font-weight: 500;
@@ -1481,8 +1471,9 @@
 }
 
 .liveCanvasOverlay button:hover {
-  border-color: rgb(33 150 210 / 58%);
-  color: var(--mint);
+  border-color: #a9e4ff;
+  background: rgb(33 150 210 / 14%);
+  color: #d9f4ff;
 }
 
 .liveCanvasOverlay svg {
@@ -1531,18 +1522,19 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border: 1px solid #405255;
+  border: 1px solid rgb(98 201 245 / 72%);
   border-radius: 4px;
   background: transparent;
-  color: var(--ink);
+  color: #a9e4ff;
   font: inherit;
   font-size: 15px;
   cursor: pointer;
 }
 
 .liveReset:hover:not(:disabled) {
-  border-color: rgb(33 150 210 / 58%);
-  color: var(--mint);
+  border-color: #a9e4ff;
+  background: rgb(33 150 210 / 12%);
+  color: #d9f4ff;
 }
 
 .liveReset:disabled {
@@ -2274,6 +2266,19 @@
     0 0 44px rgb(255 255 255 / 4%);
 }
 
+.simulatorClaim {
+  margin: 0;
+  padding: 17px 22px;
+  border-top: 1px solid #596166;
+  background: #050505;
+  color: #f4f4f5;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
 .canvasColumn {
   min-width: 0;
   padding: 14px;
@@ -2444,14 +2449,22 @@
 
 .pad button {
   aspect-ratio: 1;
-  border: 1px solid #2b393c;
+  border: 1px solid rgb(98 201 245 / 58%);
   border-radius: 4px;
-  background: #111a1f;
-  color: #aeb9b6;
+  background: #050505;
+  color: #a9e4ff;
   font-size: 24px;
   cursor: pointer;
-  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   touch-action: none;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
 }
 
 .pad button[data-pad-action="1"] {
@@ -2476,16 +2489,19 @@
 
 .pad button:hover,
 .pad button:active {
-  border-color: rgb(33 150 210 / 58%);
-  background: rgb(33 150 210 / 10%);
-  color: var(--mint);
+  border-color: #a9e4ff;
+  background: rgb(33 150 210 / 16%);
+  color: #d9f4ff;
 }
 
 .pad .padActive {
-  border-color: rgb(33 150 210 / 72%);
-  background: rgb(33 150 210 / 14%);
-  color: var(--mint);
-  box-shadow: inset 0 0 0 1px rgb(33 150 210 / 16%), 0 0 14px rgb(33 150 210 / 9%);
+  border-color: #d9f4ff;
+  background: rgb(33 150 210 / 30%);
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgb(169 228 255 / 28%),
+    0 0 24px rgb(33 150 210 / 50%);
+  transform: scale(0.97);
 }
 
 .transport {

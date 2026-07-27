@@ -1,3 +1,5 @@
+import { revalidatePath } from "next/cache";
+
 import { updateBlocketLeagueCopy } from "@/lib/blocket-league/content";
 import { isBlocketLeagueCopyId } from "@/lib/blocket-league/content-types";
 
@@ -30,5 +32,7 @@ export async function POST(request: Request) {
   }
 
   await updateBlocketLeagueCopy(payload.blockId, payload.markdown);
+  revalidatePath("/");
+  revalidatePath("/blocket-league");
   return Response.json({ ok: true });
 }

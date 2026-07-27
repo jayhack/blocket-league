@@ -367,7 +367,7 @@ export function BlocketLeagueLab({
         <EditableMarkdown blockId="hero-intro" markdown={copy["hero-intro"]} editable={editable} className={styles.heroCopy} />
         <EditableMarkdown blockId="hero-sources" markdown={copy["hero-sources"]} editable={editable} className={styles.heroCopy} />
         <div className={styles.heroGameIntro} id="play">
-          <h2>Play the game: &quot;Blocket League&quot;</h2>
+          <h2>blocket league: steer a model&apos;s hallucinations</h2>
           <EditableMarkdown blockId="play-intro" markdown={copy["play-intro"]} editable={editable} className={styles.heroGameCopy} />
         </div>
         <div className={styles.heroGame}>
@@ -404,6 +404,9 @@ export function BlocketLeagueLab({
               aria-label="A galactic square physics arena with a warm solar disc, a blue satellite disc, and a gold goal on the right."
             />
           </div>
+          <p className={styles.simulatorClaim}>
+            A simple collision physics simulation with a car, a puck, and a &quot;goal&quot;.
+          </p>
         </div>
       </section>
 

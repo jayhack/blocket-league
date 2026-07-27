@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Cpu, RotateCcw } from "lucide-react";
 
 import { ACTION_NAMES, ACTION_VECTORS, keyboardAction } from "@/lib/blocket-league/sim";
@@ -429,12 +436,18 @@ export function LiveWorldModel() {
     if (engine) window.setTimeout(() => startPlaybackRef.current(), 0);
   };
 
-  const beginManualAction = (action: number) => {
+  const beginManualAction = (event: ReactPointerEvent<HTMLButtonElement>, action: number) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
     manualActionRef.current = action;
     setInputAction(action);
     if (engineRef.current && !runningRef.current) startPlaybackRef.current();
   };
-  const endManualAction = () => {
+  const endManualAction = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
     manualActionRef.current = null;
     setInputAction(keyboardAction(keysRef.current));
   };
@@ -466,7 +479,19 @@ export function LiveWorldModel() {
         <aside className={styles.liveControls} aria-label="Activation steering controls">
           <div className={styles.pad} aria-label="Hidden-state direction pad">
             {PAD_ACTIONS.map(({ action, label }) => (
-              <button key={action} type="button" className={inputAction === action ? styles.padActive : undefined} aria-label={`${ACTION_NAMES[action]} activation write`} aria-pressed={inputAction === action} data-pad-action={action} onPointerDown={() => beginManualAction(action)} onPointerUp={endManualAction} onPointerCancel={endManualAction} onPointerLeave={endManualAction}>{label}</button>
+              <button
+                key={action}
+                type="button"
+                className={inputAction === action ? styles.padActive : undefined}
+                aria-label={`${ACTION_NAMES[action]} activation write`}
+                aria-pressed={inputAction === action}
+                data-pad-action={action}
+                onPointerDown={(event) => beginManualAction(event, action)}
+                onPointerUp={endManualAction}
+                onPointerCancel={endManualAction}
+              >
+                {label}
+              </button>
             ))}
           </div>
           <button className={styles.liveReset} type="button" onClick={resetDream} disabled={status === "idle" || status === "loading"}><RotateCcw aria-hidden="true" /> Reset</button>
@@ -474,7 +499,6 @@ export function LiveWorldModel() {
         </aside>
       </div>
       <p className={styles.livePlayerClaim}>
-        <span aria-hidden="true" />
         Real-time sampling from a video transformer with steering.
       </p>
     </div>
