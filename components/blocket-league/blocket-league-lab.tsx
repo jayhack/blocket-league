@@ -347,7 +347,7 @@ export function BlocketLeagueLab({
     <main className={styles.root}>
       <TableOfContents />
       <header className={styles.header}>
-        <a className={styles.backLink} href="https://jay.ai/blog">
+        <a className={styles.backLink} href="https://www.jay.ai/writing">
           <ArrowLeft aria-hidden="true" />
           <span>All writing</span>
         </a>
