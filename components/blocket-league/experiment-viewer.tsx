@@ -173,9 +173,21 @@ export function ExperimentViewer({ manifestUrl }: { manifestUrl: string }) {
         ))}
       </div>
 
-      <div className={styles.viewerHeader}>
+      <div
+        className={`${styles.viewerHeader} ${
+          !isObserved && lane.kind === "sample"
+            ? styles.viewerHeaderHallucinating
+            : ""
+        }`}
+      >
         <div>
-          <strong>{isObserved ? "Input" : lane.label}</strong>
+          <strong>
+            {isObserved
+              ? "Input"
+              : lane.kind === "sample"
+                ? "Hallucination"
+                : lane.label}
+          </strong>
           <span>
             {isObserved
               ? `observed ${frame + 1} / ${manifest.contextFrames}`
@@ -252,4 +264,3 @@ export function ExperimentViewer({ manifestUrl }: { manifestUrl: string }) {
     </div>
   );
 }
-

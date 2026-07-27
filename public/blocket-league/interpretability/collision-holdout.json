@@ -1,0 +1,53 @@
+{
+  "experiment": "collision-location-support-holdout",
+  "training": {
+    "control_steps": 30000,
+    "holdout_steps": 30000,
+    "cache_samples_per_model": 16384,
+    "cache_frames": 24,
+    "held_out_quadrant": "upper-right",
+    "seed": 73
+  },
+  "evaluation": {
+    "samples_per_quadrant": 32,
+    "rollout_frames": 12,
+    "metric": "puck_position_error_px"
+  },
+  "summary": {
+    "heldout_model_heldout_error_px": 1.2566658556461334,
+    "heldout_model_seen_error_px": 1.1684494266907375,
+    "matched_control_heldout_error_px": 1.2467970997095108,
+    "heldout_to_seen_ratio": 1.0754987138854961,
+    "heldout_to_control_ratio": 1.007915286247395
+  },
+  "quadrants": [
+    {
+      "quadrant": "upper-left",
+      "held_out": false,
+      "control_puck_error_px": 1.4355701804161072,
+      "holdout_puck_error_px": 1.448753982782364,
+      "error_ratio": 1.0091836696987084
+    },
+    {
+      "quadrant": "upper-right",
+      "held_out": true,
+      "control_puck_error_px": 1.2467970997095108,
+      "holdout_puck_error_px": 1.2566658556461334,
+      "error_ratio": 1.007915286247395
+    },
+    {
+      "quadrant": "lower-left",
+      "held_out": false,
+      "control_puck_error_px": 1.2113768756389618,
+      "holdout_puck_error_px": 1.161904364824295,
+      "error_ratio": 0.9591600997100331
+    },
+    {
+      "quadrant": "lower-right",
+      "held_out": false,
+      "control_puck_error_px": 1.104960486292839,
+      "holdout_puck_error_px": 0.8946899324655533,
+      "error_ratio": 0.8097031012097573
+    }
+  ]
+}

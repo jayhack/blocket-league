@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ExperimentViewer } from "@/components/blocket-league/experiment-viewer";
+import { ExperimentTabs } from "@/components/blocket-league/experiment-tabs";
 import styles from "@/components/blocket-league/experiment.module.css";
 import {
   experiments,
@@ -50,27 +50,20 @@ export default async function ExperimentPage({
         </nav>
 
         <header className={styles.hero}>
-          <p className={styles.eyebrow}>{experiment.eyebrow}</p>
           <h1>{experiment.title}</h1>
           <p className={styles.heroCopy}>{experiment.description}</p>
-
-          <div className={styles.metrics}>
-            {experiment.metrics.map((metric) => (
-              <div className={styles.metric} key={metric.label}>
-                <span>{metric.label}</span>
-                <strong>{metric.value}</strong>
-                <small>{metric.detail}</small>
-              </div>
-            ))}
-          </div>
         </header>
 
-        <section className={styles.sampleSection}>
-          <p className={styles.verdict}>{experiment.verdict}</p>
-          <ExperimentViewer
-            manifestUrl={`${basePath}${experiment.manifestUrl}`}
-          />
-        </section>
+        <ExperimentTabs
+          manifestUrl={`${basePath}${experiment.manifestUrl}`}
+          lossUrl={
+            "lossUrl" in experiment && experiment.lossUrl
+              ? `${basePath}${experiment.lossUrl}`
+              : undefined
+          }
+          metrics={experiment.metrics}
+          verdict={experiment.verdict}
+        />
 
         <footer className={styles.provenance}>
           <div>

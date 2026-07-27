@@ -23,7 +23,6 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.1em;
 }
@@ -38,32 +37,24 @@
 }
 
 .hero {
-  padding: 82px 0 48px;
-}
-
-.eyebrow {
-  margin: 0 0 18px;
-  color: var(--mint);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.17em;
+  padding: 82px 0 0;
 }
 
 .hero h1 {
-  max-width: 920px;
+  max-width: 960px;
   margin: 0;
-  font-size: clamp(48px, 7vw, 92px);
-  font-weight: 450;
-  line-height: 0.98;
-  letter-spacing: -0.065em;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 36px;
+  letter-spacing: -0.6px;
 }
 
 .heroCopy {
   max-width: 720px;
-  margin: 28px 0 0;
+  margin: 16px 0 0;
   color: #a1a1aa;
-  font-size: clamp(17px, 2vw, 22px);
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 24px;
 }
 
 .metrics {
@@ -124,6 +115,277 @@
   color: #d4d4d8;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.experimentPanels {
+  box-shadow: 0 26px 80px rgb(0 0 0 / 28%);
+}
+
+.experimentTabs {
+  min-height: 62px;
+  margin-top: 32px;
+  display: flex;
+  align-items: stretch;
+  gap: 34px;
+  border-bottom: 1px solid var(--line);
+}
+
+.experimentTabs button {
+  min-height: 62px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.experimentTabs .experimentTabActive {
+  box-shadow: inset 0 -1px var(--ink);
+  color: var(--ink);
+}
+
+.experimentPanels > [role="tabpanel"] > .viewer,
+.experimentPanels > [role="tabpanel"] > .lossViewer {
+  border-top: 0;
+  box-shadow: none;
+}
+
+.resultsTable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--line);
+  color: #d4d4d8;
+  font-size: 13px;
+  text-align: left;
+}
+
+.resultsTable th,
+.resultsTable td {
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.resultsTable thead th {
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.resultsTable tbody th {
+  width: 32%;
+  color: #a1a1aa;
+  font-weight: 400;
+}
+
+.resultsTable tbody td:nth-child(2) {
+  width: 20%;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.resultsTable tbody td:last-child {
+  color: #71717a;
+}
+
+.resultsTable tr:last-child th,
+.resultsTable tr:last-child td {
+  border-bottom: 0;
+}
+
+.resultsSummary {
+  max-width: 780px;
+  margin: 24px 0 0;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.lossViewer {
+  margin: 0;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 74% 20%, rgb(33 150 210 / 7%), transparent 22rem),
+    #050505;
+}
+
+.lossHeader {
+  min-height: 92px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.lossHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.lossHeader span,
+.lossHeader strong,
+.lossHeader small,
+.lossHeader h2,
+.lossLegend {
+  font-family: var(--font-mono);
+}
+
+.lossHeader span {
+  color: var(--mint);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+}
+
+.lossHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.lossSelection {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  column-gap: 10px;
+  text-align: right;
+}
+
+.lossSelection span {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.lossSelection strong {
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.lossSelection small {
+  color: #71717a;
+  font-size: 8px;
+}
+
+.lossChart {
+  padding: 22px 20px 6px;
+}
+
+.lossChart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  touch-action: none;
+}
+
+.lossGrid {
+  stroke: #27272a;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.lossAxisLabel {
+  fill: #71717a;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.lossRawLine,
+.lossEmaLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.lossRawLine {
+  stroke: #f47a2c;
+  stroke-width: 1;
+  opacity: 0.34;
+}
+
+.lossEmaLine {
+  stroke-width: 2.5;
+}
+
+.lossCursor {
+  stroke: #52525b;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.lossRawPoint {
+  fill: #f47a2c;
+}
+
+.lossEmaPoint {
+  fill: var(--mint);
+  stroke: #050505;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.lossLegend {
+  min-height: 52px;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.lossLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.lossLegend i {
+  width: 18px;
+  height: 2px;
+  display: inline-block;
+}
+
+.lossEmaSwatch {
+  background: var(--mint);
+}
+
+.lossRawSwatch {
+  background: rgb(244 122 44 / 50%);
+}
+
+.lossLegend small {
+  margin-left: auto;
+  color: #71717a;
+  font-size: 8px;
+}
+
+.lossLoading {
+  min-height: 220px;
+  margin: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
 }
 
 .provenance {
@@ -218,8 +480,8 @@
 }
 
 .viewerHeader {
-  min-height: 76px;
-  padding: 14px 18px;
+  min-height: 68px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -227,10 +489,20 @@
   border-bottom: 1px solid var(--line);
 }
 
+.viewerHeaderHallucinating {
+  box-shadow: inset 0 -2px #ffba32;
+}
+
+.viewerHeaderHallucinating strong {
+  color: #ffba32;
+}
+
 .viewerHeader > div {
   display: flex;
   align-items: baseline;
   gap: 12px;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .viewerHeader strong {
@@ -239,9 +511,13 @@
 }
 
 .viewerHeader span {
+  min-width: 0;
+  overflow: hidden;
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .viewerHeader button,
@@ -309,7 +585,7 @@
 }
 
 .lanePicker button {
-  min-height: 76px;
+  min-height: 68px;
   padding: 14px 18px;
   display: flex;
   flex-direction: column;
@@ -411,24 +687,52 @@
   }
 
   .scenarioPicker button {
-    min-height: 52px;
+    min-height: 68px;
     border-right: 0;
     border-bottom: 1px solid var(--line);
-  }
-
-  .viewerHeader {
-    align-items: flex-start;
-  }
-
-  .viewerHeader > div {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
   }
 
   .stage {
     min-height: auto;
     padding: 14px;
+  }
+
+  .lossHeader {
+    min-height: 78px;
+  }
+
+  .lossChart {
+    padding: 14px 8px 2px;
+  }
+
+  .lossLegend {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 9px 16px;
+  }
+
+  .lossLegend small {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .resultsTable th,
+  .resultsTable td {
+    padding: 13px 10px;
+    font-size: 11px;
+  }
+
+  .resultsTable thead th {
+    font-size: 7px;
+  }
+
+  .resultsTable tbody th {
+    width: 34%;
+  }
+
+  .resultsTable tbody td:nth-child(2) {
+    width: 23%;
+    font-size: 12px;
   }
 
   .footer {

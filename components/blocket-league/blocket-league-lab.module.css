@@ -72,11 +72,13 @@
 .labSection,
 .modelSection,
 .experimentSection,
+.experimentIndexSection,
 .lensSection,
 .interpretabilitySection,
 .liveSection,
 .emergenceSection,
-.directionHoldoutSection {
+.directionHoldoutSection,
+.collisionHoldoutSection {
   scroll-margin-top: 32px;
 }
 
@@ -275,12 +277,14 @@
 .trajectorySection,
 .modelSection,
 .experimentSection,
+.experimentIndexSection,
 .scaleSection,
 .entropySection,
 .liveSection,
 .lensSection,
 .emergenceSection,
 .directionHoldoutSection,
+.collisionHoldoutSection,
 .interpretabilitySection {
   width: min(960px, calc(100% - 48px));
   margin: 0 auto;
@@ -1983,7 +1987,7 @@
 
 .hallucinationViewer {
   display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
+  grid-template-columns: 252px minmax(0, 1fr);
   border: 1px solid var(--line);
   background: #050505;
 }
@@ -1994,9 +1998,23 @@
   border-right: 1px solid var(--line);
 }
 
+.hallucinationTabsHeader {
+  min-height: 78px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  color: #f4f4f5;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .hallucinationTabs button {
   min-height: 68px;
-  padding: 0 22px;
+  padding: 16px 22px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
   border: 0;
   border-bottom: 1px solid var(--line);
   background: transparent;
@@ -2017,11 +2035,16 @@
   box-shadow: inset 3px 0 var(--mint);
 }
 
-.hallucinationTabs p {
-  margin: 22px;
+.hallucinationSampleTitle {
+  display: block;
+}
+
+.hallucinationSampleDescription {
+  display: block;
   color: #a1a1aa;
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 19px;
 }
 
 .hallucinationStage {
@@ -2030,38 +2053,32 @@
 }
 
 .hallucinationVideoHeader {
-  min-height: 64px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
   border-bottom: 1px solid var(--line);
-}
-
-.hallucinationVideoHeader > div {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.hallucinationVideoHeader strong {
-  font-size: 18px;
-}
-
-.hallucinationVideoHeader span {
-  color: #a1a1aa;
-  font-size: 15px;
 }
 
 .hallucinationVideoHeader button {
   min-width: 78px;
-  padding: 9px 14px;
+  margin: 13px 14px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 1px solid #334040;
   background: #0a1112;
   color: #d4d4d8;
   font: inherit;
   font-size: 15px;
   cursor: pointer;
+}
+
+.hallucinationVideoHeader button svg {
+  width: 16px;
+  height: 16px;
 }
 
 .hallucinationVideo {
@@ -2072,47 +2089,132 @@
   image-rendering: pixelated;
 }
 
+.hallucinationViewerCompact .hallucinationVideo {
+  width: 64%;
+  margin: 0 auto;
+}
+
+.hallucinationTimeline {
+  min-width: 0;
+  position: relative;
+  background:
+    linear-gradient(
+      90deg,
+      rgb(33 150 210 / 8%) 0 var(--timeline-boundary),
+      rgb(255 186 50 / 7%) var(--timeline-boundary) 100%
+    );
+}
+
+.hallucinationTimeline::after {
+  width: 1px;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: var(--timeline-boundary);
+  background: #52525b;
+  content: "";
+  pointer-events: none;
+}
+
 .hallucinationTransport {
-  padding: 16px 20px 12px;
-  border-top: 1px solid var(--line);
+  padding: 0 20px 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .hallucinationTransport input {
   width: 100%;
-  accent-color: var(--mint);
+  height: 18px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hallucinationTransport input::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #050505;
+  box-shadow: 0 0 0 1px #3f3f46;
+}
+
+.hallucinationTransport input::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -7px;
+  appearance: none;
+  border: 4px solid #35a7df;
+  border-radius: 50%;
+  background: #050505;
+  box-shadow: 0 0 0 2px #050505, 0 0 0 3px #3f3f46;
+}
+
+.hallucinationTransport input::-moz-range-track {
+  height: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #050505;
+  box-shadow: 0 0 0 1px #3f3f46;
+}
+
+.hallucinationTransport input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: 4px solid #35a7df;
+  border-radius: 50%;
+  background: #050505;
+  box-shadow: 0 0 0 2px #050505, 0 0 0 3px #3f3f46;
 }
 
 .hallucinationPhases {
+  min-height: 42px;
   display: grid;
-  grid-template-columns: 1fr 3fr;
-  border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 2;
+  grid-template-columns: var(--timeline-boundary) 1fr;
 }
 
 .hallucinationPhases > div {
-  padding: 16px 20px;
+  min-height: 42px;
+  padding: 0 14px;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
   color: #777;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .hallucinationPhases > div + div {
-  border-left: 1px solid var(--line);
+  border-left: 0;
 }
 
 .hallucinationPhases .hallucinationPhaseActive {
   color: var(--ink);
-  box-shadow: inset 0 -3px var(--mint);
+}
+
+.hallucinationPhases .hallucinationPhaseActive:first-child strong {
+  color: #35a7df;
+}
+
+.hallucinationPhases .hallucinationPhasePredictedActive {
+  color: var(--ink);
+}
+
+.hallucinationPhasePredictedActive strong {
+  color: #ffba32;
 }
 
 .hallucinationPhases strong {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .hallucinationPhases span {
   color: #a1a1aa;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .trajectoryTransport {
@@ -2688,6 +2790,12 @@
   border-top: 1px solid var(--line);
 }
 
+.experimentIndexSection {
+  padding-top: 60px;
+  padding-bottom: 72px;
+  border-top: 1px solid var(--line);
+}
+
 .experimentCard {
   display: block;
   margin-top: 36px;
@@ -2703,22 +2811,15 @@
   transform: translateY(-2px);
 }
 
-.experimentCardTopline {
-  min-height: 48px;
-  padding: 0 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  border-bottom: 1px solid var(--line);
-  color: var(--mint);
+.experimentCardAction {
+  padding: 15px 20px;
+  border-top: 1px solid var(--line);
+  color: #a1a1aa;
   font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.1em;
-}
-
-.experimentCardTopline span:last-child {
-  color: #a1a1aa;
+  text-align: right;
+  text-transform: uppercase;
 }
 
 .experimentCardBody {
@@ -2776,6 +2877,85 @@
   margin: 0;
   color: var(--gold);
   font-size: 12px;
+}
+
+.experimentIndex {
+  margin-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+.experimentIndexRow {
+  min-height: 104px;
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px 24px;
+  align-items: center;
+  gap: 24px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: #050505;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.experimentIndexRow:hover {
+  border-color: var(--mint);
+  background: #07090c;
+}
+
+.experimentIndexSummary {
+  min-width: 0;
+}
+
+.experimentIndexSummary strong,
+.experimentIndexSummary span {
+  display: block;
+}
+
+.experimentIndexSummary strong {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.experimentIndexSummary span {
+  margin-top: 6px;
+  overflow: hidden;
+  color: #71717a;
+  font-size: 12px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.experimentIndexMetric {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.experimentIndexMetric span,
+.experimentIndexMetric strong {
+  display: block;
+}
+
+.experimentIndexMetric span {
+  color: #71717a;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.experimentIndexMetric strong {
+  margin-top: 7px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.experimentIndexArrow {
+  color: var(--mint);
+  font-size: 18px;
 }
 
 .modelResultsCopy {
@@ -3631,6 +3811,143 @@
 
 .directionHoldoutConclusion a:hover {
   text-decoration: underline;
+}
+
+.directionHoldoutLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}
+
+.directionHoldoutLinks a + a {
+  color: #879390;
+}
+
+.collisionHoldoutSection {
+  border-top: 1px solid var(--line);
+  padding-bottom: 72px;
+}
+
+.collisionHoldoutFigure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #060b14;
+  box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
+}
+
+.collisionHoldoutHeader {
+  padding: 22px 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.collisionHoldoutHeader p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.collisionHoldoutLegend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px 22px;
+  color: #aeb5b3;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.collisionHoldoutLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.collisionHoldoutLegend i {
+  width: 18px;
+  height: 4px;
+  background: #9aa5a4;
+}
+
+.collisionHoldoutLegend [data-series="holdout"] i {
+  background: var(--mint);
+}
+
+.collisionQuadrantGrid {
+  padding: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.collisionQuadrant {
+  min-width: 0;
+  padding: 24px;
+  display: grid;
+  gap: 22px;
+  background: #060b14;
+}
+
+.collisionQuadrant[data-held-out] {
+  background:
+    linear-gradient(rgb(244 122 44 / 7%), rgb(244 122 44 / 7%)),
+    #060b14;
+  outline: 1px dashed rgb(244 122 44 / 50%);
+  outline-offset: -8px;
+}
+
+.collisionQuadrantTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-transform: uppercase;
+}
+
+.collisionQuadrantTitle strong {
+  color: #f4f4f0;
+  font-size: 16px;
+}
+
+.collisionQuadrantTitle span {
+  color: #f4a261;
+  font: 9px var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.collisionBars {
+  display: grid;
+  gap: 13px;
+}
+
+.collisionBars > div {
+  min-height: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 60px;
+  align-items: center;
+  gap: 12px;
+}
+
+.collisionBars span {
+  height: 8px;
+  min-width: 2px;
+  display: block;
+  background: #9aa5a4;
+}
+
+.collisionBars span[data-series="holdout"] {
+  background: var(--mint);
+}
+
+.collisionBars small {
+  color: #b5bfbd;
+  font: 10px var(--font-mono);
+  text-align: right;
 }
 
 .emergenceStory {
@@ -4941,12 +5258,14 @@
   .trajectorySection,
   .modelSection,
   .experimentSection,
+  .experimentIndexSection,
   .scaleSection,
   .entropySection,
   .liveSection,
   .lensSection,
   .emergenceSection,
   .directionHoldoutSection,
+  .collisionHoldoutSection,
   .interpretabilitySection,
   .footer {
     width: min(100% - 30px, 960px);
@@ -4959,6 +5278,19 @@
   .experimentCardBody dl {
     border-top: 1px solid var(--line);
     border-left: 0;
+  }
+
+  .experimentIndexRow {
+    grid-template-columns: minmax(0, 1fr) 20px;
+    gap: 14px;
+  }
+
+  .experimentIndexMetric {
+    display: none;
+  }
+
+  .experimentIndexSummary span {
+    white-space: normal;
   }
 
   .hero {
@@ -4991,6 +5323,21 @@
   .directionHoldoutCaption > div + div {
     border-top: 1px solid var(--line);
     border-left: 0;
+  }
+
+  .collisionHoldoutHeader {
+    padding: 18px 20px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .collisionHoldoutLegend {
+    justify-content: flex-start;
+  }
+
+  .collisionQuadrantGrid {
+    padding: 16px;
+    grid-template-columns: 1fr;
   }
 
   .sectionHeading {
@@ -5039,6 +5386,11 @@
     border-bottom: 1px solid var(--line);
   }
 
+  .hallucinationTabsHeader {
+    min-height: 58px;
+    grid-column: 1 / -1;
+  }
+
   .hallucinationTabs button {
     min-height: 58px;
     padding: 0 8px;
@@ -5051,15 +5403,20 @@
     box-shadow: inset 0 -3px var(--mint);
   }
 
-  .hallucinationTabs p {
+  .hallucinationSampleDescription {
     display: none;
   }
 
   .hallucinationPhases > div {
-    padding: 14px;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 3px;
+    min-height: 42px;
+    padding: 3px 8px;
+    align-items: center;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .hallucinationPhases strong {
+    font-size: 13px;
   }
 
   .emergencePanels {
