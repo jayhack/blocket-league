@@ -649,6 +649,9 @@ def main(
     pixel_model_rollin_fraction: float = 0.35,
     pixel_model_rollin_start_step: int = 3_000,
     pixel_model_rollin_ramp_steps: int = 7_000,
+    excluded_puck_angle_center_degrees: float = -1.0,
+    excluded_puck_angle_width_degrees: float = 0.0,
+    direction_eval_samples_per_bin: int = 0,
     integration_steps: int = 10,
     codec_feature_weight: float = 1.0,
     latent_dim: int = 32,
@@ -661,8 +664,10 @@ def main(
 ) -> None:
     if stage not in {"pixel", "codec", "latent", "direct", "pixel-direct"}:
         raise ValueError("stage must be pixel, codec, latent, direct, or pixel-direct")
-    if preset not in {"micro", "tiny", "small"}:
-        raise ValueError("preset must be micro, tiny, or small")
+    if preset not in {"nano", "micro", "tiny", "small"}:
+        raise ValueError("preset must be nano, micro, tiny, or small")
+    if preset == "nano" and stage != "pixel-direct":
+        raise ValueError("the nano preset is only available for pixel-direct training")
     if prediction_type not in {"x0", "v", "epsilon"}:
         raise ValueError("prediction_type must be x0, v, or epsilon")
     if attention_mode not in {"full", "factorized"}:
@@ -677,6 +682,8 @@ def main(
         raise ValueError("pixel_entity_corruption_fraction must be in [0, 1]")
     if not 0.0 <= pixel_model_rollin_fraction <= 1.0:
         raise ValueError("pixel_model_rollin_fraction must be in [0, 1]")
+    if not 0.0 <= excluded_puck_angle_width_degrees < 360.0:
+        raise ValueError("excluded_puck_angle_width_degrees must be in [0, 360)")
     if stage in {"codec", "latent", "direct", "pixel-direct"} and gpu != "H100":
         raise ValueError("The representation-codec stages currently run on H100")
     if probe_checkpoint:
@@ -1087,6 +1094,13 @@ def main(
                 "model_rollin_fraction": pixel_model_rollin_fraction,
                 "model_rollin_start_step": pixel_model_rollin_start_step,
                 "model_rollin_ramp_steps": pixel_model_rollin_ramp_steps,
+                "excluded_puck_angle_center_degrees": (
+                    None
+                    if excluded_puck_angle_width_degrees == 0.0
+                    else excluded_puck_angle_center_degrees
+                ),
+                "excluded_puck_angle_width_degrees": excluded_puck_angle_width_degrees,
+                "direction_eval_samples_per_bin": direction_eval_samples_per_bin,
                 "late_frame_weight": late_frame_weight,
                 "ema_decay": ema_decay,
                 "warmup_steps": warmup_steps,

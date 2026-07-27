@@ -88,7 +88,8 @@
 .editor textarea {
   width: 100%;
   min-height: 180px;
-  resize: vertical;
+  overflow: hidden;
+  resize: none;
   padding: 14px;
   border: 1px solid #334044;
   border-radius: 3px;

@@ -30,6 +30,7 @@ class PixelDirectConfig:
 
 
 PIXEL_DIRECT_PRESETS: dict[str, dict[str, int]] = {
+    "nano": {"hidden_size": 72, "depth": 4, "heads": 4},
     "micro": {"hidden_size": 128, "depth": 4, "heads": 4},
     "tiny": {"hidden_size": 192, "depth": 6, "heads": 6},
     "small": {"hidden_size": 256, "depth": 8, "heads": 8},

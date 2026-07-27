@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 
@@ -27,6 +27,7 @@ export function EditableMarkdown({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pendingSavedMarkdown = useRef<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (editing) return;
@@ -42,6 +43,15 @@ export function EditableMarkdown({
     setCurrentMarkdown(markdown);
     setDraft(markdown);
   }, [editing, markdown]);
+
+  useLayoutEffect(() => {
+    if (!editing || !textareaRef.current) return;
+
+    const textarea = textareaRef.current;
+    const borderHeight = textarea.offsetHeight - textarea.clientHeight;
+    textarea.style.height = "0px";
+    textarea.style.height = `${textarea.scrollHeight + borderHeight}px`;
+  }, [draft, editing]);
 
   const beginEditing = (event?: MouseEvent<HTMLDivElement>) => {
     if (!editable) return;
@@ -92,10 +102,6 @@ export function EditableMarkdown({
       event.preventDefault();
       cancelEditing();
     }
-    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-      event.preventDefault();
-      void save();
-    }
   };
 
   if (editing) {
@@ -103,9 +109,10 @@ export function EditableMarkdown({
       <div className={`${styles.editor} ${className ?? ""}`} data-markdown-editor>
         <div className={styles.editorLabel}>
           <strong>Edit Markdown</strong>
-          <span>⌘ Enter to save · Esc to cancel</span>
+          <span>Esc to cancel</span>
         </div>
         <textarea
+          ref={textareaRef}
           autoFocus
           aria-label={`Markdown for ${blockId}`}
           value={draft}

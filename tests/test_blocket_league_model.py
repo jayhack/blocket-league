@@ -5,11 +5,17 @@ from types import SimpleNamespace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import numpy as np
 import torch
 from torch import nn
 
 from blocket_league.codec import RepresentationCodec, RepresentationCodecConfig, fake_backbone_outputs
-from blocket_league.data import make_clip, make_passive_clip, passive_kickoff_state
+from blocket_league.data import (
+    PassiveClipDataset,
+    make_clip,
+    make_passive_clip,
+    passive_kickoff_state,
+)
 from blocket_league.direct_model import DirectLatentTransformer, DirectWorldModelConfig
 from blocket_league.latent_model import CausalLatentDiT, FlowMatchingSchedule, LatentWorldModelConfig
 from blocket_league.latent_probe import (
@@ -20,7 +26,11 @@ from blocket_league.latent_probe import (
 )
 from blocket_league.metrics import trajectory_metrics
 from blocket_league.model import DiffusionSchedule, VideoDiT, VideoDiTConfig
-from blocket_league.pixel_direct_model import DirectPixelTransformer, PixelDirectConfig
+from blocket_league.pixel_direct_model import (
+    DirectPixelTransformer,
+    PixelDirectConfig,
+    pixel_direct_config_for_preset,
+)
 from blocket_league.train_pixel_direct import corrupt_player_entities, model_rollin_inputs
 from blocket_league.trajectory_assets import sample_autoregressive
 from blocket_league.train import (
@@ -33,6 +43,40 @@ from blocket_league.train_direct import direct_training_loss, rollout_latents
 
 
 class BlocketLeagueModelTests(unittest.TestCase):
+    def test_nano_pixel_direct_preset_is_about_ten_times_smaller(self) -> None:
+        nano = DirectPixelTransformer(pixel_direct_config_for_preset("nano"))
+        tiny = DirectPixelTransformer(pixel_direct_config_for_preset("tiny"))
+        nano_parameters = sum(parameter.numel() for parameter in nano.parameters())
+        tiny_parameters = sum(parameter.numel() for parameter in tiny.parameters())
+
+        self.assertEqual(nano_parameters, 377_136)
+        self.assertGreater(tiny_parameters / nano_parameters, 9.0)
+        self.assertLess(tiny_parameters / nano_parameters, 11.0)
+
+    def test_passive_clip_can_force_an_initial_puck_direction(self) -> None:
+        clip = make_passive_clip(
+            811,
+            context_frames=8,
+            future_frames=12,
+            puck_angle_center_degrees=45.0,
+            puck_angle_width_degrees=10.0,
+        )
+        velocity = clip["all_state"][0, 6:8]
+        angle = float(np.rad2deg(np.arctan2(velocity[1], velocity[0])))
+        delta = (angle - 45.0 + 180.0) % 360.0 - 180.0
+        self.assertLessEqual(abs(delta), 5.001)
+
+    def test_direction_holdout_filters_the_entire_cached_clip(self) -> None:
+        dataset = PassiveClipDataset(
+            4,
+            seed=59,
+            frames=24,
+            excluded_puck_angle_center_degrees=0.0,
+            excluded_puck_angle_width_degrees=60.0,
+        )
+        for index in range(len(dataset)):
+            self.assertEqual(dataset[index].shape, (24, 3, 64, 64))
+
     def test_player_corruption_matches_split_blob_rollout_failures(self) -> None:
         frames = torch.full((2, 3, 16, 16), 5, dtype=torch.long)
         corrupted = corrupt_player_entities(frames, 1.0)

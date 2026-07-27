@@ -1,0 +1,83 @@
+{
+  "experiment": "puck-direction-support-holdout",
+  "training": {
+    "control_steps": 30000,
+    "holdout_steps": 30000,
+    "cache_samples_per_model": 16384,
+    "cache_frames": 24,
+    "holdout_center_degrees": 0.0,
+    "holdout_width_degrees": 60.0,
+    "seed": 73
+  },
+  "evaluation": {
+    "samples_per_bin": 32,
+    "rollout_frames": 12,
+    "angle_sampling_width_degrees": 30.0,
+    "metric": "puck_position_error_px"
+  },
+  "summary": {
+    "heldout_model_heldout_error_px": 0.9522554576396942,
+    "heldout_model_seen_error_px": 0.9856886586972645,
+    "matched_control_heldout_error_px": 0.5580592006444931,
+    "heldout_to_seen_ratio": 0.9660813779659824,
+    "heldout_to_control_ratio": 1.7063699631507743
+  },
+  "bins": [
+    {
+      "center_degrees": 0,
+      "held_out": true,
+      "control_puck_error_px": 0.5580592006444931,
+      "holdout_puck_error_px": 0.9522554576396942,
+      "error_ratio": 1.7063699631507743
+    },
+    {
+      "center_degrees": 45,
+      "held_out": false,
+      "control_puck_error_px": 1.189857691526413,
+      "holdout_puck_error_px": 1.4409246295690536,
+      "error_ratio": 1.2110058537509294
+    },
+    {
+      "center_degrees": 90,
+      "held_out": false,
+      "control_puck_error_px": 1.141471341252327,
+      "holdout_puck_error_px": 0.9540857076644897,
+      "error_ratio": 0.8358385122641333
+    },
+    {
+      "center_degrees": 135,
+      "held_out": false,
+      "control_puck_error_px": 0.7783320248126984,
+      "holdout_puck_error_px": 0.7340721935033798,
+      "error_ratio": 0.9431350247730467
+    },
+    {
+      "center_degrees": 180,
+      "held_out": false,
+      "control_puck_error_px": 0.9326582551002502,
+      "holdout_puck_error_px": 0.8906796723604202,
+      "error_ratio": 0.9549903916999932
+    },
+    {
+      "center_degrees": 225,
+      "held_out": false,
+      "control_puck_error_px": 0.764333188533783,
+      "holdout_puck_error_px": 0.7661833018064499,
+      "error_ratio": 1.002420558599864
+    },
+    {
+      "center_degrees": 270,
+      "held_out": false,
+      "control_puck_error_px": 1.04394993185997,
+      "holdout_puck_error_px": 0.9636981636285782,
+      "error_ratio": 0.9231268035159406
+    },
+    {
+      "center_degrees": 315,
+      "held_out": false,
+      "control_puck_error_px": 0.8230987191200256,
+      "holdout_puck_error_px": 1.1501769423484802,
+      "error_ratio": 1.3973742342572635
+    }
+  ]
+}

@@ -71,10 +71,12 @@
 .heroGameIntro,
 .labSection,
 .modelSection,
+.experimentSection,
 .lensSection,
 .interpretabilitySection,
 .liveSection,
-.emergenceSection {
+.emergenceSection,
+.directionHoldoutSection {
   scroll-margin-top: 32px;
 }
 
@@ -272,11 +274,13 @@
 .codecSection,
 .trajectorySection,
 .modelSection,
+.experimentSection,
 .scaleSection,
 .entropySection,
 .liveSection,
 .lensSection,
 .emergenceSection,
+.directionHoldoutSection,
 .interpretabilitySection {
   width: min(960px, calc(100% - 48px));
   margin: 0 auto;
@@ -2678,6 +2682,102 @@
   padding-bottom: 60px;
 }
 
+.experimentSection {
+  padding-top: 60px;
+  padding-bottom: 72px;
+  border-top: 1px solid var(--line);
+}
+
+.experimentCard {
+  display: block;
+  margin-top: 36px;
+  border: 1px solid var(--line);
+  background: #050505;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.experimentCard:hover {
+  border-color: var(--mint);
+  transform: translateY(-2px);
+}
+
+.experimentCardTopline {
+  min-height: 48px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  color: var(--mint);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.experimentCardTopline span:last-child {
+  color: #a1a1aa;
+}
+
+.experimentCardBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+}
+
+.experimentCardBody > div {
+  padding: 30px;
+}
+
+.experimentCardBody h3 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 450;
+  letter-spacing: -0.045em;
+}
+
+.experimentCardBody p {
+  max-width: 570px;
+  margin: 17px 0 0;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.experimentCardBody dl {
+  margin: 0;
+  display: grid;
+  border-left: 1px solid var(--line);
+}
+
+.experimentCardBody dl > div {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+}
+
+.experimentCardBody dl > div:last-child {
+  border-bottom: 0;
+}
+
+.experimentCardBody dt {
+  color: #71717a;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.experimentCardBody dd {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+}
+
 .modelResultsCopy {
   max-width: 960px;
   margin: 40px 0;
@@ -3343,6 +3443,194 @@
 
 .emergenceSection {
   padding-bottom: 60px;
+}
+
+.directionHoldoutSection {
+  border-top: 1px solid var(--line);
+  padding-bottom: 72px;
+}
+
+.directionHoldoutFigure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #060b14;
+  color: var(--ink);
+  box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
+}
+
+.directionHoldoutHeader {
+  padding: 22px 38px;
+  border-bottom: 1px solid var(--line);
+}
+
+.directionHoldoutHeader p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.directionHoldoutChart {
+  position: relative;
+  padding: 18px 18px 0;
+}
+
+.directionHoldoutLegend {
+  min-height: 34px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  color: #aeb5b3;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.directionHoldoutLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.directionHoldoutLegend i {
+  width: 20px;
+  height: 3px;
+  display: inline-block;
+  background: #9aa5a4;
+}
+
+.directionHoldoutLegend [data-series="holdout"] i {
+  background: var(--mint);
+}
+
+.directionHoldoutChart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.directionHeldoutBand {
+  fill: rgb(244 122 44 / 9%);
+  stroke: rgb(244 122 44 / 36%);
+  stroke-dasharray: 4 5;
+}
+
+.directionHeldoutLabel {
+  fill: #f4a261;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.directionGridline line {
+  stroke: #273238;
+  stroke-width: 1;
+}
+
+.directionGridline text,
+.directionAxisLabel,
+.directionYLabel {
+  fill: #85918f;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.directionControlLine,
+.directionHoldoutLine {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.directionControlLine {
+  stroke: #9aa5a4;
+}
+
+.directionHoldoutLine {
+  stroke: var(--mint);
+}
+
+.directionControlPoint {
+  fill: #060b14;
+  stroke: #c4ccca;
+  stroke-width: 3;
+}
+
+.directionHoldoutPoint {
+  fill: #060b14;
+  stroke: var(--mint);
+  stroke-width: 3;
+}
+
+.directionHoldoutCaption {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+}
+
+.directionHoldoutCaption > div {
+  min-width: 0;
+  padding: 22px 24px;
+  display: grid;
+  gap: 6px;
+}
+
+.directionHoldoutCaption > div + div {
+  border-left: 1px solid var(--line);
+}
+
+.directionHoldoutCaption span,
+.directionHoldoutCaption small {
+  color: #879390;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.directionHoldoutCaption strong {
+  color: #f4f4f0;
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.directionHoldoutCaption small {
+  color: #f4a261;
+  line-height: 1.5;
+}
+
+.directionHoldoutConclusion {
+  margin-top: 30px;
+  padding-left: 24px;
+  border-left: 3px solid var(--mint);
+}
+
+.directionHoldoutConclusion strong {
+  color: #f4f4f0;
+  font-size: 22px;
+}
+
+.directionHoldoutConclusion p {
+  max-width: 900px;
+  margin: 10px 0 14px;
+  color: #d4d4d8;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.directionHoldoutConclusion a {
+  color: var(--mint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+}
+
+.directionHoldoutConclusion a:hover {
+  text-decoration: underline;
 }
 
 .emergenceStory {
@@ -4652,14 +4940,25 @@
   .codecSection,
   .trajectorySection,
   .modelSection,
+  .experimentSection,
   .scaleSection,
   .entropySection,
   .liveSection,
   .lensSection,
   .emergenceSection,
+  .directionHoldoutSection,
   .interpretabilitySection,
   .footer {
     width: min(100% - 30px, 960px);
+  }
+
+  .experimentCardBody {
+    grid-template-columns: 1fr;
+  }
+
+  .experimentCardBody dl {
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .hero {
@@ -4673,6 +4972,25 @@
 
   .heroGame {
     margin-top: 38px;
+  }
+
+  .directionHoldoutHeader {
+    padding: 18px 20px;
+  }
+
+  .directionHoldoutLegend {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+
+  .directionHoldoutCaption {
+    grid-template-columns: 1fr;
+  }
+
+  .directionHoldoutCaption > div + div {
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .sectionHeading {

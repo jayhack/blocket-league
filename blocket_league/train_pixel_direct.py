@@ -52,6 +52,10 @@ class PixelDirectTrainConfig:
     ema_decay: float = 0.9995
     warmup_steps: int = 500
     min_learning_rate_ratio: float = 0.1
+    excluded_puck_angle_center_degrees: float | None = None
+    excluded_puck_angle_width_degrees: float = 0.0
+    direction_eval_samples_per_bin: int = 0
+    direction_eval_frames: int = 12
 
 
 def _seed_everything(seed: int) -> None:
@@ -100,6 +104,8 @@ def build_pixel_cache(config: PixelDirectTrainConfig, device: torch.device):
         frames=config.cache_frames,
         image_size=config.image_size,
         goal_centered_fraction=config.goal_centered_fraction,
+        excluded_puck_angle_center_degrees=config.excluded_puck_angle_center_degrees,
+        excluded_puck_angle_width_degrees=config.excluded_puck_angle_width_degrees,
     )
     loader = DataLoader(dataset, batch_size=config.cache_batch_size, num_workers=config.workers,
                         pin_memory=device.type == "cuda", persistent_workers=config.workers > 0)
@@ -208,6 +214,8 @@ def held_out_clip(
     device: torch.device,
     *,
     goal_centered: bool = False,
+    puck_angle_center_degrees: float | None = None,
+    puck_angle_width_degrees: float = 0.0,
 ):
     clip = make_passive_clip(
         seed,
@@ -215,6 +223,8 @@ def held_out_clip(
         future_frames=config.rollout_frames,
         image_size=config.image_size,
         goal_centered=goal_centered,
+        puck_angle_center_degrees=puck_angle_center_degrees,
+        puck_angle_width_degrees=puck_angle_width_degrees,
     )
     first = torch.from_numpy(clip["context"].copy()).permute(0, 3, 1, 2)
     rest = torch.from_numpy(clip["target"].copy()).permute(0, 3, 1, 2)
@@ -224,6 +234,59 @@ def held_out_clip(
         "context": video[:config.history_frames],
         "target": video[config.history_frames:],
         "state": states,
+    }
+
+
+@torch.no_grad()
+def evaluate_direction_bins(model, config, device):
+    """Measure short-rollout accuracy for controlled initial puck directions."""
+    palette = palette_tensor(device)
+    frames = min(config.direction_eval_frames, config.rollout_frames)
+    samples = config.direction_eval_samples_per_bin
+    bins: list[dict[str, float | int | bool]] = []
+    for bin_index, center in enumerate(range(0, 360, 45)):
+        totals: dict[str, float] = {}
+        for start in range(0, samples, min(config.batch_size, 8)):
+            count = min(config.batch_size, 8, samples - start)
+            items = [
+                held_out_clip(
+                    config.seed + 4_000_000 + bin_index * 100_000 + start + offset,
+                    config,
+                    device,
+                    puck_angle_center_degrees=float(center),
+                    puck_angle_width_degrees=30.0,
+                )
+                for offset in range(count)
+            ]
+            context_video = torch.stack([item["context"] for item in items])
+            target = torch.stack([item["target"][:frames] for item in items])
+            states = torch.stack([item["state"][:frames] for item in items])
+            context = frames_to_classes(context_video, palette)
+            prediction_classes = rollout_pixel_classes(model, context, frames)
+            prediction = classes_to_video(prediction_classes, palette)
+            metrics = trajectory_metrics(prediction, states)
+            metrics["pixel_mse"] = float((prediction - target).square().mean())
+            for name, value in metrics.items():
+                totals[name] = totals.get(name, 0.0) + value * count
+        delta = None
+        if config.excluded_puck_angle_center_degrees is not None:
+            delta = (
+                center - config.excluded_puck_angle_center_degrees + 180.0
+            ) % 360.0 - 180.0
+        bins.append({
+            "center_degrees": center,
+            "samples": samples,
+            "held_out": bool(
+                delta is not None
+                and abs(delta) < config.excluded_puck_angle_width_degrees / 2.0
+            ),
+            **{name: value / samples for name, value in totals.items()},
+        })
+    return {
+        "bins": bins,
+        "frames": frames,
+        "angle_sampling_width_degrees": 30.0,
+        "samples_per_bin": samples,
     }
 
 
@@ -322,6 +385,8 @@ def train_pixel_direct(config: PixelDirectTrainConfig) -> dict[str, Any]:
         raise ValueError("entity_corruption_fraction must be in [0, 1]")
     if not 0.0 <= config.model_rollin_fraction <= 1.0:
         raise ValueError("model_rollin_fraction must be in [0, 1]")
+    if config.excluded_puck_angle_width_degrees > 0.0 and config.goal_centered_fraction > 0.0:
+        raise ValueError("direction holdout requires goal_centered_fraction=0")
     _seed_everything(config.seed)
     output_dir = Path(config.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -404,6 +469,11 @@ def train_pixel_direct(config: PixelDirectTrainConfig) -> dict[str, Any]:
     evaluation = evaluate_pixel_direct(ema_model, config, device)
     post_goal_evaluation = evaluate_pixel_direct(ema_model, config, device, goal_centered=True)
     corruption_recovery = evaluate_corruption_recovery(ema_model, config, device)
+    direction_evaluation = (
+        evaluate_direction_bins(ema_model, config, device)
+        if config.direction_eval_samples_per_bin > 0
+        else None
+    )
     checkpoint = {"kind": "passive_direct_pixel_world_model", "model": ema_model.state_dict(),
                   "model_config": model_config.to_dict(), "train_config": asdict(config),
                   "palette": np.stack(tuple(PALETTE.values())), "step": config.steps}
@@ -418,6 +488,7 @@ def train_pixel_direct(config: PixelDirectTrainConfig) -> dict[str, Any]:
                "evaluation": evaluation,
                "post_goal_evaluation": post_goal_evaluation,
                "corruption_recovery": corruption_recovery,
+               "direction_evaluation": direction_evaluation,
                "artifacts": ["checkpoint.pt", "rollout.png", "rollout-long.png", "train.jsonl", "summary.json"]}
     (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary

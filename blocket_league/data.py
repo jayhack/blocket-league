@@ -88,6 +88,8 @@ def make_passive_clip(
     future_frames: int = 64,
     image_size: int = 64,
     goal_centered: bool = False,
+    puck_angle_center_degrees: float | None = None,
+    puck_angle_width_degrees: float = 0.0,
 ) -> dict[str, np.ndarray]:
     """Render collision-rich physics without an action or control channel.
 
@@ -106,6 +108,14 @@ def make_passive_clip(
     env = BlocketLeagueEnv(seed=seed, config=config)
     def random_velocity(low: float = 0.22, high: float = 0.72) -> np.ndarray:
         angle = rng.uniform(0.0, 2.0 * np.pi)
+        speed = rng.uniform(low, high)
+        return (speed * np.asarray((np.cos(angle), np.sin(angle)))).astype(np.float32)
+
+    def sampled_puck_velocity(low: float = 0.22, high: float = 0.72) -> np.ndarray:
+        if puck_angle_center_degrees is None:
+            return random_velocity(low, high)
+        half_width = np.deg2rad(puck_angle_width_degrees) / 2.0
+        angle = np.deg2rad(puck_angle_center_degrees) + rng.uniform(-half_width, half_width)
         speed = rng.uniform(low, high)
         return (speed * np.asarray((np.cos(angle), np.sin(angle)))).astype(np.float32)
 
@@ -155,9 +165,11 @@ def make_passive_clip(
             tangent = np.asarray((-axis[1], axis[0]), dtype=np.float32)
             state.player_velocity = axis * rng.uniform(0.28, 0.68) + tangent * rng.uniform(-0.12, 0.12)
             state.puck_velocity = -axis * rng.uniform(0.18, 0.58) + tangent * rng.uniform(-0.12, 0.12)
+            if puck_angle_center_degrees is not None:
+                state.puck_velocity = sampled_puck_velocity(0.18, 0.58)
         else:
             state.player_velocity = random_velocity()
-            state.puck_velocity = random_velocity()
+            state.puck_velocity = sampled_puck_velocity()
         state.player_velocity = state.player_velocity.astype(np.float32)
         state.puck_velocity = state.puck_velocity.astype(np.float32)
 
@@ -185,6 +197,7 @@ def make_passive_clip(
         "frames": frame_array,
         "context": frame_array[:context_frames],
         "target": frame_array[context_frames:],
+        "all_state": state_array,
         "state": state_array[context_frames:],
         "events": np.asarray(events[context_frames - 1 :], dtype=np.int64),
     }
@@ -201,14 +214,22 @@ class PassiveClipDataset:
         frames: int = 24,
         image_size: int = 64,
         goal_centered_fraction: float = 0.0,
+        excluded_puck_angle_center_degrees: float | None = None,
+        excluded_puck_angle_width_degrees: float = 0.0,
     ):
         if not 0.0 <= goal_centered_fraction <= 1.0:
             raise ValueError("goal_centered_fraction must be in [0, 1]")
+        if excluded_puck_angle_width_degrees < 0.0 or excluded_puck_angle_width_degrees >= 360.0:
+            raise ValueError("excluded_puck_angle_width_degrees must be in [0, 360)")
+        if excluded_puck_angle_width_degrees > 0.0 and goal_centered_fraction > 0.0:
+            raise ValueError("direction-holdout caches cannot include goal-centered clips")
         self.samples = samples
         self.seed = seed
         self.frames = frames
         self.image_size = image_size
         self.goal_centered_fraction = goal_centered_fraction
+        self.excluded_puck_angle_center_degrees = excluded_puck_angle_center_degrees
+        self.excluded_puck_angle_width_degrees = excluded_puck_angle_width_degrees
 
     def __len__(self) -> int:
         return self.samples
@@ -216,15 +237,33 @@ class PassiveClipDataset:
     def __getitem__(self, index: int) -> object:
         import torch
 
-        clip_seed = self.seed + index * 9_973
-        curriculum_rng = np.random.default_rng(clip_seed ^ 0x5A17)
-        clip = make_passive_clip(
-            clip_seed,
-            context_frames=1,
-            future_frames=self.frames - 1,
-            image_size=self.image_size,
-            goal_centered=curriculum_rng.random() < self.goal_centered_fraction,
-        )
+        base_seed = self.seed + index * 9_973
+        clip = None
+        for attempt in range(128):
+            clip_seed = base_seed + attempt * 1_000_003
+            curriculum_rng = np.random.default_rng(clip_seed ^ 0x5A17)
+            candidate = make_passive_clip(
+                clip_seed,
+                context_frames=1,
+                future_frames=self.frames - 1,
+                image_size=self.image_size,
+                goal_centered=curriculum_rng.random() < self.goal_centered_fraction,
+            )
+            if self.excluded_puck_angle_center_degrees is None:
+                clip = candidate
+                break
+            velocities = candidate["all_state"][:, 6:8]
+            speed = np.linalg.norm(velocities, axis=1)
+            angle = np.rad2deg(np.arctan2(velocities[:, 1], velocities[:, 0]))
+            delta = (angle - self.excluded_puck_angle_center_degrees + 180.0) % 360.0 - 180.0
+            moving_in_wedge = (speed > 0.05) & (
+                np.abs(delta) < self.excluded_puck_angle_width_degrees / 2.0
+            )
+            if not np.any(moving_in_wedge):
+                clip = candidate
+                break
+        if clip is None:
+            raise RuntimeError(f"could not sample direction-filtered clip for index {index}")
         video = torch.from_numpy(clip["frames"].copy()).permute(0, 3, 1, 2).float()
         return video.div(127.5).sub(1.0)
 

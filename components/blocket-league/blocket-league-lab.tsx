@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -17,9 +18,11 @@ import {
   type WorldState,
 } from "@/lib/blocket-league/sim";
 import type { BlocketLeagueCopy } from "@/lib/blocket-league/content-types";
+import { experiments } from "@/lib/blocket-league/experiments";
 
 import styles from "./blocket-league-lab.module.css";
 import { EditableMarkdown } from "./editable-markdown";
+import { DirectionHoldoutViewer } from "./direction-holdout-viewer";
 import { HallucinationFilmstrip } from "./hallucination-filmstrip";
 import { LiveWorldModel } from "./live-world-model";
 import { PhysicsEmergenceViewer } from "./physics-emergence-viewer";
@@ -34,6 +37,8 @@ const TABLE_OF_CONTENTS = [
   { id: "intervention", label: "Causal intervention" },
   { id: "game-surgery", label: "Brain surgery" },
   { id: "representations", label: "Representation geometry" },
+  { id: "experiments", label: "Appendix A · Model scale" },
+  { id: "direction-holdout", label: "Appendix B · Direction holdout" },
 ] as const;
 
 const MODEL_HISTORY = [
@@ -46,6 +51,8 @@ const MODEL_HISTORY = [
   { label: "t−1", player: [53, 38], puck: [49, 51] },
   { label: "t", player: [58, 33], puck: [45, 55] },
 ] as const;
+
+const NANO_EXPERIMENT = experiments[0];
 
 function GitHubMark() {
   return (
@@ -367,7 +374,7 @@ export function BlocketLeagueLab({
         <EditableMarkdown blockId="hero-intro" markdown={copy["hero-intro"]} editable={editable} className={styles.heroCopy} />
         <EditableMarkdown blockId="hero-sources" markdown={copy["hero-sources"]} editable={editable} className={styles.heroCopy} />
         <div className={styles.heroGameIntro} id="play">
-          <h2>blocket league: steer a model&apos;s hallucinations</h2>
+          <h2>Steer a Video Model&apos;s Hallucinations.</h2>
           <EditableMarkdown blockId="play-intro" markdown={copy["play-intro"]} editable={editable} className={styles.heroGameCopy} />
         </div>
         <div className={styles.heroGame}>
@@ -554,6 +561,83 @@ export function BlocketLeagueLab({
           <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <PhysicsEmergenceViewer />
+      </section>
+
+      <section
+        className={styles.experimentSection}
+        id="experiments"
+        aria-labelledby="experiments-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="experiments-title">
+              Appendix A: How small can the world model get?
+            </h2>
+          </div>
+          <p className={styles.sectionCopy}>
+            We retrained the same passive pixel-prediction recipe at one tenth
+            the parameter count. Each registered run gets a durable URL tied to
+            its checkpoint, metrics, and held-out sample rollouts.
+          </p>
+        </div>
+
+        <Link className={styles.experimentCard} href={`/${NANO_EXPERIMENT.slug}`}>
+          <div className={styles.experimentCardTopline}>
+            <span>{NANO_EXPERIMENT.eyebrow}</span>
+            <span>OPEN SAMPLE VIEWER →</span>
+          </div>
+          <div className={styles.experimentCardBody}>
+            <div>
+              <h3>{NANO_EXPERIMENT.title}</h3>
+              <p>{NANO_EXPERIMENT.verdict}</p>
+            </div>
+            <dl>
+              <div>
+                <dt>Parameters</dt>
+                <dd>{NANO_EXPERIMENT.checkpoint.parameters.toLocaleString()}</dd>
+              </div>
+              <div>
+                <dt>Checkpoint</dt>
+                <dd>1.54 MB</dd>
+              </div>
+              <div>
+                <dt>64-frame error</dt>
+                <dd>19.10 px</dd>
+              </div>
+            </dl>
+          </div>
+        </Link>
+      </section>
+
+      <section className={styles.directionHoldoutSection} id="direction-holdout" aria-labelledby="direction-holdout-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="direction-holdout-title">
+              Appendix B: Does the model generalize to a direction it never saw?
+            </h2>
+          </div>
+          <p className={styles.sectionCopy}>
+            We trained two new transformers from scratch. For one, we rejected every
+            24-frame training world in which the puck ever moved within ±30° of due east;
+            the matched control saw all angles. Then we forced both models to begin in
+            eight controlled direction bins and rolled each one forward from pixels.
+          </p>
+        </div>
+        <DirectionHoldoutViewer />
+        <div className={styles.directionHoldoutConclusion}>
+          <strong>It generalizes, but not for free.</strong>
+          <p>
+            The held-out model reaches 0.95 px error due east—almost identical to its
+            0.99 px average on directions present in training. There is no catastrophic
+            hole at the missing angle. Yet the all-angle control reaches 0.56 px on the
+            same due-east worlds, so removing that 60° wedge costs 71% in accuracy.
+            The transformer has learned a direction-general transition rule, while direct
+            experience still sharpens it.
+          </p>
+          <a href="https://github.com/jayhack/blocket-league/blob/main/docs/direction-holdout-experiment.md" target="_blank" rel="noreferrer">
+            Read the complete protocol and reproduction commands ↗
+          </a>
+        </div>
       </section>
 
       <footer className={styles.footer}>

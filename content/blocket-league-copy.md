@@ -1,9 +1,5 @@
 <!-- block:hero-intro -->
-This lab demonstrates that video models can learn compact, interpretable, and causal representations of physical phenomena purely from raw video.
-
- We train a video transformer on a toy physics world with simple collision/scoring dynamics, then identify causal directions in activation space for velocity and use them to steer the model's hallucinations to form a video game.
-
-The transformer learns a shared, approximate transition function for states drawn from the simulator’s distribution.
+This lab demonstrates that video models can learn compact, interpretable, and causal representations of physical phenomena purely from raw video. We train a video transformer on a toy physics world with simple collision/scoring dynamics, then identify causal directions in activation space for velocity and use them to steer the model's hallucinations to form a video game.
 <!-- /block -->
 
 <!-- block:hero-sources -->
