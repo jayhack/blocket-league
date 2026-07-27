@@ -52,10 +52,10 @@ function eventPath(layers: Array<{ depth: number; roc_auc: number }>) {
 
 const collisionSeries = [
   { horizon: 1, color: "#f4f4f0", result: collisionAnticipation.results["1"] },
-  { horizon: 2, color: "#8fe7d1", result: collisionAnticipation.results["2"] },
-  { horizon: 4, color: "#32d5ad", result: collisionAnticipation.results["4"] },
-  { horizon: 6, color: "#eeb53e", result: collisionAnticipation.results["6"] },
-  { horizon: 8, color: "#e47b5f", result: collisionAnticipation.results["8"] },
+  { horizon: 2, color: "#8bd5f2", result: collisionAnticipation.results["2"] },
+  { horizon: 4, color: "#2196d2", result: collisionAnticipation.results["4"] },
+  { horizon: 6, color: "#f4a261", result: collisionAnticipation.results["6"] },
+  { horizon: 8, color: "#e85d2a", result: collisionAnticipation.results["8"] },
 ] as const;
 
 export function PhysicsEmergenceViewer() {
@@ -224,7 +224,7 @@ export function PhysicsEmergenceViewer() {
 
         <figcaption className={styles.eventCaption}>
           <p>
-            <strong>At block 5, collisions remain predictable eight frames—or 400 ms—ahead.</strong>{" "}
+            <strong>At block 5, collisions remain predictable eight frames, or 400 ms, ahead.</strong>{" "}
             Held-out AUROC reaches {eightFrameResult.layers[5].roc_auc.toFixed(3)} at that horizon,
             compared with {eightFrameResult.raw_trajectory_linear_baseline.roc_auc.toFixed(3)} for a
             linear readout of the explicit pixel trajectory.
@@ -243,7 +243,7 @@ export function PhysicsEmergenceViewer() {
         <h3>Lastly, motion directions form a “ring” in activation space.</h3>
         <p>
           When we sample clips with puck motion in a given direction, then average activations
-          in block 5, we see that the directions in activation space form a ring—and that we
+          in block 5, we see that the directions in activation space form a ring, and that we
           progress along this ring as we change the angle θ of motion, represented here by color.
         </p>
       </div>

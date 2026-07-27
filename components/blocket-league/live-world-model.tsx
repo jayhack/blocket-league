@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Cpu, RotateCcw } from "lucide-react";
 
 import { ACTION_NAMES, ACTION_VECTORS, keyboardAction } from "@/lib/blocket-league/sim";
@@ -15,6 +22,7 @@ const PAD_ACTIONS = [
 ] as const;
 const MOVEMENT_KEYS = new Set(["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft", "w", "a", "s", "d"]);
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const MODEL_DOWNLOAD_MB = (14_882_370 / 1024 / 1024).toFixed(1);
 
 function isTextEditingActive(target: EventTarget | null) {
   if (document.querySelector("[data-markdown-editor]")) return true;
@@ -51,6 +59,8 @@ type EngineState = {
   starterContext: Float32Array;
   history: Float32Array;
   lastGreenSpatialMask: Float32Array;
+  steeringPhase: number;
+  lastRequestedAction: number;
 };
 
 type DreamFrame = { image: ImageData; action: number };
@@ -129,25 +139,35 @@ export function greenTokenMask(
   const pixels = manifest.frameSize * manifest.frameSize;
   const offset = history.length - pixels;
   const spatial = new Float32Array(manifest.gridSize * manifest.gridSize);
-  let peakMass = 0;
+  let mass = 0;
+  let centroidX = 0;
+  let centroidY = 0;
   for (let pixel = 0; pixel < pixels; pixel += 1) {
     const value = Number(history[offset + pixel]);
     if (value !== 5 && value !== 6) continue;
-    const patchX = Math.floor((pixel % manifest.frameSize) / manifest.patchSize);
-    const patchY = Math.floor(Math.floor(pixel / manifest.frameSize) / manifest.patchSize);
-    const patch = patchY * manifest.gridSize + patchX;
-    spatial[patch] += 1;
-    peakMass = Math.max(peakMass, spatial[patch]);
+    mass += 1;
+    centroidX += (pixel % manifest.frameSize) + 0.5;
+    centroidY += Math.floor(pixel / manifest.frameSize) + 0.5;
+  }
+  if (mass > 0) {
+    const patchX = Math.min(
+      manifest.gridSize - 1,
+      Math.max(0, Math.floor((centroidX / mass) / manifest.patchSize)),
+    );
+    const patchY = Math.min(
+      manifest.gridSize - 1,
+      Math.max(0, Math.floor((centroidY / mass) / manifest.patchSize)),
+    );
+    spatial[patchY * manifest.gridSize + patchX] = 1;
   }
   const mask = new Float32Array(manifest.historyFrames * manifest.gridSize * manifest.gridSize);
-  const routed = peakMass > 0 ? spatial : fallback;
+  const routed = mass > 0 ? spatial : fallback;
   if (!routed?.some((value) => value > 0)) return { mask, spatial };
-  const scale = peakMass > 0 ? peakMass : Math.max(...routed);
   const timeOffset = (manifest.historyFrames - 1) * manifest.gridSize * manifest.gridSize;
   for (let patch = 0; patch < routed.length; patch += 1) {
-    mask[timeOffset + patch] = routed[patch] / Math.max(scale, 1);
+    mask[timeOffset + patch] = routed[patch];
   }
-  return { mask, spatial: peakMass > 0 ? spatial : routed.slice() };
+  return { mask, spatial: mass > 0 ? spatial : routed.slice() };
 }
 
 function steeringVector(action: number, manifest: LiveManifest) {
@@ -166,6 +186,12 @@ function steeringVector(action: number, manifest: LiveManifest) {
 
 async function generateFrame(engine: EngineState, action: number) {
   const { manifest, runtime } = engine;
+  if (action !== engine.lastRequestedAction) {
+    engine.steeringPhase = 0;
+    engine.lastRequestedAction = action;
+  }
+  const appliedAction = action !== 0 && engine.steeringPhase < 4 ? action : 0;
+  engine.steeringPhase = action === 0 ? 0 : (engine.steeringPhase + 1) % 8;
   const greenRouting = greenTokenMask(engine.history, manifest, engine.lastGreenSpatialMask);
   const result = await engine.dynamics.run({
     pixel_history: new runtime.Tensor(
@@ -175,7 +201,7 @@ async function generateFrame(engine: EngineState, action: number) {
     ),
     intervention: new runtime.Tensor(
       "float32",
-      steeringVector(action, manifest),
+      steeringVector(appliedAction, manifest),
       [1, manifest.hiddenSize],
     ),
     intervention_mask: new runtime.Tensor(
@@ -299,6 +325,8 @@ export function LiveWorldModel() {
         starterContext: starterContext.slice(),
         history: starterContext.slice(),
         lastGreenSpatialMask: greenTokenMask(starterContext, manifest).spatial,
+        steeringPhase: 0,
+        lastRequestedAction: 0,
       };
       setLoadProgress(1);
       setStatus("ready");
@@ -396,6 +424,8 @@ export function LiveWorldModel() {
     if (engine) {
       engine.history = engine.starterContext.slice();
       engine.lastGreenSpatialMask = greenTokenMask(engine.history, engine.manifest).spatial;
+      engine.steeringPhase = 0;
+      engine.lastRequestedAction = 0;
     }
     keysRef.current.clear();
     manualActionRef.current = null;
@@ -406,12 +436,18 @@ export function LiveWorldModel() {
     if (engine) window.setTimeout(() => startPlaybackRef.current(), 0);
   };
 
-  const beginManualAction = (action: number) => {
+  const beginManualAction = (event: ReactPointerEvent<HTMLButtonElement>, action: number) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
     manualActionRef.current = action;
     setInputAction(action);
     if (engineRef.current && !runningRef.current) startPlaybackRef.current();
   };
-  const endManualAction = () => {
+  const endManualAction = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
     manualActionRef.current = null;
     setInputAction(keyboardAction(keysRef.current));
   };
@@ -428,7 +464,12 @@ export function LiveWorldModel() {
             <canvas ref={canvasRef} className={styles.liveCanvas} width={64} height={64} role="img" aria-label="Live frames imagined by the passive Blocket League pixel transformer." />
             {(status === "idle" || status === "loading" || status === "error") && (
               <div className={styles.liveCanvasOverlay}>
-                {status === "idle" && <button type="button" onClick={loadModel}><Cpu aria-hidden="true" /> Load local model</button>}
+                {status === "idle" && (
+                  <button type="button" onClick={loadModel}>
+                    <Cpu aria-hidden="true" />
+                    Load in-browser model ({MODEL_DOWNLOAD_MB} MB)
+                  </button>
+                )}
                 {status === "loading" && <><div className={styles.liveLoadTrack} aria-label={`${Math.round(loadProgress * 100)} percent loaded`}><span style={{ width: `${loadProgress * 100}%` }} /></div><strong>{Math.round(loadProgress * 100)}%</strong></>}
                 {status === "error" && <button type="button" onClick={loadModel}><RotateCcw aria-hidden="true" /> Try again</button>}
               </div>
@@ -438,7 +479,19 @@ export function LiveWorldModel() {
         <aside className={styles.liveControls} aria-label="Activation steering controls">
           <div className={styles.pad} aria-label="Hidden-state direction pad">
             {PAD_ACTIONS.map(({ action, label }) => (
-              <button key={action} type="button" className={inputAction === action ? styles.padActive : undefined} aria-label={`${ACTION_NAMES[action]} activation write`} aria-pressed={inputAction === action} data-pad-action={action} onPointerDown={() => beginManualAction(action)} onPointerUp={endManualAction} onPointerCancel={endManualAction} onPointerLeave={endManualAction}>{label}</button>
+              <button
+                key={action}
+                type="button"
+                className={inputAction === action ? styles.padActive : undefined}
+                aria-label={`${ACTION_NAMES[action]} activation write`}
+                aria-pressed={inputAction === action}
+                data-pad-action={action}
+                onPointerDown={(event) => beginManualAction(event, action)}
+                onPointerUp={endManualAction}
+                onPointerCancel={endManualAction}
+              >
+                {label}
+              </button>
             ))}
           </div>
           <button className={styles.liveReset} type="button" onClick={resetDream} disabled={status === "idle" || status === "loading"}><RotateCcw aria-hidden="true" /> Reset</button>
@@ -446,8 +499,7 @@ export function LiveWorldModel() {
         </aside>
       </div>
       <p className={styles.livePlayerClaim}>
-        <span aria-hidden="true" />
-        Real-time sampling from a video transformer—with steering.
+        Real-time sampling from a video transformer with steering.
       </p>
     </div>
   );

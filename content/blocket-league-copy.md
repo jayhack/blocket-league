@@ -2,6 +2,8 @@
 This lab demonstrates that video models can learn compact, interpretable, and causal representations of physical phenomena purely from raw video.
 
  We train a video transformer on a toy physics world with simple collision/scoring dynamics, then identify causal directions in activation space for velocity and use them to steer the model's hallucinations to form a video game.
+
+The transformer learns a shared, approximate transition function for states drawn from the simulator’s distribution.
 <!-- /block -->
 
 <!-- block:hero-sources -->
@@ -13,15 +15,17 @@ Put the puck in the goal! This game is the real-time output of a 3.67M-parameter
 <!-- /block -->
 
 <!-- block:play-takeaway -->
-This is not perfect but clearly has grokked the basic physics of the game, including collisions, bounces, and scoring. Notably, the model has never explicitly observed keyboard directions—these were discovered post-hoc via interpretability methods (J-Lens).
+This is not perfect but clearly has grokked the basic physics of the game, including collisions, bounces, and scoring. Notably, the model has never explicitly observed keyboard directions. These were discovered post-hoc via interpretability methods (J-Lens).
 <!-- /block -->
 
 <!-- block:dataset -->
-Blocket League is a deliberately simple world with two freely moving discs, elastic collisions, wall bounces, and a goal. We sample *M* trajectories with randomized initial positions and velocities, then record the resulting frames. Neither disc is controlled by an agent or player, so every trajectory is an autonomous physics sample.
+Blocket League is a deliberately simple world with two freely moving discs, elastic collisions, wall bounces, and a goal. We render a fixed training cache of 16,384 autonomous worlds, each 24 frames long, with randomized initial positions and velocities. Neither disc is controlled by an agent or player, so every trajectory is a passive physics sample.
 <!-- /block -->
 
 <!-- block:model -->
 For this lab, we train an 8-frame × 16 × 16-patch pixel transformer. Pixel transformers, following the autoregressive formulation of the [Image Transformer](https://arxiv.org/abs/1802.05751), ingest raw pixels and learn to predict the next frame. Our complete 3.67M-parameter architecture lives in [one Python file](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py).
+
+The exported checkpoint is trained for 42,000 optimizer steps (30,000 base minibatches plus a 12,000-step recovery fine-tune) at batch size 16. Because training windows are sampled with replacement, conventional epochs do not apply. Across both phases, the model sees 672,000 sampled histories and 5.376 million next-frame prediction targets. Rendering the caches, training, and evaluation take 24 minutes and 59 seconds on one H100.
 <!-- /block -->
 
 <!-- block:model-results -->
@@ -29,11 +33,11 @@ This performs surprisingly well at next-frame prediction. The video-completion s
 <!-- /block -->
 
 <!-- block:jacobian-lens -->
-Inspired by Anthropic's [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens), we investigate this model's activations to identify directions in activation space that correspond to downstream physical observations such as velocity. Concretely, for each trajectory, we locate the green puck's hidden-state token, predict the next frame, and measure the downstream x/y centroid of the green-puck pixels. We backpropagate each centroid coordinate to that token, then average the resulting gradients over 512 randomized trajectories to produce reusable x- and y-velocity directions. [See the implementation](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_probe.py#L130-L149).
+Inspired by Anthropic's [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens), we ask whether motion is not only readable from the model's hidden states, but causally addressable. We sample 512 trajectories, measure how block-5 activations affect the player disc's next-frame x/y position, and average those gradients into reusable motion directions. These directions are written into activations at inference time; the model's weights remain frozen. [See the implementation](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_probe.py#L130-L149).
 <!-- /block -->
 
 <!-- block:causal-intervention -->
-Write the recovered +x direction for four frames, then stop. By frame 12, the green circle is 3.51 pixels farther right on average across 256 unseen worlds, and 85.9% move in the intended direction. A random activation direction has almost no effect.
+Write the recovered +x direction for four frames, then stop. By frame 12, the player disc is 3.51 pixels farther right on average across 256 unseen worlds, and 85.9% move in the intended direction. A random activation direction has almost no effect.
 <!-- /block -->
 
 <!-- block:brain-surgery -->

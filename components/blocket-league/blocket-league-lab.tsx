@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
-  CircleDot,
   RotateCcw,
 } from "lucide-react";
 
@@ -46,6 +46,17 @@ const MODEL_HISTORY = [
   { label: "t−1", player: [53, 38], puck: [49, 51] },
   { label: "t", player: [58, 33], puck: [45, 55] },
 ] as const;
+
+function GitHubMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 16 16">
+      <path
+        fill="currentColor"
+        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.6-.18-3.28-.8-3.28-3.56 0-.79.28-1.43.74-1.93-.07-.18-.32-.91.07-1.9 0 0 .6-.19 1.97.74A6.9 6.9 0 0 1 8 4.8a6.9 6.9 0 0 1 1.8.24c1.37-.93 1.97-.74 1.97-.74.39.99.14 1.72.07 1.9.46.5.74 1.14.74 1.93 0 2.77-1.69 3.38-3.3 3.56.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+      />
+    </svg>
+  );
+}
 
 function TableOfContents() {
   const [activeId, setActiveId] = useState<string>(TABLE_OF_CONTENTS[0].id);
@@ -123,25 +134,54 @@ function DiagramFrame({
   );
 }
 
-function drawDisc(
+function drawCelestialDisc(
   context: CanvasRenderingContext2D,
   position: Vec2,
   radius: number,
-  fill: string,
-  core: string,
+  colors: {
+    glow: string;
+    outer: string;
+    middle: string;
+    inner: string;
+    core: string;
+  },
 ) {
-  context.shadowColor = "rgba(0, 0, 0, 0.38)";
-  context.shadowBlur = 0.022;
-  context.shadowOffsetY = 0.012;
-  context.fillStyle = fill;
+  const halo = context.createRadialGradient(
+    position.x,
+    position.y,
+    radius * 0.25,
+    position.x,
+    position.y,
+    radius * 1.75,
+  );
+  halo.addColorStop(0, colors.glow);
+  halo.addColorStop(0.55, colors.glow.replace(/[\d.]+\)$/, "0.12)"));
+  halo.addColorStop(1, "rgba(0, 0, 0, 0)");
+  context.fillStyle = halo;
+  context.beginPath();
+  context.arc(position.x, position.y, radius * 1.75, 0, Math.PI * 2);
+  context.fill();
+
+  const surface = context.createRadialGradient(
+    position.x - radius * 0.18,
+    position.y - radius * 0.18,
+    radius * 0.04,
+    position.x,
+    position.y,
+    radius,
+  );
+  surface.addColorStop(0, colors.core);
+  surface.addColorStop(0.28, colors.inner);
+  surface.addColorStop(0.64, colors.middle);
+  surface.addColorStop(1, colors.outer);
+  context.fillStyle = surface;
   context.beginPath();
   context.arc(position.x, position.y, radius, 0, Math.PI * 2);
   context.fill();
-  context.shadowColor = "transparent";
-  context.fillStyle = core;
-  context.beginPath();
-  context.arc(position.x, position.y, radius * 0.31, 0, Math.PI * 2);
-  context.fill();
+
+  context.strokeStyle = "rgba(235, 242, 244, 0.42)";
+  context.lineWidth = radius * 0.045;
+  context.stroke();
 }
 
 function drawWorld(
@@ -161,34 +201,51 @@ function drawWorld(
   if (!context) return;
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, side, side);
-  context.fillStyle = "#070b10";
+  context.fillStyle = "#010106";
   context.fillRect(0, 0, side, side);
 
   context.save();
   context.scale(side, side);
   const wall = WORLD.wall;
-  context.fillStyle = "#0c2022";
-  context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
-  const wash = context.createRadialGradient(0.5, 0.5, 0.05, 0.5, 0.5, 0.7);
-  wash.addColorStop(0, "rgba(29, 78, 77, 0.16)");
-  wash.addColorStop(1, "rgba(3, 9, 12, 0.08)");
-  context.fillStyle = wash;
+  context.fillStyle = "#020610";
   context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
 
-  context.strokeStyle = "rgba(78, 132, 126, 0.32)";
-  context.lineWidth = 0.006;
+  context.save();
+  context.beginPath();
+  context.rect(wall, wall, 1 - wall * 2, 1 - wall * 2);
+  context.clip();
+  const wash = context.createRadialGradient(0.48, 0.44, 0.03, 0.5, 0.5, 0.72);
+  wash.addColorStop(0, "rgba(4, 93, 173, 0.28)");
+  wash.addColorStop(0.48, "rgba(0, 43, 111, 0.18)");
+  wash.addColorStop(1, "rgba(1, 2, 10, 0)");
+  context.fillStyle = wash;
+  context.fillRect(wall, wall, 1 - wall * 2, 1 - wall * 2);
+  context.restore();
+
+  context.strokeStyle = "rgba(91, 151, 183, 0.3)";
+  context.lineWidth = 0.004;
   context.beginPath();
   context.moveTo(0.5, wall);
   context.lineTo(0.5, 1 - wall);
   context.stroke();
+  context.strokeStyle = "rgba(113, 177, 200, 0.38)";
   context.beginPath();
   context.arc(0.5, 0.5, 0.14, 0, Math.PI * 2);
   context.stroke();
 
-  context.fillStyle = "rgba(238, 181, 62, 0.18)";
+  const goalGlow = context.createLinearGradient(
+    1 - wall - 0.06,
+    0,
+    1 - wall + 0.01,
+    0,
+  );
+  goalGlow.addColorStop(0, "rgba(227, 35, 20, 0)");
+  goalGlow.addColorStop(0.55, "rgba(239, 53, 20, 0.34)");
+  goalGlow.addColorStop(1, "rgba(255, 194, 55, 0.64)");
+  context.fillStyle = goalGlow;
   context.fillRect(1 - wall - 0.045, WORLD.goalLow, 0.045, WORLD.goalHigh - WORLD.goalLow);
-  context.strokeStyle = "#526769";
-  context.lineWidth = 0.013;
+  context.strokeStyle = "#073f9c";
+  context.lineWidth = 0.018;
   context.lineCap = "round";
   context.beginPath();
   context.moveTo(wall, wall);
@@ -203,20 +260,39 @@ function drawWorld(
   context.lineTo(1 - wall, 1 - wall);
   context.stroke();
 
-  context.strokeStyle = "#eeb53e";
-  context.lineWidth = 0.012;
+  context.strokeStyle = "#15bce4";
+  context.lineWidth = 0.006;
+  context.stroke();
+
+  context.strokeStyle = "#ffba32";
+  context.lineWidth = 0.014;
   context.beginPath();
   context.moveTo(1 - wall, WORLD.goalLow);
   context.lineTo(1 - wall, WORLD.goalHigh);
   context.stroke();
 
-  drawDisc(context, state.playerPosition, WORLD.playerRadius, "#32d5ad", "#0b3934");
-  drawDisc(context, state.puckPosition, WORLD.puckRadius, "#eff2e9", "#96a199");
+  drawCelestialDisc(context, state.playerPosition, WORLD.playerRadius, {
+    glow: "rgba(255, 72, 18, 0.4)",
+    outer: "#e32613",
+    middle: "#ff5b1a",
+    inner: "#ffb52f",
+    core: "#ffe173",
+  });
+  drawCelestialDisc(context, state.puckPosition, WORLD.puckRadius, {
+    glow: "rgba(20, 157, 255, 0.38)",
+    outer: "#123fa8",
+    middle: "#087ac7",
+    inner: "#19c4e8",
+    core: "#b7f4ff",
+  });
 
   if (state.resetTimer > 0) {
-    context.fillStyle = "rgba(7, 11, 16, 0.72)";
+    context.fillStyle = "rgba(1, 2, 8, 0.82)";
     context.fillRect(0.3, 0.43, 0.4, 0.14);
-    context.fillStyle = "#eeb53e";
+    context.strokeStyle = "#0b8dd0";
+    context.lineWidth = 0.003;
+    context.strokeRect(0.3, 0.43, 0.4, 0.14);
+    context.fillStyle = "#ffc53d";
     context.font = "500 0.055px system-ui, sans-serif";
     context.textAlign = "center";
     context.textBaseline = "middle";
@@ -271,12 +347,13 @@ export function BlocketLeagueLab({
     <main className={styles.root}>
       <TableOfContents />
       <header className={styles.header}>
-        <a className={styles.wordmark} href="#top" aria-label="Blocket League home">
-          <span className={styles.mark}><CircleDot aria-hidden="true" /></span>
-          <span>BLOCKET LEAGUE</span>
+        <a className={styles.backLink} href="https://www.jay.ai/writing">
+          <ArrowLeft aria-hidden="true" />
+          <span>All writing</span>
         </a>
         <a className={styles.githubLink} href="https://github.com/jayhack/blocket-league" target="_blank" rel="noreferrer">
-          GitHub ↗
+          <GitHubMark />
+          <span>GitHub</span>
         </a>
       </header>
 
@@ -290,7 +367,7 @@ export function BlocketLeagueLab({
         <EditableMarkdown blockId="hero-intro" markdown={copy["hero-intro"]} editable={editable} className={styles.heroCopy} />
         <EditableMarkdown blockId="hero-sources" markdown={copy["hero-sources"]} editable={editable} className={styles.heroCopy} />
         <div className={styles.heroGameIntro} id="play">
-          <h2>Play the game: &quot;Blocket League&quot;</h2>
+          <h2>blocket league: steer a model&apos;s hallucinations</h2>
           <EditableMarkdown blockId="play-intro" markdown={copy["play-intro"]} editable={editable} className={styles.heroGameCopy} />
         </div>
         <div className={styles.heroGame}>
@@ -324,9 +401,12 @@ export function BlocketLeagueLab({
               ref={canvasRef}
               className={styles.canvas}
               role="img"
-              aria-label="A square physics arena with a teal disc, a white disc, and a gold goal on the right."
+              aria-label="A galactic square physics arena with a warm solar disc, a blue satellite disc, and a gold goal on the right."
             />
           </div>
+          <p className={styles.simulatorClaim}>
+            A simple collision physics simulation with a car, a puck, and a &quot;goal&quot;.
+          </p>
         </div>
       </section>
 
@@ -382,73 +462,64 @@ export function BlocketLeagueLab({
         <div
           className={styles.lensDiagram}
           role="img"
-          aria-label="Across 512 rendered trajectories, select the block five activation at the green puck's spatial token, run the frozen downstream model to the next rendered frame, backpropagate the green puck centroid's x and y coordinates, and average those gradients into reusable x and y velocity directions."
+          aria-label="Across 512 rendered trajectories, measure how block five activations affect the player disc's next-frame position, then average those effects into reusable horizontal and vertical motion directions."
         >
           <div className={styles.lensFlow}>
             <div className={`${styles.lensStage} ${styles.lensContexts}`}>
               <div className={styles.diagramStageHeader}>
-                <span>SAMPLE</span>
-                <strong>512 worlds</strong>
-                <small>separate fit contexts</small>
+                <strong>Sample 512 worlds</strong>
               </div>
-              <div className={styles.contextFan} aria-hidden="true">
-                {MODEL_HISTORY.slice(2, 5).map((frame, index) => (
-                  <DiagramFrame key={frame.label} {...frame} label={`world ${index + 1}`} />
-                ))}
+              <div className={styles.lensStageVisual}>
+                <div className={styles.contextFan} aria-hidden="true">
+                  {MODEL_HISTORY.slice(2, 5).map((frame, index) => (
+                    <DiagramFrame key={frame.label} {...frame} label={`world ${index + 1}`} />
+                  ))}
+                </div>
               </div>
+              <p className={styles.lensStageCaption}>
+                Run the frozen model on many randomized motion histories.
+              </p>
             </div>
 
             <ArrowRight className={styles.lensArrow} aria-hidden="true" />
 
-            <div className={`${styles.lensStage} ${styles.lensActivation}`}>
+            <div className={`${styles.lensStage} ${styles.lensTrace}`}>
               <div className={styles.diagramStageHeader}>
-                <span>LOCATE</span>
-                <strong>h<sub>ℓ,p</sub> at block 5</strong>
-                <small>p = green-puck spatial token</small>
+                <strong>Trace downstream motion</strong>
               </div>
-              <div className={styles.activationGrid} aria-hidden="true">
-                {Array.from({ length: 25 }, (_, index) => (
-                  <span key={index} className={index === 17 ? styles.activationCellActive : undefined} />
-                ))}
+              <div className={`${styles.lensStageVisual} ${styles.lensTraceVisual}`} aria-hidden="true">
+                <div className={styles.activationGrid}>
+                  {Array.from({ length: 25 }, (_, index) => (
+                    <span key={index} className={index === 17 ? styles.activationCellActive : undefined} />
+                  ))}
+                </div>
+                <ArrowRight />
+                <div className={styles.centroidBoard}>
+                  <span className={styles.centroidDisc} />
+                  <span className={styles.centroidCrossX} />
+                  <span className={styles.centroidCrossY} />
+                </div>
               </div>
-              <div className={styles.activationVector}>192D activation</div>
-            </div>
-
-            <div className={styles.jacobianBridge}>
-              <div className={styles.forwardRail}><span>FROZEN FORWARD</span><ArrowRight aria-hidden="true" /></div>
-              <div className={styles.bridgeBlocks}>
-                <span>B6</span><span>NORM</span><span>PIXEL HEAD</span>
-              </div>
-              <div className={styles.backwardRail}><ArrowRight aria-hidden="true" /><span>BACKPROP ∂(x̂, ŷ) / ∂h</span></div>
-            </div>
-
-            <div className={`${styles.lensStage} ${styles.lensReadout}`}>
-              <div className={styles.diagramStageHeader}>
-                <span>MEASURE</span>
-                <strong>Green-puck centroid</strong>
-                <small>next-frame x/y readout from green logits</small>
-              </div>
-              <div className={styles.centroidBoard} aria-hidden="true">
-                <span className={styles.centroidDisc} />
-                <span className={styles.centroidCrossX} />
-                <span className={styles.centroidCrossY} />
-              </div>
-              <div className={styles.centroidCoordinates}>ŷ = (x̂, ŷ)</div>
+              <p className={styles.lensStageCaption}>
+                Backpropagate the player disc&apos;s next-frame x/y position to its block-5 hidden state.
+              </p>
             </div>
 
             <ArrowRight className={styles.lensArrow} aria-hidden="true" />
 
             <div className={`${styles.lensStage} ${styles.lensDirections}`}>
               <div className={styles.diagramStageHeader}>
-                <span>AVERAGE</span>
-                <strong>Velocity directions</strong>
-                <small>emphasize downstream +x / +y movement</small>
+                <strong>Average one direction</strong>
               </div>
-              <div className={styles.directionAxes} aria-hidden="true">
-                <div><span>v<sub>x</sub></span><i>→</i></div>
-                <div><span>v<sub>y</sub></span><i>↓</i></div>
+              <div className={styles.lensStageVisual}>
+                <div className={styles.directionAxes} aria-hidden="true">
+                  <div><span>v<sub>x</sub></span><i>→</i></div>
+                  <div><span>v<sub>y</sub></span><i>↓</i></div>
+                </div>
               </div>
-              <div className={styles.directionWrite}>h ← h + αv</div>
+              <p className={styles.lensStageCaption}>
+                Average across worlds to get a reusable vector we can write into the residual-stream activations.
+              </p>
             </div>
           </div>
 
