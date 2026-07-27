@@ -2,6 +2,8 @@
 This lab demonstrates that video models can learn compact, interpretable, and causal representations of physical phenomena purely from raw video.
 
  We train a video transformer on a toy physics world with simple collision/scoring dynamics, then identify causal directions in activation space for velocity and use them to steer the model's hallucinations to form a video game.
+
+The transformer learns a shared, approximate transition function for states drawn from the simulator’s distribution.
 <!-- /block -->
 
 <!-- block:hero-sources -->
@@ -13,7 +15,7 @@ Put the puck in the goal! This game is the real-time output of a 3.67M-parameter
 <!-- /block -->
 
 <!-- block:play-takeaway -->
-This is not perfect but clearly has grokked the basic physics of the game, including collisions, bounces, and scoring. Notably, the model has never explicitly observed keyboard directions—these were discovered post-hoc via interpretability methods (J-Lens).
+This is not perfect but clearly has grokked the basic physics of the game, including collisions, bounces, and scoring. Notably, the model has never explicitly observed keyboard directions. These were discovered post-hoc via interpretability methods (J-Lens).
 <!-- /block -->
 
 <!-- block:dataset -->
@@ -23,7 +25,7 @@ Blocket League is a deliberately simple world with two freely moving discs, elas
 <!-- block:model -->
 For this lab, we train an 8-frame × 16 × 16-patch pixel transformer. Pixel transformers, following the autoregressive formulation of the [Image Transformer](https://arxiv.org/abs/1802.05751), ingest raw pixels and learn to predict the next frame. Our complete 3.67M-parameter architecture lives in [one Python file](https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py).
 
-The exported checkpoint is trained for 42,000 optimizer steps—30,000 base minibatches plus a 12,000-step recovery fine-tune—at batch size 16. Because training windows are sampled with replacement, conventional epochs do not apply. Across both phases, the model sees 672,000 sampled histories and 5.376 million next-frame prediction targets. Rendering the caches, training, and evaluation take 24 minutes and 59 seconds on one H100.
+The exported checkpoint is trained for 42,000 optimizer steps (30,000 base minibatches plus a 12,000-step recovery fine-tune) at batch size 16. Because training windows are sampled with replacement, conventional epochs do not apply. Across both phases, the model sees 672,000 sampled histories and 5.376 million next-frame prediction targets. Rendering the caches, training, and evaluation take 24 minutes and 59 seconds on one H100.
 <!-- /block -->
 
 <!-- block:model-results -->

@@ -15,6 +15,7 @@ const PAD_ACTIONS = [
 ] as const;
 const MOVEMENT_KEYS = new Set(["ArrowUp", "ArrowRight", "ArrowDown", "ArrowLeft", "w", "a", "s", "d"]);
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const MODEL_DOWNLOAD_MB = (14_882_370 / 1024 / 1024).toFixed(1);
 
 function isTextEditingActive(target: EventTarget | null) {
   if (document.querySelector("[data-markdown-editor]")) return true;
@@ -450,7 +451,12 @@ export function LiveWorldModel() {
             <canvas ref={canvasRef} className={styles.liveCanvas} width={64} height={64} role="img" aria-label="Live frames imagined by the passive Blocket League pixel transformer." />
             {(status === "idle" || status === "loading" || status === "error") && (
               <div className={styles.liveCanvasOverlay}>
-                {status === "idle" && <button type="button" onClick={loadModel}><Cpu aria-hidden="true" /> Load local model</button>}
+                {status === "idle" && (
+                  <button type="button" onClick={loadModel}>
+                    <Cpu aria-hidden="true" />
+                    Load in-browser model ({MODEL_DOWNLOAD_MB} MB)
+                  </button>
+                )}
                 {status === "loading" && <><div className={styles.liveLoadTrack} aria-label={`${Math.round(loadProgress * 100)} percent loaded`}><span style={{ width: `${loadProgress * 100}%` }} /></div><strong>{Math.round(loadProgress * 100)}%</strong></>}
                 {status === "error" && <button type="button" onClick={loadModel}><RotateCcw aria-hidden="true" /> Try again</button>}
               </div>
@@ -469,7 +475,7 @@ export function LiveWorldModel() {
       </div>
       <p className={styles.livePlayerClaim}>
         <span aria-hidden="true" />
-        Real-time sampling from a video transformer—with steering.
+        Real-time sampling from a video transformer with steering.
       </p>
     </div>
   );

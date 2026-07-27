@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Blocket League — World Model Lab",
+  title: "Blocket League | World Model Lab",
   description:
     "A pixel transformer learns a tiny physical world, reveals a writable velocity direction, and becomes playable through activation edits.",
 };

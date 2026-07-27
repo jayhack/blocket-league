@@ -224,7 +224,7 @@ export function PhysicsEmergenceViewer() {
 
         <figcaption className={styles.eventCaption}>
           <p>
-            <strong>At block 5, collisions remain predictable eight frames—or 400 ms—ahead.</strong>{" "}
+            <strong>At block 5, collisions remain predictable eight frames, or 400 ms, ahead.</strong>{" "}
             Held-out AUROC reaches {eightFrameResult.layers[5].roc_auc.toFixed(3)} at that horizon,
             compared with {eightFrameResult.raw_trajectory_linear_baseline.roc_auc.toFixed(3)} for a
             linear readout of the explicit pixel trajectory.
@@ -243,7 +243,7 @@ export function PhysicsEmergenceViewer() {
         <h3>Lastly, motion directions form a “ring” in activation space.</h3>
         <p>
           When we sample clips with puck motion in a given direction, then average activations
-          in block 5, we see that the directions in activation space form a ring—and that we
+          in block 5, we see that the directions in activation space form a ring, and that we
           progress along this ring as we change the angle θ of motion, represented here by color.
         </p>
       </div>

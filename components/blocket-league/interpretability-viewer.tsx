@@ -374,7 +374,7 @@ export function InterpretabilityViewer() {
               const value = task === "collision"
                 ? selected.classification[target.id]?.auc
                 : selected.continuousR2[target.id];
-              return <div key={target.id}><dt>{target.label}</dt><dd>{value === undefined ? "—" : formatScore(value)}</dd></div>;
+              return <div key={target.id}><dt>{target.label}</dt><dd>{value === undefined ? "N/A" : formatScore(value)}</dd></div>;
             })}
           </dl>
           <div className={styles.probeControls}>
