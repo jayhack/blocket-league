@@ -14,8 +14,14 @@ training metadata, headline metrics, and a public sample manifest.
    ```bash
    uv run python -m blocket_league.experiment_assets \
      blocket_league/outputs/<run>/checkpoint.pt \
-     public/experiments/<slug>
+     public/experiments/<slug> \
+     --scenario-set <default|direction-holdout|collision-quadrants> \
+     --lane-label "Model prediction"
    ```
+
+   The direction set selects three trajectories inside the excluded ±30° east
+   wedge. The collision set selects four trajectories by the actual player–puck
+   contact midpoint, one in each arena quadrant.
 
 3. Register `<slug>` and its checkpoint metadata in
    `lib/blocket-league/experiments.ts`.

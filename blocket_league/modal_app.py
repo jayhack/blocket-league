@@ -652,6 +652,8 @@ def main(
     excluded_puck_angle_center_degrees: float = -1.0,
     excluded_puck_angle_width_degrees: float = 0.0,
     direction_eval_samples_per_bin: int = 0,
+    excluded_collision_quadrant: str = "",
+    collision_quadrant_eval_samples: int = 0,
     integration_steps: int = 10,
     codec_feature_weight: float = 1.0,
     latent_dim: int = 32,
@@ -684,6 +686,14 @@ def main(
         raise ValueError("pixel_model_rollin_fraction must be in [0, 1]")
     if not 0.0 <= excluded_puck_angle_width_degrees < 360.0:
         raise ValueError("excluded_puck_angle_width_degrees must be in [0, 360)")
+    if excluded_collision_quadrant not in {
+        "",
+        "upper-left",
+        "upper-right",
+        "lower-left",
+        "lower-right",
+    }:
+        raise ValueError("unknown excluded_collision_quadrant")
     if stage in {"codec", "latent", "direct", "pixel-direct"} and gpu != "H100":
         raise ValueError("The representation-codec stages currently run on H100")
     if probe_checkpoint:
@@ -1101,6 +1111,8 @@ def main(
                 ),
                 "excluded_puck_angle_width_degrees": excluded_puck_angle_width_degrees,
                 "direction_eval_samples_per_bin": direction_eval_samples_per_bin,
+                "excluded_collision_quadrant": excluded_collision_quadrant or None,
+                "collision_quadrant_eval_samples": collision_quadrant_eval_samples,
                 "late_frame_weight": late_frame_weight,
                 "ema_decay": ema_decay,
                 "warmup_steps": warmup_steps,

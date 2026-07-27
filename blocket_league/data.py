@@ -198,6 +198,7 @@ def make_passive_clip(
         "context": frame_array[:context_frames],
         "target": frame_array[context_frames:],
         "all_state": state_array,
+        "all_events": np.asarray([0, *events], dtype=np.int64),
         "state": state_array[context_frames:],
         "events": np.asarray(events[context_frames - 1 :], dtype=np.int64),
     }
@@ -216,6 +217,7 @@ class PassiveClipDataset:
         goal_centered_fraction: float = 0.0,
         excluded_puck_angle_center_degrees: float | None = None,
         excluded_puck_angle_width_degrees: float = 0.0,
+        excluded_collision_quadrant: str | None = None,
     ):
         if not 0.0 <= goal_centered_fraction <= 1.0:
             raise ValueError("goal_centered_fraction must be in [0, 1]")
@@ -223,6 +225,14 @@ class PassiveClipDataset:
             raise ValueError("excluded_puck_angle_width_degrees must be in [0, 360)")
         if excluded_puck_angle_width_degrees > 0.0 and goal_centered_fraction > 0.0:
             raise ValueError("direction-holdout caches cannot include goal-centered clips")
+        if excluded_collision_quadrant not in {
+            None,
+            "upper-left",
+            "upper-right",
+            "lower-left",
+            "lower-right",
+        }:
+            raise ValueError("unknown excluded_collision_quadrant")
         self.samples = samples
         self.seed = seed
         self.frames = frames
@@ -230,6 +240,7 @@ class PassiveClipDataset:
         self.goal_centered_fraction = goal_centered_fraction
         self.excluded_puck_angle_center_degrees = excluded_puck_angle_center_degrees
         self.excluded_puck_angle_width_degrees = excluded_puck_angle_width_degrees
+        self.excluded_collision_quadrant = excluded_collision_quadrant
 
     def __len__(self) -> int:
         return self.samples
@@ -249,23 +260,42 @@ class PassiveClipDataset:
                 image_size=self.image_size,
                 goal_centered=curriculum_rng.random() < self.goal_centered_fraction,
             )
-            if self.excluded_puck_angle_center_degrees is None:
-                clip = candidate
-                break
-            velocities = candidate["all_state"][:, 6:8]
-            speed = np.linalg.norm(velocities, axis=1)
-            angle = np.rad2deg(np.arctan2(velocities[:, 1], velocities[:, 0]))
-            delta = (angle - self.excluded_puck_angle_center_degrees + 180.0) % 360.0 - 180.0
-            moving_in_wedge = (speed > 0.05) & (
-                np.abs(delta) < self.excluded_puck_angle_width_degrees / 2.0
-            )
-            if not np.any(moving_in_wedge):
+            accepted = True
+            if self.excluded_puck_angle_center_degrees is not None:
+                velocities = candidate["all_state"][:, 6:8]
+                speed = np.linalg.norm(velocities, axis=1)
+                angle = np.rad2deg(np.arctan2(velocities[:, 1], velocities[:, 0]))
+                delta = (
+                    angle - self.excluded_puck_angle_center_degrees + 180.0
+                ) % 360.0 - 180.0
+                moving_in_wedge = (speed > 0.05) & (
+                    np.abs(delta) < self.excluded_puck_angle_width_degrees / 2.0
+                )
+                accepted = accepted and not np.any(moving_in_wedge)
+            if self.excluded_collision_quadrant is not None:
+                states = candidate["all_state"]
+                midpoints = (states[:, :2] + states[:, 4:6]) / 2.0
+                in_quadrant = points_in_quadrant(
+                    midpoints,
+                    self.excluded_collision_quadrant,
+                )
+                excluded_impacts = (candidate["all_events"] == 2) & in_quadrant
+                accepted = accepted and not np.any(excluded_impacts)
+            if accepted:
                 clip = candidate
                 break
         if clip is None:
-            raise RuntimeError(f"could not sample direction-filtered clip for index {index}")
+            raise RuntimeError(f"could not sample an accepted passive clip for index {index}")
         video = torch.from_numpy(clip["frames"].copy()).permute(0, 3, 1, 2).float()
         return video.div(127.5).sub(1.0)
+
+
+def points_in_quadrant(points: np.ndarray, quadrant: str) -> np.ndarray:
+    """Return a mask for arena points; rendered y coordinates increase downward."""
+    vertical, horizontal = quadrant.split("-")
+    x_matches = points[..., 0] < 0.5 if horizontal == "left" else points[..., 0] >= 0.5
+    y_matches = points[..., 1] < 0.5 if vertical == "upper" else points[..., 1] >= 0.5
+    return x_matches & y_matches
 
 
 class ClipDataset:

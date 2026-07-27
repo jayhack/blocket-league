@@ -14,7 +14,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from .data import PassiveClipDataset, make_passive_clip
+from .data import PassiveClipDataset, make_passive_clip, points_in_quadrant
 from .env import PALETTE
 from .metrics import trajectory_metrics
 from .pixel_direct_model import DirectPixelTransformer, pixel_direct_config_for_preset
@@ -56,6 +56,8 @@ class PixelDirectTrainConfig:
     excluded_puck_angle_width_degrees: float = 0.0
     direction_eval_samples_per_bin: int = 0
     direction_eval_frames: int = 12
+    excluded_collision_quadrant: str | None = None
+    collision_quadrant_eval_samples: int = 0
 
 
 def _seed_everything(seed: int) -> None:
@@ -106,6 +108,7 @@ def build_pixel_cache(config: PixelDirectTrainConfig, device: torch.device):
         goal_centered_fraction=config.goal_centered_fraction,
         excluded_puck_angle_center_degrees=config.excluded_puck_angle_center_degrees,
         excluded_puck_angle_width_degrees=config.excluded_puck_angle_width_degrees,
+        excluded_collision_quadrant=config.excluded_collision_quadrant,
     )
     loader = DataLoader(dataset, batch_size=config.cache_batch_size, num_workers=config.workers,
                         pin_memory=device.type == "cuda", persistent_workers=config.workers > 0)
@@ -288,6 +291,82 @@ def evaluate_direction_bins(model, config, device):
         "angle_sampling_width_degrees": 30.0,
         "samples_per_bin": samples,
     }
+
+
+def collision_quadrant_clip(
+    seed: int,
+    config: PixelDirectTrainConfig,
+    device: torch.device,
+    quadrant: str,
+):
+    """Find a passive clip whose first predicted collision lands in one quadrant."""
+    frames = min(config.direction_eval_frames, config.rollout_frames)
+    for attempt in range(2_048):
+        clip = make_passive_clip(
+            seed + attempt * 9_973,
+            context_frames=config.history_frames,
+            future_frames=config.rollout_frames,
+            image_size=config.image_size,
+        )
+        impact_indices = np.flatnonzero(clip["events"][:frames] == 2)
+        for impact_index in impact_indices:
+            state = clip["state"][impact_index]
+            midpoint = ((state[:2] + state[4:6]) / 2.0)[None]
+            if bool(points_in_quadrant(midpoint, quadrant)[0]):
+                first = torch.from_numpy(clip["context"].copy()).permute(0, 3, 1, 2)
+                rest = torch.from_numpy(clip["target"].copy()).permute(0, 3, 1, 2)
+                video = torch.cat((first, rest), dim=0).float().div(127.5).sub(1.0).to(device)
+                states = torch.from_numpy(clip["state"].copy()).float().to(device)
+                return {
+                    "context": video[:config.history_frames],
+                    "target": video[config.history_frames:],
+                    "state": states,
+                    "collision_frame": int(impact_index + 1),
+                }
+    raise RuntimeError(f"could not find a collision clip in {quadrant}")
+
+
+@torch.no_grad()
+def evaluate_collision_quadrants(model, config, device):
+    palette = palette_tensor(device)
+    frames = min(config.direction_eval_frames, config.rollout_frames)
+    samples = config.collision_quadrant_eval_samples
+    quadrants = ("upper-left", "upper-right", "lower-left", "lower-right")
+    results = []
+    for quadrant_index, quadrant in enumerate(quadrants):
+        totals: dict[str, float] = {}
+        collision_frames = []
+        for start in range(0, samples, min(config.batch_size, 8)):
+            count = min(config.batch_size, 8, samples - start)
+            items = [
+                collision_quadrant_clip(
+                    config.seed + 6_000_000 + quadrant_index * 1_000_000
+                    + (start + offset) * 100_003,
+                    config,
+                    device,
+                    quadrant,
+                )
+                for offset in range(count)
+            ]
+            context_video = torch.stack([item["context"] for item in items])
+            target = torch.stack([item["target"][:frames] for item in items])
+            states = torch.stack([item["state"][:frames] for item in items])
+            context = frames_to_classes(context_video, palette)
+            prediction_classes = rollout_pixel_classes(model, context, frames)
+            prediction = classes_to_video(prediction_classes, palette)
+            metrics = trajectory_metrics(prediction, states)
+            metrics["pixel_mse"] = float((prediction - target).square().mean())
+            collision_frames.extend(item["collision_frame"] for item in items)
+            for name, value in metrics.items():
+                totals[name] = totals.get(name, 0.0) + value * count
+        results.append({
+            "quadrant": quadrant,
+            "held_out": quadrant == config.excluded_collision_quadrant,
+            "samples": samples,
+            "mean_collision_frame": float(np.mean(collision_frames)),
+            **{name: value / samples for name, value in totals.items()},
+        })
+    return {"frames": frames, "samples_per_quadrant": samples, "quadrants": results}
 
 
 def split_player_context(context: torch.Tensor, frames: int = 2) -> torch.Tensor:
@@ -474,6 +553,11 @@ def train_pixel_direct(config: PixelDirectTrainConfig) -> dict[str, Any]:
         if config.direction_eval_samples_per_bin > 0
         else None
     )
+    collision_quadrant_evaluation = (
+        evaluate_collision_quadrants(ema_model, config, device)
+        if config.collision_quadrant_eval_samples > 0
+        else None
+    )
     checkpoint = {"kind": "passive_direct_pixel_world_model", "model": ema_model.state_dict(),
                   "model_config": model_config.to_dict(), "train_config": asdict(config),
                   "palette": np.stack(tuple(PALETTE.values())), "step": config.steps}
@@ -489,6 +573,7 @@ def train_pixel_direct(config: PixelDirectTrainConfig) -> dict[str, Any]:
                "post_goal_evaluation": post_goal_evaluation,
                "corruption_recovery": corruption_recovery,
                "direction_evaluation": direction_evaluation,
+               "collision_quadrant_evaluation": collision_quadrant_evaluation,
                "artifacts": ["checkpoint.pt", "rollout.png", "rollout-long.png", "train.jsonl", "summary.json"]}
     (output_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary

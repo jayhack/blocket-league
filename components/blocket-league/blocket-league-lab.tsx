@@ -21,6 +21,7 @@ import type { BlocketLeagueCopy } from "@/lib/blocket-league/content-types";
 import { experiments } from "@/lib/blocket-league/experiments";
 
 import styles from "./blocket-league-lab.module.css";
+import { CollisionHoldoutViewer } from "./collision-holdout-viewer";
 import { EditableMarkdown } from "./editable-markdown";
 import { DirectionHoldoutViewer } from "./direction-holdout-viewer";
 import { HallucinationFilmstrip } from "./hallucination-filmstrip";
@@ -39,6 +40,8 @@ const TABLE_OF_CONTENTS = [
   { id: "representations", label: "Representation geometry" },
   { id: "experiments", label: "Appendix A · Model scale" },
   { id: "direction-holdout", label: "Appendix B · Direction holdout" },
+  { id: "collision-holdout", label: "Appendix C · Spatial holdout" },
+  { id: "experiment-index", label: "Appendix D · Experiments" },
 ] as const;
 
 const MODEL_HISTORY = [
@@ -52,7 +55,9 @@ const MODEL_HISTORY = [
   { label: "t", player: [58, 33], puck: [45, 55] },
 ] as const;
 
-const NANO_EXPERIMENT = experiments[0];
+const NANO_EXPERIMENT = experiments.find(
+  (experiment) => experiment.slug === "nano-1p5mb",
+)!;
 
 function GitHubMark() {
   return (
@@ -575,36 +580,32 @@ export function BlocketLeagueLab({
             </h2>
           </div>
           <p className={styles.sectionCopy}>
-            We retrained the same passive pixel-prediction recipe at one tenth
-            the parameter count. Each registered run gets a durable URL tied to
-            its checkpoint, metrics, and held-out sample rollouts.
+            We compressed the pixel transformer from 3.67 million parameters to
+            377,136—about one tenth the size—and retrained it for 12,000 steps.
+            The 1.54 MB model learns the arena and coarse motion, but its entities
+            fragment during long autoregressive rollouts: 64-frame position error
+            rises from 6.53 px to 19.10 px. For this recipe, 377,136 parameters is
+            below the useful capacity floor.
           </p>
         </div>
 
         <Link className={styles.experimentCard} href={`/${NANO_EXPERIMENT.slug}`}>
-          <div className={styles.experimentCardTopline}>
-            <span>{NANO_EXPERIMENT.eyebrow}</span>
-            <span>OPEN SAMPLE VIEWER →</span>
-          </div>
           <div className={styles.experimentCardBody}>
             <div>
               <h3>{NANO_EXPERIMENT.title}</h3>
               <p>{NANO_EXPERIMENT.verdict}</p>
             </div>
             <dl>
-              <div>
-                <dt>Parameters</dt>
-                <dd>{NANO_EXPERIMENT.checkpoint.parameters.toLocaleString()}</dd>
-              </div>
-              <div>
-                <dt>Checkpoint</dt>
-                <dd>1.54 MB</dd>
-              </div>
-              <div>
-                <dt>64-frame error</dt>
-                <dd>19.10 px</dd>
-              </div>
+              {NANO_EXPERIMENT.metrics.slice(0, 3).map((metric) => (
+                <div key={metric.label}>
+                  <dt>{metric.label}</dt>
+                  <dd>{metric.value}</dd>
+                </div>
+              ))}
             </dl>
+          </div>
+          <div className={styles.experimentCardAction}>
+            View the full experiment, metrics, and checkpoint samples →
           </div>
         </Link>
       </section>
@@ -634,9 +635,90 @@ export function BlocketLeagueLab({
             The transformer has learned a direction-general transition rule, while direct
             experience still sharpens it.
           </p>
-          <a href="https://github.com/jayhack/blocket-league/blob/main/docs/direction-holdout-experiment.md" target="_blank" rel="noreferrer">
-            Read the complete protocol and reproduction commands ↗
-          </a>
+          <div className={styles.directionHoldoutLinks}>
+            <Link href="/direction-holdout-east-60/">
+              View the held-out direction samples →
+            </Link>
+            <a href="https://github.com/jayhack/blocket-league/blob/main/docs/direction-holdout-experiment.md" target="_blank" rel="noreferrer">
+              Read the protocol and reproduction commands ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={styles.collisionHoldoutSection}
+        id="collision-holdout"
+        aria-labelledby="collision-holdout-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="collision-holdout-title">
+              Appendix C: Does collision physics transfer across the arena?
+            </h2>
+          </div>
+          <p className={styles.sectionCopy}>
+            We rejected every 24-frame training world containing a player–puck
+            collision in the upper-right quadrant, then tested collisions centered
+            in all four quadrants. The model could still observe free motion in the
+            missing region; only collision outcomes were removed.
+          </p>
+        </div>
+        <CollisionHoldoutViewer />
+        <div className={styles.directionHoldoutConclusion}>
+          <strong>Yes—almost perfectly.</strong>
+          <p>
+            On 32 upper-right collision worlds, the held-out model reaches 1.257 px
+            puck error versus 1.247 px for the matched all-location control: just a
+            0.8% penalty. Its error in the unseen quadrant is only 7.5% above its own
+            three-quadrant average. In contrast to the direction holdout, the
+            transformer appears to have learned collision dynamics as a
+            location-independent rule.
+          </p>
+          <div className={styles.directionHoldoutLinks}>
+            <Link href="/collision-holdout-upper-right/">
+              View the held-out collision samples →
+            </Link>
+            <a href="https://github.com/jayhack/blocket-league/blob/main/docs/spatial-collision-holdout-experiment.md" target="_blank" rel="noreferrer">
+              Read the protocol and reproduction commands ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={styles.experimentIndexSection}
+        id="experiment-index"
+        aria-labelledby="experiment-index-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <h2 id="experiment-index-title">Appendix D: Registered experiments</h2>
+          </div>
+          <p className={styles.sectionCopy}>
+            Each run links to its checkpoint metadata, metrics, and held-out
+            sample rollouts.
+          </p>
+        </div>
+
+        <div className={styles.experimentIndex}>
+          {experiments.map((experiment) => (
+            <Link
+              className={styles.experimentIndexRow}
+              href={`/${experiment.slug}`}
+              key={experiment.slug}
+            >
+              <div className={styles.experimentIndexSummary}>
+                <strong>{experiment.title}</strong>
+                <span>{experiment.description}</span>
+              </div>
+              <div className={styles.experimentIndexMetric}>
+                <span>{experiment.metrics[0].label}</span>
+                <strong>{experiment.metrics[0].value}</strong>
+              </div>
+              <span className={styles.experimentIndexArrow} aria-hidden="true">→</span>
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -25,7 +25,7 @@ The exported checkpoint is trained for 42,000 optimizer steps (30,000 base minib
 <!-- /block -->
 
 <!-- block:model-results -->
-This performs surprisingly well at next-frame prediction. The video-completion samples below preserve collisions, bouncing, and goals, as well as simpler building blocks such as continued motion and velocity. Each sample begins with 12 observed frames; the next 36 are generated one at a time and fed back into the model.
+This performs surprisingly well at next-frame prediction and retains coherence over long sampling rollouts. The video-completion samples below preserve collisions, bouncing, and goals, as well as simpler building blocks such as continued motion and velocity. Each sample begins with 12 observed frames; the next 36 are generated one at a time and fed back into the model.
 <!-- /block -->
 
 <!-- block:jacobian-lens -->
@@ -37,7 +37,9 @@ Write the recovered +x direction for four frames, then stop. By frame 12, the pl
 <!-- /block -->
 
 <!-- block:brain-surgery -->
-We map these directions to your keyboard and let you directly steer the model, forming the simple video game illustrated below. This loads the full 3.67M-parameter model into your browser.
+If you map your keyboard to these causal direction probes, it becomes a simple video game. Note that the model has exclusively trained on raw pixels - we are not manipulating the model's input, but rather it's own internal representation for what it has "discovered" about motion.
+
+This demo loads the full 3.67M-parameter model into your browser.
 <!-- /block -->
 
 <!-- block:representation-depth -->

@@ -15,6 +15,7 @@ from blocket_league.data import (
     make_clip,
     make_passive_clip,
     passive_kickoff_state,
+    points_in_quadrant,
 )
 from blocket_league.direct_model import DirectLatentTransformer, DirectWorldModelConfig
 from blocket_league.latent_model import CausalLatentDiT, FlowMatchingSchedule, LatentWorldModelConfig
@@ -76,6 +77,20 @@ class BlocketLeagueModelTests(unittest.TestCase):
         )
         for index in range(len(dataset)):
             self.assertEqual(dataset[index].shape, (24, 3, 64, 64))
+
+    def test_collision_quadrants_use_rendered_screen_coordinates(self) -> None:
+        points = np.asarray(
+            ((0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)),
+            dtype=np.float32,
+        )
+        np.testing.assert_array_equal(
+            points_in_quadrant(points, "upper-right"),
+            (False, True, False, False),
+        )
+        np.testing.assert_array_equal(
+            points_in_quadrant(points, "lower-left"),
+            (False, False, True, False),
+        )
 
     def test_player_corruption_matches_split_blob_rollout_failures(self) -> None:
         frames = torch.full((2, 3, 16, 16), 5, dtype=torch.long)
