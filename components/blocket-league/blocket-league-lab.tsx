@@ -26,22 +26,30 @@ import { EditableMarkdown } from "./editable-markdown";
 import { DirectionHoldoutViewer } from "./direction-holdout-viewer";
 import { HallucinationFilmstrip } from "./hallucination-filmstrip";
 import { LiveWorldModel } from "./live-world-model";
-import { PhysicsEmergenceViewer } from "./physics-emergence-viewer";
+import {
+  CollisionAnticipationViewer,
+  MotionRingViewer,
+} from "./physics-emergence-viewer";
 import { PixelInterpretabilityViewer } from "./pixel-interpretability-viewer";
+import { PositionGeometryViewer } from "./position-geometry-viewer";
+import { PositionReadoutRollouts } from "./position-readout-rollouts";
 
 const TABLE_OF_CONTENTS = [
   { id: "top", label: "Introduction" },
   { id: "play", label: "Play the game" },
-  { id: "world", label: "Dataset" },
-  { id: "model", label: "Pixel transformer" },
+  { id: "training", label: "Train a toy model" },
+  { id: "linear-position", label: "Linear x/y readout" },
+  { id: "generalization", label: "Generalization" },
   { id: "lens", label: "Jacobian lens" },
   { id: "intervention", label: "Causal intervention" },
   { id: "game-surgery", label: "Brain surgery" },
-  { id: "representations", label: "Representation geometry" },
+  { id: "direction-ring", label: "Direction ring" },
   { id: "experiments", label: "Appendix A · Model scale" },
   { id: "direction-holdout", label: "Appendix B · Direction holdout" },
   { id: "collision-holdout", label: "Appendix C · Spatial holdout" },
-  { id: "experiment-index", label: "Appendix D · Experiments" },
+  { id: "position-geometry", label: "Appendix D · Cartesian position" },
+  { id: "collision-representation", label: "Appendix E · Collision probe" },
+  { id: "experiment-index", label: "Appendix F · Experiments" },
 ] as const;
 
 const MODEL_HISTORY = [
@@ -370,7 +378,11 @@ export function BlocketLeagueLab({
       </header>
 
       <section className={styles.hero} id="top">
-        <h1>J-Lens for video models: uncovering steerable, interpretable physical dynamics.</h1>
+        <h1>
+          J-Lens for video models:
+          <br />
+          uncovering steerable physical dynamics.
+        </h1>
         <div className={styles.heroMeta}>
           <span>by <a href="https://jay.ai" target="_blank" rel="noreferrer">Jay Hack</a></span>
           <span aria-hidden="true">·</span>
@@ -379,7 +391,12 @@ export function BlocketLeagueLab({
         <EditableMarkdown blockId="hero-intro" markdown={copy["hero-intro"]} editable={editable} className={styles.heroCopy} />
         <EditableMarkdown blockId="hero-sources" markdown={copy["hero-sources"]} editable={editable} className={styles.heroCopy} />
         <div className={styles.heroGameIntro} id="play">
-          <h2>Steer a Video Model&apos;s Hallucinations.</h2>
+          <EditableMarkdown
+            blockId="play-title"
+            markdown={copy["play-title"]}
+            editable={editable}
+            headingId="play-title"
+          />
           <EditableMarkdown blockId="play-intro" markdown={copy["play-intro"]} editable={editable} className={styles.heroGameCopy} />
         </div>
         <div className={styles.heroGame}>
@@ -390,15 +407,60 @@ export function BlocketLeagueLab({
         </div>
       </section>
 
-      <section className={styles.labSection} id="world" aria-labelledby="world-title">
+      <section className={styles.modelSection} id="training" aria-labelledby="training-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="world-title">The dataset: raw physics rollouts from &quot;Blocket League&quot;.</h2>
+            <EditableMarkdown blockId="model-title" markdown={copy["model-title"]} editable={editable} headingId="training-title" />
           </div>
-          <EditableMarkdown blockId="dataset" markdown={copy.dataset} editable={editable} className={styles.sectionCopy} />
+          <EditableMarkdown blockId="model" markdown={copy.model} editable={editable} className={styles.sectionCopy} />
         </div>
 
-        <div className={styles.simulatorShell}>
+        <figure className={styles.simpleArchitectureFigure}>
+          <div
+            className={styles.simpleArchitecture}
+            role="img"
+            aria-label="Three raw frames enter a five-layer pixel transformer, which predicts the next frame."
+          >
+            <div className={styles.simpleArchitectureFrames} aria-hidden="true">
+              {MODEL_HISTORY.slice(-3).map((frame) => (
+                <DiagramFrame key={frame.label} {...frame} />
+              ))}
+            </div>
+            <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
+            <div className={styles.simpleTransformerBlock}>
+              <strong>Transformer</strong>
+              <span>5 layers</span>
+            </div>
+            <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
+            <div className={styles.simpleArchitectureOutput} aria-hidden="true">
+              <DiagramFrame
+                label=""
+                player={[63, 29]}
+                puck={[41, 59]}
+                predicted
+              />
+            </div>
+          </div>
+          <figcaption className={styles.architectureSubtitle}>
+            A 5-layer pixel transformer on raw frame data of physics rollouts.{" "}
+            <a
+              href="https://github.com/jayhack/blocket-league/blob/main/blocket_league/pixel_direct_model.py"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View the code on GitHub ↗
+            </a>
+          </figcaption>
+        </figure>
+
+        <EditableMarkdown
+          blockId="dataset"
+          markdown={copy.dataset}
+          editable={editable}
+          className={styles.trainingStepCopy}
+        />
+
+        <div className={`${styles.simulatorShell} ${styles.trainingSimulator}`}>
           <div className={styles.canvasColumn}>
             <div className={styles.canvasHeader}>
               <div className={styles.score} aria-label={`${snapshot.score} goals scored`}>
@@ -417,56 +479,95 @@ export function BlocketLeagueLab({
             />
           </div>
           <p className={styles.simulatorClaim}>
-            A simple collision physics simulation with a car, a puck, and a &quot;goal&quot;.
+            Blocket League
           </p>
-        </div>
-      </section>
-
-      <section className={styles.modelSection} id="model" aria-labelledby="model-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <h2 id="model-title">The model: pixel transformers for unsupervised prediction.</h2>
-          </div>
-          <EditableMarkdown blockId="model" markdown={copy.model} editable={editable} className={styles.sectionCopy} />
-        </div>
-
-        <div
-          className={styles.simpleArchitecture}
-          role="img"
-          aria-label="Three previous rendered frames enter a causal video transformer, which predicts the next rendered frame."
-        >
-          <div className={styles.simpleArchitectureFrames} aria-hidden="true">
-            {MODEL_HISTORY.slice(-3).map((frame) => (
-              <DiagramFrame key={frame.label} {...frame} />
-            ))}
-          </div>
-          <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
-          <div className={styles.simpleTransformerBlock}>
-            <strong>Transformer</strong>
-            <span>6 causal blocks</span>
-          </div>
-          <ArrowRight className={styles.simpleArchitectureArrow} aria-hidden="true" />
-          <div className={styles.simpleArchitectureOutput} aria-hidden="true">
-            <DiagramFrame
-              label="next frame"
-              player={[63, 29]}
-              puck={[41, 59]}
-              predicted
-            />
-          </div>
-          <div className={styles.simpleArchitectureLabels}>
-            <span>Previous frames</span>
-            <span>Predict the next frame</span>
-          </div>
         </div>
         <EditableMarkdown blockId="model-results" markdown={copy["model-results"]} editable={editable} className={styles.modelResultsCopy} />
         <HallucinationFilmstrip />
       </section>
 
+      <section
+        className={styles.positionReadoutSection}
+        id="linear-position"
+        aria-labelledby="linear-position-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="linear-position-title"
+              markdown={copy["linear-position-title"]}
+              editable={editable}
+              headingId="linear-position-title"
+            />
+          </div>
+          <p className={styles.sectionCopy}>
+            By block 5, one fixed bottom-right hidden token contains enough
+            information for a linear map to recover player x/y and puck x/y. The
+            model was never trained on coordinates.
+          </p>
+        </div>
+        <PositionReadoutRollouts />
+        <div className={styles.positionReadoutConclusion}>
+          <strong>The crosshairs follow the model&apos;s own hallucinations.</strong>
+          <p>
+            The same fixed-token decoder keeps tracking both objects even when the
+            model is feeding its own predicted pixels back as input.
+          </p>
+          <Link href="#position-geometry">
+            See the full layer-by-layer and random-weight controls in Appendix D ↓
+          </Link>
+          <p>
+            Position is not all that is readable: block 5 can also anticipate a
+            collision up to eight frames before contact.
+          </p>
+          <Link href="#collision-representation">
+            See the collision probe in Appendix E ↓
+          </Link>
+        </div>
+      </section>
+
+      <section
+        className={styles.generalizationSection}
+        id="generalization"
+        aria-labelledby="generalization-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="generalization-title"
+              markdown={copy["generalization-title"]}
+              editable={editable}
+              headingId="generalization-title"
+            />
+          </div>
+          <p className={styles.sectionCopy}>
+            Now remove every training example with a collision in the upper-right.
+            The model still sees objects move there—just never collide.
+          </p>
+        </div>
+        <div className={styles.generalizationSampler}>
+          <HallucinationFilmstrip
+            compact
+            manifestUrl="/experiments/collision-holdout-upper-right/manifest.json"
+            scenarioPrefix="upper-right"
+          />
+        </div>
+        <div className={styles.positionReadoutConclusion}>
+          <strong>Collision physics transfers into the missing quadrant.</strong>
+          <p>
+            It still predicts those collisions. Against a matched control trained
+            everywhere, the penalty in the unseen quadrant is only 0.8%.
+          </p>
+          <Link href="#collision-holdout">
+            See the matched control and full spatial holdout in Appendix C ↓
+          </Link>
+        </div>
+      </section>
+
       <section className={styles.lensSection} id="lens" aria-labelledby="lens-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="lens-title">Identifying latent activations for physical phenomena</h2>
+            <EditableMarkdown blockId="jacobian-title" markdown={copy["jacobian-title"]} editable={editable} headingId="lens-title" />
           </div>
           <EditableMarkdown blockId="jacobian-lens" markdown={copy["jacobian-lens"]} editable={editable} className={styles.sectionCopy} />
         </div>
@@ -541,7 +642,7 @@ export function BlocketLeagueLab({
       <section className={styles.interpretabilitySection} id="intervention" aria-labelledby="interpretability-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="interpretability-title">These variables are causal. Write to them and the hallucination changes.</h2>
+            <EditableMarkdown blockId="causal-title" markdown={copy["causal-title"]} editable={editable} headingId="interpretability-title" />
           </div>
           <EditableMarkdown blockId="causal-intervention" markdown={copy["causal-intervention"]} editable={editable} className={styles.sectionCopy} />
         </div>
@@ -551,21 +652,21 @@ export function BlocketLeagueLab({
       <section className={styles.liveSection} id="game-surgery" aria-labelledby="live-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="live-title">This is a video game. You play it through brain surgery.</h2>
+            <EditableMarkdown blockId="brain-surgery-title" markdown={copy["brain-surgery-title"]} editable={editable} headingId="live-title" />
           </div>
           <EditableMarkdown blockId="brain-surgery" markdown={copy["brain-surgery"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <LiveWorldModel />
       </section>
 
-      <section className={styles.emergenceSection} id="representations" aria-labelledby="emergence-title">
+      <section className={styles.emergenceSection} id="direction-ring" aria-labelledby="direction-ring-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="emergence-title">A linear probe shows where motion becomes readable.</h2>
+            <EditableMarkdown blockId="representation-title" markdown={copy["representation-title"]} editable={editable} headingId="direction-ring-title" />
           </div>
           <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
         </div>
-        <PhysicsEmergenceViewer />
+        <MotionRingViewer />
       </section>
 
       <section
@@ -575,9 +676,7 @@ export function BlocketLeagueLab({
       >
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="experiments-title">
-              Appendix A: How small can the world model get?
-            </h2>
+            <EditableMarkdown blockId="model-scale-title" markdown={copy["model-scale-title"]} editable={editable} headingId="experiments-title" />
           </div>
           <p className={styles.sectionCopy}>
             We compressed the pixel transformer from 3.67 million parameters to
@@ -613,9 +712,12 @@ export function BlocketLeagueLab({
       <section className={styles.directionHoldoutSection} id="direction-holdout" aria-labelledby="direction-holdout-title">
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="direction-holdout-title">
-              Appendix B: Does the model generalize to a direction it never saw?
-            </h2>
+            <EditableMarkdown
+              blockId="direction-holdout-title"
+              markdown={copy["direction-holdout-title"]}
+              editable={editable}
+              headingId="direction-holdout-title"
+            />
           </div>
           <p className={styles.sectionCopy}>
             We trained two new transformers from scratch. For one, we rejected every
@@ -653,9 +755,12 @@ export function BlocketLeagueLab({
       >
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="collision-holdout-title">
-              Appendix C: Does collision physics transfer across the arena?
-            </h2>
+            <EditableMarkdown
+              blockId="collision-holdout-title"
+              markdown={copy["collision-holdout-title"]}
+              editable={editable}
+              headingId="collision-holdout-title"
+            />
           </div>
           <p className={styles.sectionCopy}>
             We rejected every 24-frame training world containing a player–puck
@@ -687,13 +792,94 @@ export function BlocketLeagueLab({
       </section>
 
       <section
+        className={styles.positionGeometrySection}
+        id="position-geometry"
+        aria-labelledby="position-geometry-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="position-geometry-title"
+              markdown={copy["position-geometry-title"]}
+              editable={editable}
+              headingId="position-geometry-title"
+            />
+          </div>
+          <p className={styles.sectionCopy}>
+            Earlier position probes selected the token containing the rendered
+            entity, so they could partly recover absolute patch identity. Here the
+            decoder receives only one fixed hidden state: the bottom-right token
+            after the eighth observed frame. We ask it to report the player and
+            puck&apos;s x/y coordinates, then exclude the upper-right quadrant from
+            probe fitting to test whether horizontal and vertical position recombine.
+          </p>
+        </div>
+        <PositionGeometryViewer />
+        <div className={styles.directionHoldoutConclusion}>
+          <strong>The map is readable; the causal handle is downstream.</strong>
+          <p>
+            Spatial attention broadcasts both objects&apos; locations into a fixed
+            token, and a linear transform recovers separate x/y axes. But adding
+            that regression vector back into the residual stream does not teleport
+            the puck. Linear decodability alone is correlational. When we instead
+            orient the write with the downstream Jacobian of the rendered puck
+            centroid, the same position variable becomes steerable: one brief write
+            moves the puck in the intended direction in 84–90% of worlds immediately,
+            and the altered trajectory continues separating after the write stops.
+          </p>
+          <p>
+            This still does not prove that a collision circuit literally consumes
+            this particular coordinate readout. The next decisive test is geometric
+            mediation: decompose a collide-versus-miss activation patch into the
+            x/y-and-velocity subspace and its orthogonal remainder, then ask which
+            component causes the model to apply a collision-like change in
+            post-contact velocity.
+          </p>
+          <div className={styles.directionHoldoutLinks}>
+            <a href="https://github.com/jayhack/blocket-league/blob/main/docs/position-geometry-experiment.md" target="_blank" rel="noreferrer">
+              Read the protocol and reproduction commands ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={styles.emergenceSection}
+        id="collision-representation"
+        aria-labelledby="collision-representation-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="collision-representation-title"
+              markdown={copy["collision-representation-title"]}
+              editable={editable}
+              headingId="collision-representation-title"
+            />
+          </div>
+          <EditableMarkdown
+            blockId="collision-representation"
+            markdown={copy["collision-representation"]}
+            editable={editable}
+            className={styles.sectionCopy}
+          />
+        </div>
+        <CollisionAnticipationViewer />
+      </section>
+
+      <section
         className={styles.experimentIndexSection}
         id="experiment-index"
         aria-labelledby="experiment-index-title"
       >
         <div className={styles.sectionHeading}>
           <div>
-            <h2 id="experiment-index-title">Appendix D: Registered experiments</h2>
+            <EditableMarkdown
+              blockId="experiment-index-title"
+              markdown={copy["experiment-index-title"]}
+              editable={editable}
+              headingId="experiment-index-title"
+            />
           </div>
           <p className={styles.sectionCopy}>
             Each run links to its checkpoint metadata, metrics, and held-out

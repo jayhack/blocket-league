@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { Pause, Play } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./blocket-league-lab.module.css";
+import { HallucinationTimelineHeader } from "./hallucination-timeline-header";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -130,9 +130,11 @@ function FilmFrame({
 export function HallucinationFilmstrip({
   manifestUrl = `${BASE_PATH}/blocket-league/hallucinations/manifest.json`,
   compact = false,
+  scenarioPrefix,
 }: {
   manifestUrl?: string;
   compact?: boolean;
+  scenarioPrefix?: string;
 }) {
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [scenarioIndex, setScenarioIndex] = useState(0);
@@ -149,11 +151,22 @@ export function HallucinationFilmstrip({
         return response.json() as Promise<SourceManifest>;
       })
       .then((value) => {
-        if (!cancelled) setManifest(normalizeManifest(value, manifestUrl));
+        if (cancelled) return;
+        const normalized = normalizeManifest(value, manifestUrl);
+        setManifest(
+          scenarioPrefix
+            ? {
+                ...normalized,
+                scenarios: normalized.scenarios.filter((scenario) =>
+                  scenario.id.startsWith(scenarioPrefix)
+                ),
+              }
+            : normalized,
+        );
       })
       .catch(() => { if (!cancelled) setError(true); });
     return () => { cancelled = true; };
-  }, [manifestUrl]);
+  }, [manifestUrl, scenarioPrefix]);
 
   const scenario = manifest?.scenarios[scenarioIndex];
   const totalFrames = manifest ? manifest.inputFrames + manifest.hallucinationFrames : 0;
@@ -177,16 +190,6 @@ export function HallucinationFilmstrip({
 
   if (error) return <p className={styles.trajectoryLoading}>Hallucination samples could not be loaded.</p>;
   if (!manifest || !scenario) return <p className={styles.trajectoryLoading}>Loading hallucinations…</p>;
-
-  const hallucinating = frameIndex >= manifest.inputFrames;
-  const inputShare = manifest.inputFrames / totalFrames;
-  const trackInset = 20;
-  const timelineStyle = {
-    "--input-share": `${inputShare * 100}%`,
-    "--timeline-boundary": `calc(${inputShare * 100}% + ${
-      trackInset * (1 - 2 * inputShare)
-    }px)`,
-  } as CSSProperties;
 
   return (
     <div
@@ -219,41 +222,17 @@ export function HallucinationFilmstrip({
         ))}
       </div>
       <div className={styles.hallucinationStage}>
-        <div className={styles.hallucinationVideoHeader}>
-          <div className={styles.hallucinationTimeline} style={timelineStyle}>
-            <div className={styles.hallucinationPhases}>
-              <div className={!hallucinating ? styles.hallucinationPhaseActive : undefined}>
-                <strong>Input</strong>
-              </div>
-              <div
-                className={
-                  hallucinating
-                    ? `${styles.hallucinationPhaseActive} ${styles.hallucinationPhasePredictedActive}`
-                    : undefined
-                }
-              >
-                <strong>Hallucination</strong>
-              </div>
-            </div>
-            <div className={styles.hallucinationTransport}>
-              <input
-                type="range"
-                min={0}
-                max={totalFrames - 1}
-                value={frameIndex}
-                aria-label="Scrub through observed and hallucinated frames"
-                onChange={(event) => {
-                  setFrameIndex(Number(event.target.value));
-                  setPlaying(false);
-                }}
-              />
-            </div>
-          </div>
-          <button type="button" onClick={() => setPlaying((value) => !value)}>
-            {playing ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-            {playing ? "Pause" : "Play"}
-          </button>
-        </div>
+        <HallucinationTimelineHeader
+          frame={frameIndex}
+          inputFrames={manifest.inputFrames}
+          totalFrames={totalFrames}
+          playing={playing}
+          onFrameChange={(nextFrame) => {
+            setFrameIndex(nextFrame);
+            setPlaying(false);
+          }}
+          onPlayingChange={setPlaying}
+        />
         <FilmFrame
           image={atlas}
           index={frameIndex}

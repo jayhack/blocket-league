@@ -1,4 +1,5 @@
 .root {
+  --article-width: 720px;
   --ink: #fafafa;
   --muted: #a1a1aa;
   --line: #262626;
@@ -78,12 +79,15 @@
 .liveSection,
 .emergenceSection,
 .directionHoldoutSection,
-.collisionHoldoutSection {
+.collisionHoldoutSection,
+.positionReadoutSection,
+.generalizationSection,
+.positionGeometrySection {
   scroll-margin-top: 32px;
 }
 
 .header {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--article-width), calc(100% - 48px));
   margin: 0 auto;
   padding: 24px 0;
   display: flex;
@@ -154,7 +158,7 @@
 }
 
 .hero {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--article-width), calc(100% - 48px));
   margin: 0 auto;
   padding: 64px 0 44px;
   position: relative;
@@ -174,10 +178,10 @@
   margin: 0;
   position: relative;
   z-index: 1;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 800;
-  line-height: 52px;
-  letter-spacing: -1.2px;
+  line-height: 46px;
+  letter-spacing: -1px;
 }
 
 .heroMeta {
@@ -210,8 +214,8 @@
   max-width: 960px;
   margin: 20px 0 0;
   color: #d4d4d8;
-  font-size: 22px;
-  line-height: 38px;
+  font-size: 20px;
+  line-height: 34px;
 }
 
 .heroCopy + .heroCopy {
@@ -234,15 +238,15 @@
 .heroGameIntro p {
   margin: 12px 0 0;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 18px;
+  line-height: 30px;
 }
 
 .heroGameCopy {
   margin-top: 12px;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 18px;
+  line-height: 30px;
 }
 
 .heroGame {
@@ -285,8 +289,11 @@
 .emergenceSection,
 .directionHoldoutSection,
 .collisionHoldoutSection,
+.positionReadoutSection,
+.generalizationSection,
+.positionGeometrySection,
 .interpretabilitySection {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--article-width), calc(100% - 48px));
   margin: 0 auto;
   padding: 40px 0;
 }
@@ -1655,7 +1662,7 @@
 }
 
 .trajectorySection {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--article-width), calc(100% - 48px));
   margin: 0 auto;
   padding: 40px 0 50px;
 }
@@ -2082,7 +2089,8 @@
 }
 
 .hallucinationVideo {
-  width: 100%;
+  width: 64%;
+  margin: 0 auto;
   aspect-ratio: 1;
   display: block;
   background: #070b10;
@@ -2092,6 +2100,326 @@
 .hallucinationViewerCompact .hallucinationVideo {
   width: 64%;
   margin: 0 auto;
+}
+
+.positionReadoutSection {
+  padding-top: 72px;
+}
+
+.positionReadoutViewer {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  border: 1px solid var(--line);
+  background: #050505;
+}
+
+.positionReadoutSamples {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line);
+}
+
+.positionReadoutSamplesHeader {
+  min-height: 70px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  color: #f4f4f5;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.positionReadoutSamples button {
+  min-height: 70px;
+  padding: 15px 22px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: #a1a1aa;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.positionReadoutSamples button:hover,
+.positionReadoutSamples .positionReadoutSampleActive {
+  background: rgb(33 150 210 / 7%);
+  color: #f4f4f5;
+}
+
+.positionReadoutSamples .positionReadoutSampleActive {
+  box-shadow: inset 3px 0 var(--mint);
+}
+
+.positionReadoutSamples button span,
+.positionReadoutSamples button small {
+  display: block;
+}
+
+.positionReadoutSamples button small {
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.positionReadoutLegend {
+  margin-top: auto;
+  padding: 20px 22px;
+  display: grid;
+  gap: 9px;
+  color: #a1a1aa;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.positionReadoutLegend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.positionReadoutLegend i {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border: 1px dashed #70e6ff;
+  border-radius: 50%;
+}
+
+.positionReadoutLegend [data-entity="puck"] i {
+  border-color: #ffcf55;
+}
+
+.positionReadoutLegend small {
+  margin-top: 4px;
+  color: #71717a;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.positionReadoutStage {
+  min-width: 0;
+  background: #000;
+}
+
+.positionReadoutHeader {
+  min-height: 70px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+}
+
+.positionReadoutHeader > div:first-child {
+  padding: 12px 18px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+}
+
+.positionReadoutHeader > div:first-child span {
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.positionReadoutHeader > div:first-child strong {
+  color: #d4d4d8;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.positionReadoutHeader button {
+  margin: 10px 12px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #334040;
+  background: #0a1112;
+  color: #d4d4d8;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.positionReadoutHeader button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.positionReadoutFrame {
+  width: 64%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.positionReadoutCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #070b10;
+  image-rendering: pixelated;
+}
+
+.positionMarker {
+  --marker-color: #70e6ff;
+  width: 34px;
+  height: 34px;
+  position: absolute;
+  z-index: 2;
+  border: 2px solid var(--marker-color);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #000, 0 0 12px rgb(112 230 255 / 55%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.positionMarker::before,
+.positionMarker::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--marker-color);
+  box-shadow: 0 0 0 1px #000;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.positionMarker::before {
+  width: 46px;
+  height: 2px;
+}
+
+.positionMarker::after {
+  width: 2px;
+  height: 46px;
+}
+
+.positionMarkerPuck {
+  --marker-color: #ffcf55;
+  box-shadow: 0 0 0 2px #000, 0 0 12px rgb(255 207 85 / 55%);
+}
+
+.positionReadoutTransport {
+  padding: 8px 18px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.positionReadoutTransport input {
+  width: 100%;
+  accent-color: var(--mint);
+}
+
+.positionReadoutTransport > div {
+  display: flex;
+  justify-content: space-between;
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.positionReadoutConclusion {
+  margin-top: 24px;
+  padding: 22px 24px;
+  border-left: 2px solid var(--mint);
+  background: #05090d;
+}
+
+.positionReadoutConclusion strong {
+  color: #f4f4f5;
+  font-size: 18px;
+}
+
+.positionReadoutConclusion p {
+  margin: 8px 0 12px;
+  color: #b5b5bc;
+  line-height: 1.7;
+}
+
+.positionReadoutConclusion a,
+.generalizationCards small {
+  color: var(--mint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.generalizationSection {
+  padding-top: 72px;
+  padding-bottom: 72px;
+  border-top: 1px solid var(--line);
+}
+
+.generalizationSampler {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.generalizationSampler .hallucinationViewer {
+  grid-template-columns: 264px minmax(0, 1fr);
+}
+
+.generalizationCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.generalizationCards > a {
+  min-width: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  background: #06090d;
+  color: inherit;
+  text-decoration: none;
+  transition: background 160ms ease;
+}
+
+.generalizationCards > a:hover {
+  background: #0a1016;
+}
+
+.generalizationCards span {
+  color: #71717a;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.09em;
+}
+
+.generalizationCards strong {
+  margin-top: 18px;
+  color: #f4f4f5;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.generalizationCards p {
+  margin: 14px 0 24px;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.generalizationCards small {
+  margin-top: auto;
 }
 
 .hallucinationTimeline {
@@ -2345,16 +2673,16 @@
   max-width: 960px;
   margin: 16px 0 0;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 18px;
+  line-height: 30px;
 }
 
 .sectionCopy {
   max-width: 960px;
   margin-top: 16px;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 18px;
+  line-height: 30px;
 }
 
 .sectionHeading > p + p {
@@ -2362,7 +2690,7 @@
 }
 
 .simulatorShell {
-  width: min(532px, 100%);
+  width: min(426px, 100%);
   margin: 0 auto;
   display: block;
   border: 1px solid #596166;
@@ -2370,6 +2698,10 @@
   box-shadow:
     0 26px 80px rgb(0 0 0 / 46%),
     0 0 44px rgb(255 255 255 / 4%);
+}
+
+.trainingSimulator {
+  margin-top: 0;
 }
 
 .simulatorClaim {
@@ -2960,10 +3292,21 @@
 
 .modelResultsCopy {
   max-width: 960px;
-  margin: 40px 0;
+  margin: 32px 0 20px;
   color: #d4d4d8;
-  font-size: 20px;
-  line-height: 34px;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.trainingStepCopy {
+  margin: 32px 0 20px;
+  color: #d4d4d8;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.simpleArchitectureFigure {
+  margin: 0;
 }
 
 .architectureDiagram,
@@ -2982,13 +3325,13 @@
 }
 
 .simpleArchitecture {
-  min-height: 230px;
-  padding: 32px;
+  min-height: 210px;
+  padding: 26px 22px 22px;
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) 44px 210px 44px 120px;
-  grid-template-rows: 1fr auto;
+  grid-template-columns: minmax(180px, 1fr) 26px 150px 26px 92px;
+  grid-template-rows: 1fr;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   border: 1px solid var(--line);
   background: #050505;
 }
@@ -2996,7 +3339,7 @@
 .simpleArchitectureFrames {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .simpleArchitectureFrames .diagramFrame,
@@ -3016,16 +3359,16 @@
 }
 
 .simpleArchitectureArrow {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   justify-self: center;
   color: #d4d4d8;
   stroke-width: 1.5;
 }
 
 .simpleTransformerBlock {
-  min-height: 124px;
-  padding: 24px;
+  min-height: 108px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3037,23 +3380,44 @@
 }
 
 .simpleTransformerBlock strong {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.4px;
 }
 
 .simpleTransformerBlock span {
   color: #a1a1aa;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .simpleArchitectureLabels {
   grid-column: 1 / -1;
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
   justify-content: space-between;
   color: #a1a1aa;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+.architectureSubtitle {
+  margin: 0;
+  padding: 13px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.architectureSubtitle a {
+  color: var(--mint);
+  text-decoration: none;
+}
+
+.architectureSubtitle a:hover {
+  text-decoration: underline;
 }
 
 .architectureFlow {
@@ -3828,6 +4192,235 @@
   padding-bottom: 72px;
 }
 
+.positionGeometrySection {
+  border-top: 1px solid var(--line);
+  padding-bottom: 72px;
+}
+
+.positionGeometryStory {
+  display: grid;
+  gap: 52px;
+}
+
+.stateVariableSummary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  background: #060b14;
+}
+
+.stateVariableSummary > div {
+  min-width: 0;
+  padding: 26px 28px;
+  border-right: 1px solid var(--line);
+}
+
+.stateVariableSummary > div:last-child {
+  border-right: 0;
+}
+
+.stateVariableSummary span,
+.positionCausalStats span {
+  display: block;
+  color: #85918f;
+  font: 9px var(--font-mono);
+  letter-spacing: 0.09em;
+}
+
+.stateVariableSummary strong,
+.positionCausalStats strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--mint);
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.stateVariableSummary p {
+  margin: 8px 0 0;
+  color: #aeb5b3;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.positionDepthFigure,
+.positionCausalFigure {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: #060b14;
+  box-shadow: 0 26px 80px rgb(0 0 0 / 22%);
+}
+
+.positionDepthFigure > header {
+  padding: 22px 38px;
+  border-bottom: 1px solid var(--line);
+}
+
+.positionDepthFigure > header p {
+  margin: 0;
+  color: #aeb5b3;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.positionDepthLegend {
+  min-height: 54px;
+  padding: 16px 32px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px 22px;
+  color: #aeb5b3;
+  font: 9px var(--font-mono);
+}
+
+.positionDepthLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.positionDepthLegend i {
+  width: 20px;
+  height: 3px;
+  display: block;
+  background: var(--mint);
+}
+
+.positionDepthLegend [data-series="puck"] i {
+  background: var(--gold);
+}
+
+.positionDepthLegend [data-series="quadrant"] i {
+  height: 0;
+  border-top: 2px dashed #f4a261;
+  background: transparent;
+}
+
+.positionDepthFigure svg,
+.positionCausalFigure svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.positionGridline line {
+  stroke: #273238;
+  stroke-width: 1;
+}
+
+.positionGridline text,
+.positionAxisLabel {
+  fill: #85918f;
+  font: 10px var(--font-mono);
+}
+
+.positionPlayerLine,
+.positionPuckLine,
+.positionQuadrantLine,
+.positionCausalLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.positionPlayerLine {
+  stroke: var(--mint);
+}
+
+.positionPuckLine {
+  stroke: var(--gold);
+}
+
+.positionQuadrantLine {
+  stroke: #f4a261;
+  stroke-dasharray: 7 7;
+  stroke-width: 1.5;
+  opacity: 0.76;
+}
+
+.positionPlayerPoint,
+.positionPuckPoint,
+.positionCausalPoint {
+  fill: #060b14;
+  stroke-width: 3;
+}
+
+.positionPlayerPoint {
+  stroke: var(--mint);
+}
+
+.positionPuckPoint {
+  stroke: var(--gold);
+}
+
+.positionDepthFigure figcaption,
+.positionCausalFigure figcaption {
+  padding: 20px 38px 24px;
+  border-top: 1px solid var(--line);
+  color: #aeb5b3;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.positionDepthFigure figcaption strong {
+  color: #f4f4f0;
+}
+
+.positionWriteHeading h3 {
+  margin: 0 0 12px;
+  color: #f4f4f0;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+}
+
+.positionWriteHeading p {
+  max-width: 850px;
+  margin: 0;
+  color: #d4d4d8;
+  font-size: 19px;
+  line-height: 1.65;
+}
+
+.positionCausalStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.positionCausalStats > div {
+  padding: 22px 26px;
+  border-right: 1px solid var(--line);
+}
+
+.positionCausalStats > div:last-child {
+  border-right: 0;
+}
+
+.positionCausalStats small {
+  display: block;
+  margin-top: 6px;
+  color: #85918f;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.positionCausalLine {
+  stroke: var(--mint);
+}
+
+.positionCausalPoint {
+  stroke: var(--mint);
+}
+
+.positionCausalWriteLabel {
+  fill: #f4a261;
+  font: 10px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
 .collisionHoldoutFigure {
   margin: 0;
   border: 1px solid var(--line);
@@ -4296,8 +4889,8 @@
   max-width: 900px;
   margin: -20px 0 0;
   color: #d0d4d2;
-  font-size: 20px;
-  line-height: 1.62;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
 .pcaChart {
@@ -4936,7 +5529,7 @@
 }
 
 .footer {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--article-width), calc(100% - 48px));
   margin: 0 auto;
   padding: 27px 0 34px;
   display: flex;
@@ -5266,9 +5859,12 @@
   .emergenceSection,
   .directionHoldoutSection,
   .collisionHoldoutSection,
+  .positionReadoutSection,
+  .generalizationSection,
+  .positionGeometrySection,
   .interpretabilitySection,
   .footer {
-    width: min(100% - 30px, 960px);
+    width: min(100% - 30px, var(--article-width));
   }
 
   .experimentCardBody {
@@ -5283,6 +5879,35 @@
   .experimentIndexRow {
     grid-template-columns: minmax(0, 1fr) 20px;
     gap: 14px;
+  }
+
+  .stateVariableSummary,
+  .positionCausalStats {
+    grid-template-columns: 1fr;
+  }
+
+  .stateVariableSummary > div,
+  .positionCausalStats > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .stateVariableSummary > div:last-child,
+  .positionCausalStats > div:last-child {
+    border-bottom: 0;
+  }
+
+  .positionDepthFigure > header,
+  .positionDepthFigure figcaption,
+  .positionCausalFigure figcaption {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .positionDepthLegend {
+    justify-content: flex-start;
+    padding-right: 18px;
+    padding-left: 18px;
   }
 
   .experimentIndexMetric {
@@ -5376,6 +6001,64 @@
   }
 
   .hallucinationViewer {
+    grid-template-columns: 1fr;
+  }
+
+  .generalizationSampler .hallucinationViewer {
+    grid-template-columns: 1fr;
+  }
+
+  .positionReadoutViewer {
+    grid-template-columns: 1fr;
+  }
+
+  .positionReadoutSamples {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .positionReadoutSamplesHeader,
+  .positionReadoutLegend {
+    grid-column: 1 / -1;
+  }
+
+  .positionReadoutSamples button {
+    padding-inline: 14px;
+    border-right: 1px solid var(--line);
+  }
+
+  .positionReadoutSamples button:nth-of-type(3) {
+    border-right: 0;
+  }
+
+  .positionReadoutSamples .positionReadoutSampleActive {
+    box-shadow: inset 0 3px var(--mint);
+  }
+
+  .positionReadoutLegend {
+    margin-top: 0;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .positionReadoutLegend small {
+    margin: 3px 0 0;
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .positionReadoutHeader {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .positionReadoutHeader button {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .generalizationCards {
     grid-template-columns: 1fr;
   }
 
@@ -5731,6 +6414,7 @@
   .simulatorShell,
   .simpleArchitecture,
   .hallucinationViewer,
+  .positionReadoutViewer,
   .lensDiagram,
   .interpretabilityShell,
   .emergenceFigure,
@@ -5740,6 +6424,7 @@
   .simulatorShell,
   .simpleArchitecture,
   .hallucinationViewer,
+  .positionReadoutViewer,
   .lensDiagram,
   .interpretabilityShell,
   .emergenceFigure,

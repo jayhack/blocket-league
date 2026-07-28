@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 
@@ -13,6 +21,7 @@ type EditableMarkdownProps = {
   markdown: string;
   editable: boolean;
   className?: string;
+  headingId?: string;
 };
 
 export function EditableMarkdown({
@@ -20,6 +29,7 @@ export function EditableMarkdown({
   markdown,
   editable,
   className,
+  headingId,
 }: EditableMarkdownProps) {
   const [currentMarkdown, setCurrentMarkdown] = useState(markdown);
   const [draft, setDraft] = useState(markdown);
@@ -106,7 +116,10 @@ export function EditableMarkdown({
 
   if (editing) {
     return (
-      <div className={`${styles.editor} ${className ?? ""}`} data-markdown-editor>
+      <div
+        className={`${styles.editor} ${headingId ? styles.titleEditor : ""} ${className ?? ""}`}
+        data-markdown-editor
+      >
         <div className={styles.editorLabel}>
           <strong>Edit Markdown</strong>
           <span>Esc to cancel</span>
@@ -132,8 +145,14 @@ export function EditableMarkdown({
 
   return (
     <div
-      className={`${styles.block} ${styles.rendered} ${editable ? styles.editable : ""} ${className ?? ""}`}
-      onClick={beginEditing}
+      className={`${styles.block} ${styles.rendered} ${headingId ? styles.title : ""} ${editable ? styles.editable : ""} ${className ?? ""}`}
+      onPointerDown={(event) => {
+        if (!editable || !headingId) return;
+        if (event.target instanceof Element && event.target.closest("a")) return;
+        event.preventDefault();
+        beginEditing();
+      }}
+      onClick={headingId ? undefined : beginEditing}
       onKeyDown={(event) => {
         if (editable && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
@@ -148,6 +167,22 @@ export function EditableMarkdown({
         remarkPlugins={[remarkBreaks]}
         components={{
           a: ({ children, ...props }) => <a {...props} target="_blank" rel="noreferrer">{children}</a>,
+          ...(headingId
+            ? {
+                p: ({ children }: { children?: ReactNode }) => (
+                  <h2 id={headingId}>{children}</h2>
+                ),
+                h1: ({ children }: { children?: ReactNode }) => (
+                  <h2 id={headingId}>{children}</h2>
+                ),
+                h2: ({ children }: { children?: ReactNode }) => (
+                  <h2 id={headingId}>{children}</h2>
+                ),
+                h3: ({ children }: { children?: ReactNode }) => (
+                  <h2 id={headingId}>{children}</h2>
+                ),
+              }
+            : {}),
         }}
       >
         {currentMarkdown}

@@ -56,6 +56,19 @@
   text-underline-offset: 4px;
 }
 
+.title {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.titleEditor {
+  width: min(100%, 720px);
+}
+
+.titleEditor textarea {
+  min-height: 58px;
+}
+
 .editor {
   padding: 16px;
   border: 1px solid rgb(33 150 210 / 58%);
