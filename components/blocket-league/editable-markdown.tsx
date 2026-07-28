@@ -37,9 +37,21 @@ export function EditableMarkdown({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pendingSavedMarkdown = useRef<string | null>(null);
+  const activeBlockId = useRef(blockId);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    if (activeBlockId.current !== blockId) {
+      activeBlockId.current = blockId;
+      pendingSavedMarkdown.current = null;
+      setCurrentMarkdown(markdown);
+      setDraft(markdown);
+      setEditing(false);
+      setSaving(false);
+      setError(null);
+      return;
+    }
+
     if (editing) return;
 
     if (pendingSavedMarkdown.current !== null) {
@@ -52,7 +64,7 @@ export function EditableMarkdown({
 
     setCurrentMarkdown(markdown);
     setDraft(markdown);
-  }, [editing, markdown]);
+  }, [blockId, editing, markdown]);
 
   useLayoutEffect(() => {
     if (!editing || !textareaRef.current) return;

@@ -40,10 +40,10 @@ const TABLE_OF_CONTENTS = [
   { id: "training", label: "Train a toy model" },
   { id: "generalization", label: "Generalization" },
   { id: "linear-position", label: "Decode the representation" },
+  { id: "direction-ring", label: "Direction ring" },
   { id: "lens", label: "Jacobian lens" },
   { id: "intervention", label: "Causal intervention" },
   { id: "game-surgery", label: "Brain surgery" },
-  { id: "direction-ring", label: "Direction ring" },
   { id: "conclusion", label: "Conclusion" },
   { id: "experiments", label: "Appendix A · Model scale" },
   { id: "direction-holdout", label: "Appendix B · Direction holdout" },
@@ -558,6 +558,16 @@ export function BlocketLeagueLab({
         </div>
       </section>
 
+      <section className={styles.emergenceSection} id="direction-ring" aria-labelledby="direction-ring-title">
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown blockId="representation-title" markdown={copy["representation-title"]} editable={editable} headingId="direction-ring-title" />
+          </div>
+          <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
+        </div>
+        <MotionRingViewer />
+      </section>
+
       <section className={styles.lensSection} id="lens" aria-labelledby="lens-title">
         <div className={styles.sectionHeading}>
           <div>
@@ -647,16 +657,6 @@ export function BlocketLeagueLab({
           <EditableMarkdown blockId="brain-surgery" markdown={copy["brain-surgery"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <LiveWorldModel />
-      </section>
-
-      <section className={styles.emergenceSection} id="direction-ring" aria-labelledby="direction-ring-title">
-        <div className={styles.sectionHeading}>
-          <div>
-            <EditableMarkdown blockId="representation-title" markdown={copy["representation-title"]} editable={editable} headingId="direction-ring-title" />
-          </div>
-          <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
-        </div>
-        <MotionRingViewer />
       </section>
 
       <section

@@ -1,5 +1,5 @@
 <!-- block:play-title -->
-The Punchline: Steer a Video Model's Hallucinations.
+The punchline: steer a video model's hallucinations.
 <!-- /block -->
 
 <!-- block:hero-intro -->
@@ -17,11 +17,11 @@ This is essentially an application of Anthropic's [Jacobian lens](https://www.an
 <!-- block:play-intro -->
 Put the puck in the goal!
 
-The game below is the real-time output of a 3.67M-parameter video transformer running in your browser. Arrow keys write to the model activations and "steer" the model's hallucinations.
+The game below is the real-time output of a 3.67M-parameter video transformer running in your browser. Arrow keys write to the model's activations and "steer" the model's hallucinations, using Anthropic's Jacobian lens technique.
 <!-- /block -->
 
 <!-- block:play-takeaway -->
-This is not perfect but clearly has grokked the basic physics of the game, including collisions, wall bounces, and scoring. Notably, **the model has never explicitly observed input controls**. These were discovered post-hoc via interpretability methods (J-Lens).
+This is not perfect but clearly has grokked the basic physics of the game, including collisions, wall bounces, and scoring. Notably, **the model has never explicitly observed input controls** - this is distinct from [Genie 3](https://deepmind.google/models/genie/) and [MIRA](https://mira-wm.com/blog-post/), which are explicitly trained with video game controls in mind.
 <!-- /block -->
 
 <!-- block:dataset-title -->
@@ -33,7 +33,7 @@ We train it on **Blocket League**, a toy physics simulation with collision mecha
 <!-- /block -->
 
 <!-- block:model-title -->
-Training a toy video prediction model.
+Training a toy video prediction model
 <!-- /block -->
 
 <!-- block:model -->
@@ -41,11 +41,11 @@ To study the learned representation of video models, we can train a tiny video t
 <!-- /block -->
 
 <!-- block:model-results -->
-For about **$10 of compute**, the model cleanly learns the transition function and can “hallucinate” valid game rollouts by recursively sampling frames. The learned dynamics are pretty spot on.
+For about $10 of compute, the model cleanly learns the transition function and can “hallucinate” valid game rollouts by recursively sampling frames. The learned dynamics are pretty spot on.
 <!-- /block -->
 
 <!-- block:linear-position-title -->
-Decoding the Learned Representation
+Decoding the learned representation
 <!-- /block -->
 
 <!-- block:linear-position-intro -->
@@ -72,7 +72,7 @@ Finding steerable directions with the Jacobian lens.
 <!-- /block -->
 
 <!-- block:jacobian-lens -->
-Reading x/y locations or collision anticipation from weights is interesting yet limited.
+In NN activations space, **readable is not necessarily writable.** "Writing" to the x/y activation directions from above does not properly steer model output; this implies it is not causal, and just a reflection on the proverbial cave wall of what the model has actually learned.
 
 Using Anthropic's recently-published [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html#the-jacobian-lens), however, we can uncover a *causal* mechanism in the model's computation that controls ball velocity, then manipulate this to change the transformer's output.
 
@@ -88,7 +88,7 @@ Write the recovered +x direction for four frames, then stop. By frame 12, the pl
 <!-- /block -->
 
 <!-- block:brain-surgery-title -->
-This is a video game. You play it through "brain surgery."
+Making a video game via transformer "brain surgery"
 <!-- /block -->
 
 <!-- block:brain-surgery -->
@@ -102,11 +102,11 @@ Motion direction forms a ring in activation space
 <!-- /block -->
 
 <!-- block:representation-depth -->
-A further insight about the model's internal activations is that motion direction in the transformer's block-5 activations has a ring-like topology.
+Motion direction itself has a ring-like topology in the transformer's block-5 activation space.
 
-If you average the block-5 activations by motion direction and run PCA, they wrap into a circular manifold, with nearby directions in the world colocated within the model.
+Average the block-5 activations by motion direction and project them with PCA: they wrap into a circular manifold, with nearby directions in the world remaining neighbors inside the model.
 
-The geometry of the representation mirrors the thing it represents: turn the physical direction smoothly, and the model moves smoothly around its internal ring.
+The geometry mirrors what it represents: rotate the physical direction smoothly, and the hidden state moves smoothly around its internal ring.
 <!-- /block -->
 
 <!-- block:conclusion-title -->
