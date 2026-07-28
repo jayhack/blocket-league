@@ -38,8 +38,8 @@ const TABLE_OF_CONTENTS = [
   { id: "top", label: "Introduction" },
   { id: "play", label: "Play the game" },
   { id: "training", label: "Train a toy model" },
-  { id: "linear-position", label: "Linear x/y readout" },
   { id: "generalization", label: "Generalization" },
+  { id: "linear-position", label: "Decode the representation" },
   { id: "lens", label: "Jacobian lens" },
   { id: "intervention", label: "Causal intervention" },
   { id: "game-surgery", label: "Brain surgery" },
@@ -487,46 +487,6 @@ export function BlocketLeagueLab({
       </section>
 
       <section
-        className={styles.positionReadoutSection}
-        id="linear-position"
-        aria-labelledby="linear-position-title"
-      >
-        <div className={styles.sectionHeading}>
-          <div>
-            <EditableMarkdown
-              blockId="linear-position-title"
-              markdown={copy["linear-position-title"]}
-              editable={editable}
-              headingId="linear-position-title"
-            />
-          </div>
-          <p className={styles.sectionCopy}>
-            By block 5, one fixed bottom-right hidden token contains enough
-            information for a linear map to recover player x/y and puck x/y. The
-            model was never trained on coordinates.
-          </p>
-        </div>
-        <PositionReadoutRollouts />
-        <div className={styles.positionReadoutConclusion}>
-          <strong>The crosshairs follow the model&apos;s own hallucinations.</strong>
-          <p>
-            The same fixed-token decoder keeps tracking both objects even when the
-            model is feeding its own predicted pixels back as input.
-          </p>
-          <Link href="#position-geometry">
-            See the full layer-by-layer and random-weight controls in Appendix D ↓
-          </Link>
-          <p>
-            Position is not all that is readable: block 5 can also anticipate a
-            collision up to eight frames before contact.
-          </p>
-          <Link href="#collision-representation">
-            See the collision probe in Appendix E ↓
-          </Link>
-        </div>
-      </section>
-
-      <section
         className={styles.generalizationSection}
         id="generalization"
         aria-labelledby="generalization-title"
@@ -540,10 +500,12 @@ export function BlocketLeagueLab({
               headingId="generalization-title"
             />
           </div>
-          <p className={styles.sectionCopy}>
-            Now remove every training example with a collision in the upper-right.
-            The model still sees objects move there—just never collide.
-          </p>
+          <EditableMarkdown
+            blockId="generalization-intro"
+            markdown={copy["generalization-intro"]}
+            editable={editable}
+            className={styles.sectionCopy}
+          />
         </div>
         <div className={styles.generalizationSampler}>
           <HallucinationFilmstrip
@@ -555,11 +517,45 @@ export function BlocketLeagueLab({
         <div className={styles.positionReadoutConclusion}>
           <strong>Collision physics transfers into the missing quadrant.</strong>
           <p>
-            It still predicts those collisions. Against a matched control trained
-            everywhere, the penalty in the unseen quadrant is only 0.8%.
+            Against a matched control trained everywhere, the penalty in the unseen
+            quadrant is only 0.8%.
           </p>
           <Link href="#collision-holdout">
             See the matched control and full spatial holdout in Appendix C ↓
+          </Link>
+        </div>
+      </section>
+
+      <section
+        className={styles.positionReadoutSection}
+        id="linear-position"
+        aria-labelledby="linear-position-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="linear-position-title"
+              markdown={copy["linear-position-title"]}
+              editable={editable}
+              headingId="linear-position-title"
+            />
+          </div>
+          <EditableMarkdown
+            blockId="linear-position-intro"
+            markdown={copy["linear-position-intro"]}
+            editable={editable}
+            className={styles.sectionCopy}
+          />
+        </div>
+        <PositionReadoutRollouts />
+        <div className={styles.positionReadoutConclusion}>
+          <strong>The crosshairs follow the model&apos;s own hallucinations.</strong>
+          <p>
+            The same fixed-token decoder keeps tracking both objects even when the
+            model is feeding its own predicted pixels back as input.
+          </p>
+          <Link href="#position-geometry">
+            See the full layer-by-layer and random-weight controls in Appendix D ↓
           </Link>
         </div>
       </section>

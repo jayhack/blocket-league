@@ -23,7 +23,7 @@ The toy world.
 <!-- /block -->
 
 <!-- block:dataset -->
-We train it on **Blocket League**, a toy physics simulation with collision mechanics and a goal state.
+We train it on **Blocket League**, a toy physics simulation with collision mechanics between and goal scoring. We sample rollouts and train with a next-frame-prediction objective.
 <!-- /block -->
 
 <!-- block:model-title -->
@@ -42,8 +42,23 @@ For about **$10 of compute**, the model cleanly learns the transition function a
 Decoding the Learned Representation
 <!-- /block -->
 
+<!-- block:linear-position-intro -->
+How accessible is this abstract learned representation?
+
+Some physical properties are easily accessible within the transformer's hidden state. A simple linear regression from block 5 activations, for example, can neatly predict X/Y coordinates of both the orange and the blue ball.
+
+Similarly, we can see this same layer will "anticipate" a collision up to eight frames before contact. [See the collision probe in Appendix E ↓](#collision-representation)
+<!-- /block -->
+
 <!-- block:generalization-title -->
-Collision physics transfers to a part of the arena it never saw.
+Generalizing to unseen scenarios
+<!-- /block -->
+
+<!-- block:generalization-intro -->
+Is this model merely memorizing the training set, or is it able to learn some higher-level representation that generalizes beyond seen examples?
+
+
+If you retrain this model with certain classes of samples entirely removed - for example, no collisions in the top right quadrant - it turns out the model can still accurately predict what will happen in these scenarios. This is fairly significant and implies the model has learned some higher-level representation that captures entities and their relationships, as opposed to merely interpolating between previously-seen samples.
 <!-- /block -->
 
 <!-- block:jacobian-title -->
