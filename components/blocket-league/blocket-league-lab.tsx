@@ -44,6 +44,7 @@ const TABLE_OF_CONTENTS = [
   { id: "intervention", label: "Causal intervention" },
   { id: "game-surgery", label: "Brain surgery" },
   { id: "direction-ring", label: "Direction ring" },
+  { id: "conclusion", label: "Conclusion" },
   { id: "experiments", label: "Appendix A · Model scale" },
   { id: "direction-holdout", label: "Appendix B · Direction holdout" },
   { id: "collision-holdout", label: "Appendix C · Spatial holdout" },
@@ -520,9 +521,6 @@ export function BlocketLeagueLab({
             Against a matched control trained everywhere, the penalty in the unseen
             quadrant is only 0.8%.
           </p>
-          <Link href="#collision-holdout">
-            See the matched control and full spatial holdout in Appendix C ↓
-          </Link>
         </div>
       </section>
 
@@ -590,8 +588,6 @@ export function BlocketLeagueLab({
               </p>
             </div>
 
-            <ArrowRight className={styles.lensArrow} aria-hidden="true" />
-
             <div className={`${styles.lensStage} ${styles.lensTrace}`}>
               <div className={styles.diagramStageHeader}>
                 <strong>Trace downstream motion</strong>
@@ -613,8 +609,6 @@ export function BlocketLeagueLab({
                 Backpropagate the player disc&apos;s next-frame x/y position to its block-5 hidden state.
               </p>
             </div>
-
-            <ArrowRight className={styles.lensArrow} aria-hidden="true" />
 
             <div className={`${styles.lensStage} ${styles.lensDirections}`}>
               <div className={styles.diagramStageHeader}>
@@ -663,6 +657,29 @@ export function BlocketLeagueLab({
           <EditableMarkdown blockId="representation-depth" markdown={copy["representation-depth"]} editable={editable} className={styles.sectionCopy} />
         </div>
         <MotionRingViewer />
+      </section>
+
+      <section
+        className={styles.conclusionSection}
+        id="conclusion"
+        aria-labelledby="conclusion-title"
+      >
+        <div className={styles.sectionHeading}>
+          <div>
+            <EditableMarkdown
+              blockId="conclusion-title"
+              markdown={copy["conclusion-title"]}
+              editable={editable}
+              headingId="conclusion-title"
+            />
+          </div>
+          <EditableMarkdown
+            blockId="conclusion"
+            markdown={copy.conclusion}
+            editable={editable}
+            className={styles.sectionCopy}
+          />
+        </div>
       </section>
 
       <section

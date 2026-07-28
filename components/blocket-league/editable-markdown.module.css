@@ -50,6 +50,10 @@
   margin-bottom: 0;
 }
 
+.rendered > p + p {
+  margin-top: 1em;
+}
+
 .rendered a {
   color: #f47a2c;
   text-decoration-color: rgb(244 122 44 / 60%);

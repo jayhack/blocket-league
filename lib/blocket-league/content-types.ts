@@ -21,6 +21,8 @@ export const BLOCKET_LEAGUE_COPY_IDS = [
   "brain-surgery",
   "representation-title",
   "representation-depth",
+  "conclusion-title",
+  "conclusion",
   "model-scale-title",
   "direction-holdout-title",
   "collision-holdout-title",

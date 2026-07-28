@@ -215,11 +215,6 @@ export function MotionRingViewer() {
         </div>
 
       </figure>
-
-      <p className={styles.geometryConclusion}>
-        The geometry of the representation mirrors the thing it represents: turn the
-        physical direction smoothly, and the model moves smoothly around its internal ring.
-      </p>
     </div>
   );
 }

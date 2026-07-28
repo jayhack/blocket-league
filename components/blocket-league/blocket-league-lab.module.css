@@ -78,6 +78,7 @@
 .interpretabilitySection,
 .liveSection,
 .emergenceSection,
+.conclusionSection,
 .directionHoldoutSection,
 .collisionHoldoutSection,
 .positionReadoutSection,
@@ -287,6 +288,7 @@
 .liveSection,
 .lensSection,
 .emergenceSection,
+.conclusionSection,
 .directionHoldoutSection,
 .collisionHoldoutSection,
 .positionReadoutSection,
@@ -2350,6 +2352,10 @@
   line-height: 1.7;
 }
 
+.positionReadoutConclusion p:last-child {
+  margin-bottom: 0;
+}
+
 .positionReadoutConclusion a,
 .generalizationCards small {
   color: var(--mint);
@@ -3851,8 +3857,7 @@
   box-shadow: 0 0 32px rgb(33 150 210 / 8%);
 }
 
-.architectureArrow,
-.lensArrow {
+.architectureArrow {
   width: 14px;
   align-self: center;
   justify-self: center;
@@ -3987,6 +3992,12 @@
 
 .emergenceSection {
   padding-bottom: 60px;
+}
+
+.conclusionSection {
+  padding-top: 60px;
+  padding-bottom: 72px;
+  border-top: 1px solid var(--line);
 }
 
 .directionHoldoutSection {
@@ -4885,14 +4896,6 @@
   line-height: 1.62;
 }
 
-.geometryConclusion {
-  max-width: 900px;
-  margin: -20px 0 0;
-  color: #d0d4d2;
-  font-size: 18px;
-  line-height: 1.6;
-}
-
 .pcaChart {
   padding: 12px 28px 0;
 }
@@ -5145,16 +5148,24 @@
 }
 
 .lensFlow {
-  padding: 28px;
+  min-width: 600px;
+  padding: 12px 8px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr) 34px minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
-  gap: 10px;
+  gap: 6px;
+}
+
+.lensDiagram {
+  width: min(880px, calc(100% - 32px));
+  margin-inline: auto;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
 }
 
 .lensStage {
   min-height: 360px;
-  padding: 24px;
+  padding: 12px 8px;
   display: flex;
   flex-direction: column;
   border: 0;
@@ -5204,12 +5215,12 @@
 }
 
 .activationGrid {
-  width: 92px;
+  width: 84px;
   aspect-ratio: 1;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  gap: 2px;
 }
 
 .activationGrid span {
@@ -5286,7 +5297,7 @@
 }
 
 .centroidBoard {
-  width: 92px;
+  width: 84px;
   aspect-ratio: 1;
   position: relative;
   margin: auto;
@@ -5327,8 +5338,8 @@
 }
 
 .lensTraceVisual {
-  grid-template-columns: 92px 26px 92px;
-  gap: 18px;
+  grid-template-columns: 84px 22px 84px;
+  gap: 12px;
 }
 
 .lensTraceVisual > svg {
@@ -5337,7 +5348,7 @@
 }
 
 .directionAxes {
-  width: min(170px, 100%);
+  width: min(156px, 100%);
   margin: 0;
   display: grid;
   gap: 8px;
@@ -5619,8 +5630,7 @@
     min-height: 240px;
   }
 
-  .architectureArrow,
-  .lensArrow {
+  .architectureArrow {
     transform: rotate(90deg);
   }
 
@@ -5632,13 +5642,35 @@
     padding-top: 10px;
   }
 
-  .lensFlow {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
   .lensStage {
     min-height: 230px;
+  }
+
+  .contextFan {
+    width: 140px;
+    height: 120px;
+  }
+
+  .contextFan .diagramFrame {
+    width: 92px;
+  }
+
+  .contextFan .diagramFrame:nth-child(1) { left: 0; top: 28px; }
+  .contextFan .diagramFrame:nth-child(2) { left: 22px; top: 14px; }
+  .contextFan .diagramFrame:nth-child(3) { left: 44px; top: 0; }
+
+  .activationGrid,
+  .centroidBoard {
+    width: 72px;
+  }
+
+  .lensTraceVisual {
+    grid-template-columns: 72px 18px 72px;
+    gap: 8px;
+  }
+
+  .lensTraceVisual > svg {
+    width: 18px;
   }
 
   .jacobianBridge {
@@ -5679,7 +5711,7 @@
   }
 }
 
-@media (max-width: 1399px) {
+@media (max-width: 1199px) {
   .tableOfContents {
     display: none;
   }
@@ -5767,13 +5799,8 @@
     font-size: 30px;
   }
 
-  .geometryHeading p,
-  .geometryConclusion {
+  .geometryHeading p {
     font-size: 19px;
-  }
-
-  .geometryConclusion {
-    margin-top: -8px;
   }
 
   .pcaCaption {
@@ -5857,6 +5884,7 @@
   .liveSection,
   .lensSection,
   .emergenceSection,
+  .conclusionSection,
   .directionHoldoutSection,
   .collisionHoldoutSection,
   .positionReadoutSection,
@@ -6351,9 +6379,12 @@
 }
 
 @media (max-width: 560px) {
-  .architectureDiagram,
-  .lensFlow {
+  .architectureDiagram {
     padding: 14px;
+  }
+
+  .lensFlow {
+    padding: 10px 6px;
   }
 
   .historyRibbon .diagramFrame {

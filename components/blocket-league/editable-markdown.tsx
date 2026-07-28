@@ -166,7 +166,15 @@ export function EditableMarkdown({
       <ReactMarkdown
         remarkPlugins={[remarkBreaks]}
         components={{
-          a: ({ children, ...props }) => <a {...props} target="_blank" rel="noreferrer">{children}</a>,
+          a: ({ children, href, ...props }) => (
+            <a
+              {...props}
+              href={href}
+              {...(href?.startsWith("#") ? {} : { target: "_blank", rel: "noreferrer" })}
+            >
+              {children}
+            </a>
+          ),
           ...(headingId
             ? {
                 p: ({ children }: { children?: ReactNode }) => (

@@ -1,0 +1,34 @@
+.callout {
+  margin-top: 24px;
+  padding: 22px 24px;
+  border-left: 2px solid var(--callout-accent);
+  background: #05090d;
+}
+
+.callout.blue {
+  --callout-accent: #2196d2;
+}
+
+.callout.orange {
+  --callout-accent: #ff6a2a;
+}
+
+.title {
+  display: block;
+  color: #f4f4f5;
+  font-size: 18px;
+}
+
+.body {
+  margin-top: 8px;
+  color: #b5b5bc;
+  line-height: 1.7;
+}
+
+.body :global(p) {
+  margin: 0;
+}
+
+.body :global(p + p) {
+  margin-top: 12px;
+}
