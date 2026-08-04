@@ -41,7 +41,7 @@ To study the learned representation of video models, we can train a tiny video t
 <!-- /block -->
 
 <!-- block:model-results -->
-For about $10 of compute, the model cleanly learns the transition function and can “hallucinate” valid game rollouts by recursively sampling frames. The learned dynamics are pretty spot on.
+For $10 of compute on [Modal](https://modal.com), the model cleanly learns the transition function and can “hallucinate” valid game rollouts by recursively sampling frames. The learned dynamics are pretty spot on.
 <!-- /block -->
 
 <!-- block:linear-position-title -->

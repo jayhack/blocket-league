@@ -60,6 +60,16 @@
   text-underline-offset: 4px;
 }
 
+.rendered a.modalLink {
+  color: #7fee64;
+  text-decoration-color: rgb(127 238 100 / 58%);
+}
+
+.rendered a.modalLink:hover {
+  color: #b7f1bf;
+  text-decoration-color: currentColor;
+}
+
 .title {
   width: fit-content;
   max-width: 100%;
