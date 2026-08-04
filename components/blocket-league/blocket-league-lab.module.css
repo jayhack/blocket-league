@@ -4000,6 +4000,38 @@
   border-top: 1px solid var(--line);
 }
 
+.conclusionCredits {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+  color: #7fee64;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.conclusionCredits a {
+  color: inherit;
+  text-decoration-color: rgb(127 238 100 / 58%);
+  text-underline-offset: 4px;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+
+.conclusionCredits a:hover {
+  color: #b7f1bf;
+  text-decoration-color: currentColor;
+}
+
+.qedMark {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  flex: 0 0 auto;
+  background: var(--gold);
+}
+
 .directionHoldoutSection {
   border-top: 1px solid var(--line);
   padding-bottom: 72px;
