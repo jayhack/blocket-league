@@ -182,6 +182,7 @@ export function EditableMarkdown({
             <a
               {...props}
               href={href}
+              className={href === "https://modal.com" ? styles.modalLink : undefined}
               {...(href?.startsWith("#") ? {} : { target: "_blank", rel: "noreferrer" })}
             >
               {children}

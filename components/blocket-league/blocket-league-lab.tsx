@@ -677,17 +677,8 @@ export function BlocketLeagueLab({
             blockId="conclusion"
             markdown={copy.conclusion}
             editable={editable}
-            className={styles.sectionCopy}
+            className={`${styles.sectionCopy} ${styles.conclusionCopy}`}
           />
-          <div className={styles.conclusionCredits}>
-            <a href="https://modal.com" target="_blank" rel="noreferrer">
-              for $10 of compute on Modal
-            </a>
-            <span className={styles.qedMark} role="img" aria-label="Q.E.D." />
-            <a href="https://modal.com" target="_blank" rel="noreferrer">
-              Built on Modal
-            </a>
-          </div>
         </div>
       </section>
 
