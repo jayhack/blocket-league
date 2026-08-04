@@ -679,6 +679,15 @@ export function BlocketLeagueLab({
             editable={editable}
             className={`${styles.sectionCopy} ${styles.conclusionCopy}`}
           />
+          <a
+            className={styles.conclusionCredit}
+            href="https://modal.com"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src="/blocket-league/modal-logo.svg" alt="" aria-hidden="true" />
+            <span>Built on Modal.</span>
+          </a>
         </div>
       </section>
 

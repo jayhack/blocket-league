@@ -116,7 +116,7 @@ Conclusion
 <!-- block:conclusion -->
 Even this toy model builds a higher-level internal state we can read, that generalizes beyond its training examples, and that interpretability techniques available in 2026 let us causally influence.
 
-I think this scales. In the spirit of Anthropic's [global-workspace view](https://transformer-circuits.pub/2026/workspace/), models trained over trillions of tokens seem to develop detailed internal worlds that are isomorphic to the reality they observe. Mapping these worlds and learning how they shape behavior may be one of the most exciting and consequential scientific projects of the AI era. [Built on Modal](https://modal.com)
+I think this scales. In the spirit of Anthropic's [global-workspace view](https://transformer-circuits.pub/2026/workspace/), models trained over trillions of tokens seem to develop detailed internal worlds that are isomorphic to the reality they observe. Mapping these worlds and learning how they shape behavior may be one of the most exciting and consequential scientific projects of the AI era.
 <!-- /block -->
 
 <!-- block:model-scale-title -->
